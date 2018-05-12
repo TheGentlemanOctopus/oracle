@@ -5,7 +5,7 @@
         "fps" : 30
     },
     "InputDevices": {
-        "Device0": {
+        "InputDevice0": {
             "type": "fft",
             "args": {
                 "datasize": 2048,
@@ -21,7 +21,7 @@
         }
     },
     "OutputDevices": {
-        "Device0": {
+        "OutputDevice0": {
             "type": "cube_small",
             "range": [0,25],
             "pixels": 25,
@@ -34,7 +34,7 @@
                 "frame_period": 1000
             }
         },
-        "Device1": {
+        "OutputDevice1": {
             "type": "cube_small",
             "range": [25,50],
             "pixels": 25,
@@ -47,6 +47,5 @@
                 "frame_period": 1000
             }
         }
-
     }
 }
