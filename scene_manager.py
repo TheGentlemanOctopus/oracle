@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from multiprocessing import Process, Queue
 import device
 import time
 
@@ -11,7 +11,9 @@ class SceneManager(object):
         d = device.Device()
         p = Process(target=d.main)
         p.start()
-        time.sleep(10)
+        while True:
+            print(d.out_queue.get())
+            
 
 if __name__ == '__main__':
     scene = SceneManager()
