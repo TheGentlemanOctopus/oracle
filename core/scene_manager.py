@@ -3,9 +3,7 @@ import time
 import opc
 import sys
 
-from devices.lonely import Lonely
-from devices.cube_strip import CubeStrip
-import utilities.process_descriptor as pd
+from core.devices import construct_devices
 
 class SceneManager(object):
     """docstring for SceneManager"""
