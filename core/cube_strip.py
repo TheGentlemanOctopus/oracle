@@ -1,0 +1,31 @@
+from device import Device
+from pixel import Pixel
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+class CubeStrip(Device):
+    def __init__(self, start, direction, spacing, num_pixels):
+        self.pixels = []
+        
+        for i in range(num_pixels):
+            self.pixels.append(Pixel(np.array(start) + i*spacing*np.array(direction)))
+
+    def update(self):
+        for pixel in self.pixels:
+            pixel.r = 0
+            pixel.g = 0.25
+            pixel.b = 0.75
+
+        return self.pixels
+
+if __name__ == "__main__":
+    start = [0,0,0]
+    direction = [1,0,0]
+    spacing = 1 
+    num_pixels = 10
+
+    strip = CubeStrip(start, direction, spacing, num_pixels)
+    
+    for pixel in strip.pixels:
+        print pixel.location

@@ -1,8 +1,10 @@
 from multiprocessing import Process, Queue
-from lonely import Lonely
 import device
 import time
 import opc
+
+from lonely import Lonely
+from cube_strip import CubeStrip
 
 class SceneManager(object):
     """docstring for SceneManager"""
@@ -15,7 +17,12 @@ class SceneManager(object):
             raise Exception("Could not connect to opc at " + opc_ip)
 
     def start(self):
-        d = Lonely()
+        start = [0,0,0]
+        direction = [1,0,0]
+        spacing = 0.2
+        num_pixels = 10
+        d = CubeStrip(start, direction, spacing, num_pixels)
+
         p = Process(target=d.main)
         p.start()
         while True:
