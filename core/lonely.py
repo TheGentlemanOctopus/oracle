@@ -6,7 +6,7 @@ import numpy as np
 class Lonely(Device):
     """Lonely pixel :("""
 
-    def setup(self):
+    def __init__(self):
         self.pixels = [Pixel([0,0,0])]
 
     def update(self):
