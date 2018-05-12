@@ -3,17 +3,14 @@ from multiprocessing import Queue
 
 class Device(object):
     """Generic Device"""
-    def __init__(self, frame_rate=30):
-        self.out_queue = Queue()
-        self.frame_rate = frame_rate
-        self.setup()
-
-    def setup(self):
-        self.pixels = []
+    frame_rate = 30
+    out_queue = Queue()
+    pixels = []
 
     def main(self):
         while True:
-            self.put([pixel.color_255 for pixel in self.update()])
+            self.update()
+            self.put([pixel.color_255 for pixel in self.pixels])
             time.sleep(1.0/self.frame_rate)
 
     def put(self, data):
@@ -28,6 +25,8 @@ class Device(object):
 
 if __name__ == '__main__':
     device = Device()
+    device.frame_rate = 30
+
     device.main()
     while True:
         print(device.out_queue.get())
