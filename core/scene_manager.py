@@ -1,11 +1,10 @@
 from multiprocessing import Process, Queue
-import device
 import time
 import opc
 import sys
 
-from lonely import Lonely
-from cube_strip import CubeStrip
+from devices.lonely import Lonely
+from devices.cube_strip import CubeStrip
 import utilities.process_descriptor as pd
 
 class SceneManager(object):
