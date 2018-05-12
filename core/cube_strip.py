@@ -1,7 +1,7 @@
 from device import Device
 from pixel import Pixel
 import numpy as np
-
+import time
 import matplotlib.pyplot as plt
 
 class CubeStrip(Device):
@@ -12,10 +12,11 @@ class CubeStrip(Device):
             self.pixels.append(Pixel(np.array(start) + i*spacing*np.array(direction)))
 
     def update(self):
+        t = time.time()
         for pixel in self.pixels:
-            pixel.r = 0
-            pixel.g = 0.25
-            pixel.b = 0.75
+            pixel.r = 0.5*(1+ np.sin(pixel.location[0]/np.pi + t))
+            pixel.g = 0.5*(1+ np.cos(pixel.location[0]/np.pi + t))
+            pixel.b = 0.5*(1+ np.sin(pixel.location[0]/np.pi + t + np.pi/2))
 
         return self.pixels
 
