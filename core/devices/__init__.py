@@ -1,5 +1,15 @@
 import core.utilities.process_descriptor as pd
-from cube_strip import CubeStrip
+from device import Device
+
+# To be able construct a device, all you have to is import it here 
+import cube_strip
+import lonely
+
+classes = Device.__subclasses__()
+device_dict = {}
+for device in classes:
+    device_dict[device.__name__] = device
+
 
 def construct_devices(scene_descriptor_path):
     # Load JSON
@@ -8,7 +18,6 @@ def construct_devices(scene_descriptor_path):
     devices = []
     # Construct devices
     for name, data in json_data["OutputDevices"].items():
-        if data["type"] == "cube_strip":
-            devices.append(CubeStrip(**data["args"]))
+        devices.append(device_dict[data["type"]](**data["args"]))
 
     return devices
