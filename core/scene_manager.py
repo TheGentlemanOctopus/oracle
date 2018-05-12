@@ -26,21 +26,6 @@ class SceneManager(object):
         while True:
             self.client.put_pixels(d.out_queue.get(), channel=0)
 
-# TODO: Move me
-def construct_devices(scene_descriptor_path):
-    # Load JSON
-    json_data = pd.process(scene_descriptor_path)
-
-    devices = []
-    # Construct devices
-    for name, data in json_data["OutputDevices"].items():
-        if data["type"] == "cube_strip":
-            devices.append(CubeStrip(**data["args"]))
-
-    return devices
-
-
-
 if __name__ == '__main__':
     devices = construct_devices(sys.argv[1])
 

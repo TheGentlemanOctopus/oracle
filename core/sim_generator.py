@@ -1,7 +1,5 @@
 '''Generates a JSON file for use with the GL simulator'''
-from lonely import Lonely
-from cube_strip import CubeStrip
-from scene_manager import construct_devices
+from devices import construct_devices
 import json
 import sys
 
