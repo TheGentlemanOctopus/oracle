@@ -6,6 +6,10 @@ class Device(object):
     def __init__(self, frame_rate=30):
         self.out_queue = Queue()
         self.frame_rate = frame_rate
+        self.setup()
+
+    def setup(self):
+        self.pixels = []
 
     def main(self):
         while True:
