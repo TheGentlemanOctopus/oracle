@@ -1,10 +1,9 @@
 from multiprocessing import Process, Queue
-import device
 import time
 import opc
+import sys
 
-from lonely import Lonely
-from cube_strip import CubeStrip
+from core.devices import construct_devices
 
 class SceneManager(object):
     """docstring for SceneManager"""
@@ -16,19 +15,17 @@ class SceneManager(object):
         if not self.client.can_connect():
             raise Exception("Could not connect to opc at " + opc_ip)
 
-    def start(self):
-        start = [0,0,0]
-        direction = [1,0,0]
-        spacing = 0.2
-        num_pixels = 10
-        d = CubeStrip(start, direction, spacing, num_pixels)
+    def start(self, devices):
+        # TODO: Support multiple devices
+        d = devices[0]
 
         p = Process(target=d.main)
         p.start()
         while True:
             self.client.put_pixels(d.out_queue.get(), channel=0)
 
-
 if __name__ == '__main__':
+    devices = construct_devices(sys.argv[1])
+
     scene = SceneManager()
-    scene.start()
+    scene.start(devices)

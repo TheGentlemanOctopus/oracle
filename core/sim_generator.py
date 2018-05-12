@@ -1,17 +1,11 @@
 '''Generates a JSON file for use with the GL simulator'''
-from lonely import Lonely
-from cube_strip import CubeStrip
-
+from devices import construct_devices
 import json
+import sys
 
 def main():
-    start = [0,0,0]
-    direction = [1,0,0]
-    spacing = 0.2
-    num_pixels = 10
-    devices = [
-        CubeStrip(start, direction, spacing, num_pixels)
-    ]
+
+    devices = construct_devices(sys.argv[1])
     
     pixels = []
     for device in devices:
@@ -20,6 +14,7 @@ def main():
     json_data = [{"point": pixel.location} for pixel in pixels]
     with open('lonely_layout.json', 'w') as f:
         json.dump(json_data, f)
+    print "dumped"
 
 if __name__ == '__main__':
     main()

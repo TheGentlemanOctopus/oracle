@@ -1,0 +1,40 @@
+{
+    "SceneDetails": {
+        "pixel" : 2000,
+        "pixel_type" : "RGB",
+        "fps" : 30
+    },
+    "InputDevices": {
+        "InputDevice0": {
+            "type": "fft",
+            "args": {
+                "datasize": 2048,
+                "mic": true,
+                "debug":false,
+                "fname":"../sounds/test.wav",
+                "frate":44100.0, 
+                "output":false,
+                "threshold":17,
+                "stretch":4, 
+                "dataqueues":false
+            }
+        }
+    },
+    "OutputDevices": {
+        "OutputDevice0": {
+            "type": "CubeStrip",
+            "range": [0,25],
+            "pixels": 25,
+            "args": {
+                "start" : [0,0,0],
+                "direction" : [1,0,0],
+                "spacing" : 0.2,
+                "num_pixels" : 10
+            }
+        },
+        "MeLonely": {
+            "type": "Lonely",
+            "args": {}
+        }
+    }
+}
