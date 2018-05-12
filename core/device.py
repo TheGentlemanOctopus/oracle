@@ -9,7 +9,8 @@ class Device(object):
 
     def main(self):
         while True:
-            self.put([pixel.color_255 for pixel in self.update()])
+            self.update()
+            self.put([pixel.color_255 for pixel in self.pixels])
             time.sleep(1.0/self.frame_rate)
 
     def put(self, data):
