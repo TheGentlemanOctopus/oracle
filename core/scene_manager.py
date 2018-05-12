@@ -16,18 +16,25 @@ class SceneManager(object):
             raise Exception("Could not connect to opc at " + opc_ip)
 
     def start(self, devices):
-        # TODO: Support multiple devices
-        d = devices[0]
+        for device in devices:
+            p = Process(target=device.main)
+            p.start()
 
-        p = Process(target=d.main)
-        p.start()
-        
         while True:
             # TODO: This assumes each device has a unique set of channels
+            # TODO: This only works with gl server,
             # Combine pixels across all devices by channel
+            all_pixels_dict = {}
             for device in devices:
                 for channel, pixels in device.out_queue.get().items():
-                    self.client.put_pixels(pixels, channel=channel)
+                    all_pixels_dict[channel] = pixels
+                    
+            # Send to client
+            all_pixels_list = []
+            for channel in sorted(all_pixels_dict.keys()):
+                all_pixels_list.extend(all_pixels_dict[channel])
+
+            self.client.put_pixels(all_pixels_list, channel=0)
 
 
 if __name__ == '__main__':

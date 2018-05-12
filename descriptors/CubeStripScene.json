@@ -21,7 +21,7 @@
         }
     },
     "OutputDevices": {
-        "OutputDevice0": {
+        "Strip0": {
             "type": "CubeStrip",
             "range": [0,25],
             "pixels": 25,
@@ -33,10 +33,16 @@
                 "num_pixels" : 10
             }
         },
-        "MeLonely": {
-            "type": "Lonely",
+        "Strip1": {
+            "type": "CubeStrip",
+            "range": [0,25],
+            "pixels": 25,
             "args": {
-                "channel": 0 
+                "channel": 1,
+                "start" : [0,1,0],
+                "direction" : [0,1,0],
+                "spacing" : 0.2,
+                "num_pixels" : 10
             }
         }
     }

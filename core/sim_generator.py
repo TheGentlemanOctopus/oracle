@@ -14,7 +14,7 @@ def main():
 
     json_data = [{"point": pixel.location} for pixel in pixels]
     with open('lonely_layout.json', 'w') as f:
-        json.dump(json_data, f)
+        json.dump(json_data, f, indent=4)
     print "dumped"
 
 if __name__ == '__main__':
