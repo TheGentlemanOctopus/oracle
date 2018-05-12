@@ -11,6 +11,11 @@ class Pixel(object):
     def color(self):
         return (self.r, self.g, self.b)
 
+    @property
+    def color_255(self):
+        return (255*self.r, 255*self.g, 255*self.b)
+    
+
 if __name__ == "__main__":
     pixel = Pixel([0,0,0])
 

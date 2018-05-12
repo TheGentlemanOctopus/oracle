@@ -11,9 +11,9 @@ class Lonely(Device):
 
     def update(self):
         t = time.time()
-        self.pixels[0].r = (255.0/2)*(1+np.sin(t))
-        self.pixels[0].g = (255.0/2)*(1+np.cos(t))
-        self.pixels[0].b = 100
+        self.pixels[0].r = (1+np.sin(t))/2.0
+        self.pixels[0].g = (1+np.cos(t))/2.0
+        self.pixels[0].b = 0.5
 
         return self.pixels
 
