@@ -14,7 +14,7 @@ class SceneManager(object):
         p = Process(target=d.main)
         p.start()
         while True:
-            print(d.out_queue.get())
+            print("Scene ", d.out_queue.get())
 
 
 if __name__ == '__main__':
