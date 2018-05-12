@@ -26,6 +26,7 @@
             "range": [0,25],
             "pixels": 25,
             "args": {
+                "channel": 0,
                 "start" : [0,0,0],
                 "direction" : [1,0,0],
                 "spacing" : 0.2,

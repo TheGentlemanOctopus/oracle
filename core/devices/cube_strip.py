@@ -5,11 +5,15 @@ import time
 import matplotlib.pyplot as plt
 
 class CubeStrip(Device):
-    def __init__(self, start, direction, spacing, num_pixels):
+    def __init__(self, channel, start, direction, spacing, num_pixels):
         self.pixels = []
-        
         for i in range(num_pixels):
             self.pixels.append(Pixel(np.array(start) + i*spacing*np.array(direction)))
+
+
+        self.pixels_by_channel = {
+            channel: self.pixels
+        }
 
     def update(self):
         t = time.time()
