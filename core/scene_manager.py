@@ -21,8 +21,14 @@ class SceneManager(object):
 
         p = Process(target=d.main)
         p.start()
+        
         while True:
-            self.client.put_pixels(d.out_queue.get(), channel=0)
+            # TODO: This assumes each device has a unique set of channels
+            # Combine pixels across all devices by channel
+            for device in devices:
+                for channel, pixels in device.out_queue.get().items():
+                    self.client.put_pixels(pixels, channel=channel)
+
 
 if __name__ == '__main__':
     devices = construct_devices(sys.argv[1])
