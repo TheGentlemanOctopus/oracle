@@ -4,6 +4,8 @@
 """
 
 from devices import construct_devices, combine_channel_dicts
+import utilities.process_descriptor as pd
+
 import json
 import sys
 import os
@@ -28,8 +30,10 @@ def main(args):
     parser.add_argument("scene_path", help="Path to scene json")   
     parser_args = parser.parse_args(args)
 
+    scene_data = pd.read_json(parser_args.scene_path)
+
     # construct devices and combine into one big dict
-    devices = construct_devices(parser_args.scene)
+    devices = construct_devices(scene_data["OutputDevices"])
     channels_combined = combine_channel_dicts(devices)
 
     # gl_server requires a json file for every channel, even if they have no pixels
