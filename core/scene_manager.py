@@ -38,6 +38,7 @@ class SceneManager(object):
 
         # Recombine
         while True:
+            loop_time = time.time()
             # Update pixel lists if new data has arrived
             for i, device in enumerate(devices):
                 if not device.out_queue.empty():
@@ -56,7 +57,12 @@ class SceneManager(object):
             for channel, pixels in channels_combined.items():
                 self.client.put_pixels(pixels, channel=channel)
 
-            # TODO: Sleepy sleep
+            # The scene_fps should be at least 2x device_fps to avoid sampling issues
+            elapsed = time.time() - loop_time
+            sleep_time = (1.0/self.scene_fps) - elapsed
+            if sleep_time < 0: 
+                sleep_time = 0
+            time.sleep(sleep_time)
 
 
 if __name__ == '__main__':
