@@ -1,5 +1,6 @@
 import time
 from multiprocessing import Queue
+from core.utilities.sleep_timer import SleepTimer
 
 class Device(object):
     """
@@ -22,18 +23,14 @@ class Device(object):
         """
             This should be called to start the process
         """
+        sleep_timer = SleepTimer(1.0/self.fps)
         while True:
-            # TODO: DRY this up with scene descriptor
-            loop_time = time.time()
+            sleep_timer.start()
 
             self.update()
             self.put(self.pixel_colors_by_channel_255)
 
-            elapsed = time.time() - loop_time
-            sleep_time = (1.0/self.fps) - elapsed
-            if sleep_time < 0: 
-                sleep_time = 0
-            time.sleep(sleep_time)
+            sleep_timer.sleep()
 
     @property
     def pixel_colors_by_channel_255(self):

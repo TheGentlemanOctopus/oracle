@@ -4,6 +4,7 @@ import opc
 import sys
 import numpy as np
 import utilities.process_descriptor as pd
+from utilities.sleep_timer import SleepTimer
 import argparse
 
 from core.devices import construct_devices, combine_channel_dicts
@@ -53,9 +54,9 @@ class SceneManager(object):
             p.start()
 
         # Main loop
+        sleep_timer = SleepTimer(1.0/self.scene_fps)
         while True:
-            # TODO: DRY this up with what's in devices
-            loop_time = time.time()
+            sleep_timer.start()
             
             # Update pixel lists if new data has arrived
             for i, device in enumerate(devices):
@@ -78,12 +79,8 @@ class SceneManager(object):
                 self.client.put_pixels(pixels, channel=channel)
 
             # The scene_fps should be at least 2x device_fps to avoid sampling issues
-            # TODO: This shouldn't be necessary, I think the queue clear in devices requires a mutex
-            elapsed = time.time() - loop_time
-            sleep_time = (1.0/self.scene_fps) - elapsed
-            if sleep_time < 0: 
-                sleep_time = 0
-            time.sleep(sleep_time)
+            # TODO: comment above shouldn't be necessary, I think the queue clear in devices requires a mutex
+            sleep_timer.sleep()
 
 def main(args):
     # Parse Args
