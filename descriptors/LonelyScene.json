@@ -1,0 +1,31 @@
+{
+    "SceneDetails": {
+        "pixel" : 2000,
+        "pixel_type" : "RGB",
+        "fps" : 30
+    },
+    "InputDevices": {
+        "InputDevice0": {
+            "type": "fft",
+            "args": {
+                "datasize": 2048,
+                "mic": true,
+                "debug":false,
+                "fname":"../sounds/test.wav",
+                "frate":44100.0, 
+                "output":false,
+                "threshold":17,
+                "stretch":4, 
+                "dataqueues":false
+            }
+        }
+    },
+    "OutputDevices": {
+        "MeLonely": {
+            "type": "Lonely",
+            "args": {
+                "channel": 0
+            }
+        }
+    }
+}

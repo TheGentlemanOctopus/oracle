@@ -5,13 +5,23 @@ class Device(object):
     """Generic Device"""
     frame_rate = 30
     out_queue = Queue()
-    pixels = []
+
+    # A dictionary where the key is the channel and the value is an array of pixel objects
+    pixels_by_channel = {}
 
     def main(self):
         while True:
             self.update()
-            self.put([pixel.color_255 for pixel in self.pixels])
+            self.put(self.pixels_by_channel_255)
             time.sleep(1.0/self.frame_rate)
+
+    @property
+    def pixels_by_channel_255(self):
+        all_pixels = {}
+        for channel, pixel_list in self.pixels_by_channel.items():
+            all_pixels[channel] = [pixel.color_255 for pixel in pixel_list]
+
+        return all_pixels
 
     def put(self, data):
         # TODO: Make clear function with the following...

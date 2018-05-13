@@ -5,19 +5,37 @@ from device import Device
 import cube_strip
 import lonely
 
-classes = Device.__subclasses__()
+# Generates dictionary with class name as key and class as value. 
+# Useful for constructing device class instances
 device_dict = {}
-for device in classes:
+for device in Device.__subclasses__():
     device_dict[device.__name__] = device
 
 
 def construct_devices(scene_descriptor_path):
+    # TODO: Error handling for json format
+
     # Load JSON
     json_data = pd.process(scene_descriptor_path)
 
     devices = []
     # Construct devices
-    for name, data in json_data["OutputDevices"].items():
-        devices.append(device_dict[data["type"]](**data["args"]))
+    for device_json in json_data["OutputDevices"]:
+        devices.append(device_dict[device_json["type"]](**device_json["args"]))
 
     return devices
+
+def combine_channel_dicts(devices):
+    """ 
+        Combines channel dictionarties from a list of devices into one big one into one
+        Pixels are ordered in the same order as the array
+    """
+    channels_combined = {}
+    for device in devices:
+        for channel, pixels in device.pixels_by_channel.items():
+            if channel in channels_combined:
+                channels_combined[channel].extend(pixels)
+            else:
+                channels_combined[channel] = pixels
+
+    return channels_combined
