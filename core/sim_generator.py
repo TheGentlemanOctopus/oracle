@@ -4,6 +4,9 @@ import json
 import sys
 import os
 import subprocess
+import numpy as np
+
+temp_dir = os.path.dirname(os.path.abspath( __file__ )) + "/temp/"
 
 def main():
     devices = construct_devices(sys.argv[1])
@@ -11,32 +14,32 @@ def main():
     channels_combined = combine_channel_dicts(devices)
 
     # Make temp folder 
-    temp_dir = os.path.dirname(os.path.abspath( __file__ )) + "/temp/"
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
-    json_filenames = []
+    max_channels = max(channels_combined.keys())
+
+    for i in np.arange(max_channels)+1:
+        with open(json_filename(i), 'w') as f:
+            json.dump({}, f, indent=4)
 
     # Output each channel into a json
-    i=0
     for channel, pixels in channels_combined.items():
-        i+=1
-        json_data = [{"point": pixel.location} for pixel in pixels]
-        
-        json_filename = temp_dir + 'layout_%i.json'%i
-        json_filenames.append(json_filename)
+        json_data = [{"point": pixel.location} for pixel in pixels]   
 
-        with open(json_filename, 'w') as f:
+        with open(json_filename(channel), 'w') as f:
             json.dump(json_data, f, indent=4)
 
     command = ["gl_server"]
-    for filename in json_filenames:
+    for i in np.arange(max_channels)+1:
         command.append("-l")
-        command.append(filename)
+        command.append(json_filename(i))
 
     print "Launching gl_server", command
     subprocess.call(command)
 
+def json_filename(channel):
+    return temp_dir + 'layout_%i.json'%channel
 
 
 if __name__ == '__main__':

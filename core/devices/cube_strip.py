@@ -5,6 +5,8 @@ import time
 
 class CubeStrip(Device):
     def __init__(self, channel, start, direction, spacing, num_pixels):
+        super(CubeStrip, self).__init__()
+
         self.pixels = []
         for i in range(num_pixels):
             self.pixels.append(Pixel(np.array(start) + i*spacing*np.array(direction)))

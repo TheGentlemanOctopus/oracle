@@ -4,10 +4,13 @@ from multiprocessing import Queue
 class Device(object):
     """Generic Device"""
     frame_rate = 30
-    out_queue = Queue()
 
-    # A dictionary where the key is the channel and the value is an array of pixel objects
-    pixels_by_channel = {}
+    def __init__(self):
+        # For sending pixels out
+        self.out_queue = Queue()
+
+        # A dictionary where the key is the channel and the value is an array of pixel objects
+        self.pixels_by_channel = {}
 
     def main(self):
         while True:
