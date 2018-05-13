@@ -20,8 +20,9 @@
             }
         }
     },
-    "OutputDevices": {
-        "Strip0": {
+    "OutputDevices": [
+        {
+            "name": "Strip0",
             "type": "CubeStrip",
             "range": [0,25],
             "pixels": 25,
@@ -33,7 +34,8 @@
                 "num_pixels" : 10
             }
         },
-        "Strip1": {
+        {
+            "name": "Strip1",
             "type": "CubeStrip",
             "range": [0,25],
             "pixels": 25,
@@ -45,5 +47,5 @@
                 "num_pixels" : 10
             }
         }
-    }
+    ]
 }
