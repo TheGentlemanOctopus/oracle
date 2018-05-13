@@ -2,8 +2,9 @@ from multiprocessing import Process, Queue
 import time
 import opc
 import sys
+import numpy as np
 
-from core.devices import construct_devices
+from core.devices import construct_devices, combine_channel_dicts
 
 class SceneManager(object):
     """docstring for SceneManager"""
@@ -16,25 +17,32 @@ class SceneManager(object):
             raise Exception("Could not connect to opc at " + opc_ip)
 
     def start(self, devices):
+        device_pixel_dictionary_list = [device.pixels_by_channel_255 for device in devices]
+
+        # Start Processes
         for device in devices:
             p = Process(target=device.main)
             p.start()
 
+        # Recombine
         while True:
-            # TODO: This assumes each device has a unique set of channels
-            # TODO: This only works with gl server,
-            # Combine pixels across all devices by channel
-            all_pixels_dict = {}
-            for device in devices:
-                for channel, pixels in device.out_queue.get().items():
-                    all_pixels_dict[channel] = pixels
-                    
-            # Send to client
-            all_pixels_list = []
-            for channel in sorted(all_pixels_dict.keys()):
-                all_pixels_list.extend(all_pixels_dict[channel])
+            # Update pixel lists if new data has arrived
+            for i, device in enumerate(devices):
+                if not device.out_queue.empty():
+                    device_pixel_dictionary_list[i] = device.out_queue.get()
 
-            self.client.put_pixels(all_pixels_list, channel=0)
+            # Combine
+            channels_combined = {}
+            for pixel_dict in device_pixel_dictionary_list:
+                for channel, pixels in pixel_dict.items():
+                    if channel in channels_combined:
+                        channels_combined[channel].extend(pixels)
+                    else:
+                        channels_combined[channel] = [p for p in pixels]
+            
+            # Pass onto OPC client
+            for channel, pixels in channels_combined.items():
+                self.client.put_pixels(pixels, channel=channel)
 
 
 if __name__ == '__main__':
