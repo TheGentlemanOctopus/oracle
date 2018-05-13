@@ -3,27 +3,24 @@ from pixel import Pixel
 import numpy as np
 import time
 
+from core.layouts.strip import Strip
+
 class CubeStrip(Device):
     def __init__(self, channel, start, direction, spacing, num_pixels):
         super(CubeStrip, self).__init__()
 
-        self.pixels = []
-        for i in range(num_pixels):
-            self.pixels.append(Pixel(np.array(start) + i*spacing*np.array(direction)))
-
+        self.strip = Strip(start, direction, spacing, num_pixels)
 
         self.pixels_by_channel = {
-            channel: self.pixels
+            channel: self.strip.pixels
         }
 
     def update(self):
         t = time.time()
-        for pixel in self.pixels:
+        for pixel in self.strip.pixels:
             pixel.r = 0.5*(1+ np.sin(pixel.location[0]/np.pi + t))
             pixel.g = 0.5*(1+ np.cos(pixel.location[0]/np.pi + t))
             pixel.b = 0.5*(1+ np.sin(pixel.location[0]/np.pi + t + np.pi/2))
-
-        return self.pixels
 
 if __name__ == "__main__":
     start = [0,0,0]
