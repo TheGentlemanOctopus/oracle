@@ -7,6 +7,8 @@ class Lonely(Device):
     """Lonely pixel :("""
 
     def __init__(self, channel):
+        super(Lonely, self).__init__()
+
         self.pixel = Pixel([0,0,0])
 
         self.pixels_by_channel = {

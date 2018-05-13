@@ -19,9 +19,10 @@ def construct_devices(scene_descriptor_path):
     json_data = pd.process(scene_descriptor_path)
 
     devices = []
-    # Construct devices
+    # Construct device from the dictionary of device classes that are keyed by their __name__
     for device_json in json_data["OutputDevices"]:
-        devices.append(device_dict[device_json["type"]](**device_json["args"]))
+        device_constructor = device_dict[device_json["type"]]
+        devices.append(device_constructor(**device_json["args"]))
 
     return devices
 
