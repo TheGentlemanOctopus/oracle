@@ -4,6 +4,7 @@ import opc
 import sys
 import numpy as np
 import utilities.process_descriptor as pd
+import argparse
 
 from core.devices import construct_devices, combine_channel_dicts
 
@@ -43,7 +44,7 @@ class SceneManager(object):
 
         # A list of dictionaries which are the device's pixel colors by channel
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
-        device_pixel_dictionary_list = [device.pixels_by_channel_255 for device in devices]
+        device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in devices]
 
         # Start Processes
         for device in devices:
@@ -84,11 +85,20 @@ class SceneManager(object):
                 sleep_time = 0
             time.sleep(sleep_time)
 
+def main(args):
+    # Parse Args
+    parser = argparse.ArgumentParser(description="Run a scene for us all to marvel")
+    parser.add_argument("scene_path", help="Path to scene json file")   
+    parser_args = parser.parse_args(args)
+
+    parsed_scene = pd.read_json(parser_args.scene_path)
+
+    # Prepare for scene time...
+    scene = SceneManager(**parsed_scene["SceneDetails"])
+    devices = construct_devices(parsed_scene["OutputDevices"])
+
+    # Yaaay! Scene time
+    scene.start(devices)
 
 if __name__ == '__main__':
-    parsed = pd.read_json(sys.argv[1])
-
-    devices = construct_devices(sys.argv[1])
-
-    scene = SceneManager(**parsed["SceneDetails"])
-    scene.start(devices)
+    main(sys.argv[1:])
