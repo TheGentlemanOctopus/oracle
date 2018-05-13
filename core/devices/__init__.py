@@ -13,7 +13,16 @@ for device in Device.__subclasses__():
 
 
 def construct_devices(scene_descriptor_path):
-    # TODO: Error handling for json format
+    """
+        Returns a list constructed devices given a list of initialisation data
+        Each element in the list should be a dictionary with format 
+        {
+            "type": <name of device class>,
+            "args": <dict of constructor args>
+        }
+    """
+
+    # TODO: Error handling
 
     # Load JSON
     json_data = pd.process(scene_descriptor_path)

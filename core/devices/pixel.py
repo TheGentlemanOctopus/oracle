@@ -1,5 +1,10 @@
 class Pixel(object):
-    """docstring for Pixel"""
+    """
+        Pixel object holds location and color data
+        TODO: Move this out of the device module?
+
+        r,g,b values are stored between 0->1 because that makes math easier
+    """
     def __init__(self, location, r=0, g=0, b=0):
         self.location = tuple(location)
 
@@ -13,10 +18,7 @@ class Pixel(object):
 
     @property
     def color_255(self):
+        """
+            tuple scaled for 8-bit
+        """
         return (255*self.r, 255*self.g, 255*self.b)
-    
-
-if __name__ == "__main__":
-    pixel = Pixel([0,0,0])
-
-    print pixel.color

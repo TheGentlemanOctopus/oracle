@@ -4,11 +4,14 @@ import time
 import numpy as np
 
 class Lonely(Device):
-    """Lonely pixel :("""
+    """
+        Simplest possible output device. A singular lonely pixel :(
+    """
 
     def __init__(self, channel):
         super(Lonely, self).__init__()
 
+        # Lonely, I am so lonely, I have nobody, all on my own
         self.pixel = Pixel([0,0,0])
 
         self.pixels_by_channel = {
