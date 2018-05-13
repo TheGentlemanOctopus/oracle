@@ -1,8 +1,9 @@
 {
     "SceneDetails": {
-        "pixel" : 2000,
-        "pixel_type" : "RGB",
-        "fps" : 30
+        "scene_fps" : 60,
+        "device_fps": 30,
+        "opc_host": "127.0.0.1",
+        "opc_port": 7890
     },
     "InputDevices": {
         "InputDevice0": {

@@ -3,12 +3,18 @@ import time
 import opc
 import sys
 import numpy as np
+import utilities.process_descriptor as pd
 
 from core.devices import construct_devices, combine_channel_dicts
 
 class SceneManager(object):
     """docstring for SceneManager"""
-    def __init__(self,  opc_host="127.0.0.1", opc_port=7890):
+    def __init__(self, 
+                scene_fps=60, 
+                device_fps=30, 
+                opc_host="127.0.0.1", 
+                opc_port=7890
+        ):
         opc_ip = opc_host + ":" + str(opc_port)
         self.client = opc.Client(opc_ip)
 
@@ -16,7 +22,13 @@ class SceneManager(object):
         if not self.client.can_connect():
             raise Exception("Could not connect to opc at " + opc_ip)
 
+        self.scene_fps = scene_fps
+        self.device_fps = device_fps
+
+
+
     def start(self, devices):
+
         device_pixel_dictionary_list = [device.pixels_by_channel_255 for device in devices]
 
         # Start Processes
@@ -44,9 +56,13 @@ class SceneManager(object):
             for channel, pixels in channels_combined.items():
                 self.client.put_pixels(pixels, channel=channel)
 
+            # TODO: Sleepy sleep
+
 
 if __name__ == '__main__':
+    parsed = pd.read_json(sys.argv[1])
+
     devices = construct_devices(sys.argv[1])
 
-    scene = SceneManager()
+    scene = SceneManager(**parsed["SceneDetails"])
     scene.start(devices)
