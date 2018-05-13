@@ -1,5 +1,5 @@
 '''Generates a JSON file and launches GL simulator given the layout'''
-from devices import construct_devices
+from devices import construct_devices, combine_channel_dicts
 import json
 import sys
 import os
@@ -8,14 +8,7 @@ import subprocess
 def main():
     devices = construct_devices(sys.argv[1])
 
-    # Combine into one big pixels by channel
-    channels_combined = {}
-    for device in devices:
-        for channel, pixels in device.pixels_by_channel.items():
-            if channel in channels_combined:
-                channels_combined[channel].extend(pixels)
-            else:
-                channels_combined[channel] = pixels
+    channels_combined = combine_channel_dicts(devices)
 
     # Make temp folder 
     temp_dir = os.path.dirname(os.path.abspath( __file__ )) + "/temp/"

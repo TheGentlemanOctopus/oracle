@@ -24,3 +24,18 @@ def construct_devices(scene_descriptor_path):
         devices.append(device_dict[device_json["type"]](**device_json["args"]))
 
     return devices
+
+def combine_channel_dicts(devices):
+    """ 
+        Combines channel dictionarties from a list of devices into one big one into one
+        Pixels are ordered in the same order as the array
+    """
+    channels_combined = {}
+    for device in devices:
+        for channel, pixels in device.pixels_by_channel.items():
+            if channel in channels_combined:
+                channels_combined[channel].extend(pixels)
+            else:
+                channels_combined[channel] = pixels
+
+    return channels_combined
