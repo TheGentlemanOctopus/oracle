@@ -2,7 +2,6 @@ from device import Device
 from pixel import Pixel
 import numpy as np
 import time
-import matplotlib.pyplot as plt
 
 class CubeStrip(Device):
     def __init__(self, channel, start, direction, spacing, num_pixels):
