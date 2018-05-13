@@ -33,6 +33,7 @@ class SceneManager(object):
 
         # Start Processes
         for device in devices:
+            device.fps = self.device_fps
             p = Process(target=device.main)
             p.start()
 

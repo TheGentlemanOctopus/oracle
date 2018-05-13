@@ -3,7 +3,7 @@ from multiprocessing import Queue
 
 class Device(object):
     """Generic Device"""
-    frame_rate = 30
+    fps = 30
 
     def __init__(self):
         # For sending pixels out
@@ -14,9 +14,16 @@ class Device(object):
 
     def main(self):
         while True:
+            loop_time = time.time()
+
             self.update()
             self.put(self.pixels_by_channel_255)
-            time.sleep(1.0/self.frame_rate)
+
+            elapsed = time.time() - loop_time
+            sleep_time = (1.0/self.fps) - elapsed
+            if sleep_time < 0: 
+                sleep_time = 0
+            time.sleep(sleep_time)
 
     @property
     def pixels_by_channel_255(self):
