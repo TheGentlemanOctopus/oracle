@@ -6,6 +6,9 @@ import time
 from core.layouts.strip import Strip
 
 class CubeStrip(Device):
+    """
+        A simple device for device purposes, just a linear array of pixels
+    """
     def __init__(self, channel, start, direction, spacing, num_pixels):
         super(CubeStrip, self).__init__()
 

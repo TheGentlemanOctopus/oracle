@@ -4,32 +4,48 @@ import opc
 import sys
 import numpy as np
 import utilities.process_descriptor as pd
+from utilities.sleep_timer import SleepTimer
+import argparse
 
 from core.devices import construct_devices, combine_channel_dicts
 
 class SceneManager(object):
-    """docstring for SceneManager"""
+    """
+        Scene Manager is responsible for running a scene
+        Runs a set of devices (currently only output devices), combines pixel data and forwards onto server
+        TODO: Handling for input devices
+    """
     def __init__(self, 
                 scene_fps=60, 
                 device_fps=30, 
                 opc_host="127.0.0.1", 
                 opc_port=7890
         ):
+        """
+            Initialisation connects to the opc server
+            Note: This does not run device processes, that's the job of the start command
+        """
+
+        # Connect to opc client
         opc_ip = opc_host + ":" + str(opc_port)
         self.client = opc.Client(opc_ip)
 
-        # If the client is not connected the put_pixels operation is slow as it tries to reconnect
         if not self.client.can_connect():
             raise Exception("Could not connect to opc at " + opc_ip)
 
+        # Set fps for scene and device
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-
-
     def start(self, devices):
+        """
+            Runs the scene forever. 
+            devices is a list of device objects
+        """
 
-        device_pixel_dictionary_list = [device.pixels_by_channel_255 for device in devices]
+        # A list of dictionaries which are the device's pixel colors by channel
+        # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
+        device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in devices]
 
         # Start Processes
         for device in devices:
@@ -37,15 +53,19 @@ class SceneManager(object):
             p = Process(target=device.main)
             p.start()
 
-        # Recombine
+        # Main loop
+        sleep_timer = SleepTimer(1.0/self.scene_fps)
         while True:
-            loop_time = time.time()
+            sleep_timer.start()
+            
             # Update pixel lists if new data has arrived
             for i, device in enumerate(devices):
+                # TODO: Should the call to .empty() require a mutex?
                 if not device.out_queue.empty():
                     device_pixel_dictionary_list[i] = device.out_queue.get()
 
-            # Combine
+            # Combine the scene pixels into one concatenated dictionary keyed by channel number
+            # Multiple devices using the same channel are combined with the same ordering as the devices list
             channels_combined = {}
             for pixel_dict in device_pixel_dictionary_list:
                 for channel, pixels in pixel_dict.items():
@@ -59,17 +79,23 @@ class SceneManager(object):
                 self.client.put_pixels(pixels, channel=channel)
 
             # The scene_fps should be at least 2x device_fps to avoid sampling issues
-            elapsed = time.time() - loop_time
-            sleep_time = (1.0/self.scene_fps) - elapsed
-            if sleep_time < 0: 
-                sleep_time = 0
-            time.sleep(sleep_time)
+            # TODO: comment above shouldn't be necessary, I think the queue clear in devices requires a mutex
+            sleep_timer.sleep()
 
+def main(args):
+    # Parse Args
+    parser = argparse.ArgumentParser(description="Run a scene for us all to marvel")
+    parser.add_argument("scene_path", help="Path to scene json file")   
+    parser_args = parser.parse_args(args)
+
+    parsed_scene = pd.read_json(parser_args.scene_path)
+
+    # Prepare for scene time...
+    scene = SceneManager(**parsed_scene["SceneDetails"])
+    devices = construct_devices(parsed_scene["OutputDevices"])
+
+    # Yaaay! Scene time
+    scene.start(devices)
 
 if __name__ == '__main__':
-    parsed = pd.read_json(sys.argv[1])
-
-    devices = construct_devices(sys.argv[1])
-
-    scene = SceneManager(**parsed["SceneDetails"])
-    scene.start(devices)
+    main(sys.argv[1:])
