@@ -3,6 +3,7 @@ import numpy as np
 from device import Device
 from core.layouts.strip import Strip
 import colorsys
+import time
 
 class BigCube(Device):
     """
@@ -58,8 +59,14 @@ class BigCube(Device):
     def pixels(self):
         return np.concatenate([strip.pixels for strip in self.strips])
     
-    def update(self):
+    def update(self, period=5):
+        # Period is the number of seconds it takes a color to lap the cube
+        # TODO: Move period when we have pattern gen capabailities
         pixels = self.pixels
+
+        # Phase as a percentage
+        shift = int(len(pixels)*(time.time() % period)/period)
+        pixels = np.concatenate([pixels[shift:], pixels[:shift]])
 
         # One lap of the color wheel in the order
         s = 1 # Saturation
