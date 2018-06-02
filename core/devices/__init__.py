@@ -4,6 +4,7 @@ from device import Device
 # To be able construct a device, all you have to is import it here 
 import cube_strip
 import lonely
+import big_cube
 
 # Generates dictionary with the class name as key and class as value. 
 # Useful for constructing device class instances
