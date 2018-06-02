@@ -14,7 +14,7 @@ class BigCube(Device):
         super(BigCube, self).__init__()
 
         # The vertices of the cube
-        vertices = np.array([
+        vertices = np.float([
             (1, -1, -1),
             (1, 1, -1),
             (-1, -1, -1),
@@ -23,16 +23,16 @@ class BigCube(Device):
             (1, 1, 1),
             (-1, 1, 1),
             (-1, -1, 1)
-        ]).astype(float)
+        ])
 
         # TODO: Set cube length and orientation
         edge_length = 2
 
         # An eulerian tour around a cube with two strips per edge
-        # Elements are from-to tuples that are indices to vertices array
+        # Elements are from-to tuples that map to indices in the vertices array
         route = np.array([(0, 1), (1, 0), (0, 2), (2, 0), (0, 4), (4, 5), (5, 1), (1, 3), (3, 1), (1, 5), (5, 4), (4, 7), (7, 2), (2, 3), (3, 2), (2, 7), (7, 6), (6, 3), (3, 6), (6, 5), (5, 6), (6, 7), (7, 4), (4, 0)])
 
-        # Create strips
+        # Create strips in the order they should be laid
         pixels_per_edge = int(float(edge_length)/led_spacing)
         self.strips = []
         for path in route:
@@ -41,7 +41,7 @@ class BigCube(Device):
 
             # A hacky(ish) way to offset strips so they are not on top of each other
             sign = 1 if path[0] > path[1] else -1
-            offset = strip_spacing*sign
+            offset = 0.5*strip_spacing*sign
             start += offset
             end += offset
 
@@ -57,6 +57,9 @@ class BigCube(Device):
 
     @property
     def pixels(self):
+        """
+            Returned in the order that strips should be laid
+        """
         return np.concatenate([strip.pixels for strip in self.strips])
     
     def update(self, period=5):
