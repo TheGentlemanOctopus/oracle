@@ -27,7 +27,8 @@
             "type": "BigCube",
             "args": {
                 "channel": 1,
-                "spacing" : 0.2
+                "led_spacing" : 0.2,
+                "strip_spacing": 0.05
             }
         }
     ]
