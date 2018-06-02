@@ -1,0 +1,35 @@
+{
+    "SceneDetails": {
+        "scene_fps" : 60,
+        "device_fps": 30,
+        "opc_host": "127.0.0.1",
+        "opc_port": 7890
+    },
+    "InputDevices": {
+        "InputDevice0": {
+            "type": "fft",
+            "args": {
+                "datasize": 2048,
+                "mic": true,
+                "debug":false,
+                "fname":"../sounds/test.wav",
+                "frate":44100.0, 
+                "output":false,
+                "threshold":17,
+                "stretch":4, 
+                "dataqueues":false
+            }
+        }
+    },
+    "OutputDevices": [
+        {
+            "name": "BigDaddy",
+            "type": "BigCube",
+            "args": {
+                "channel": 1,
+                "led_spacing" : 0.2,
+                "strip_spacing": 0.05
+            }
+        }
+    ]
+}
