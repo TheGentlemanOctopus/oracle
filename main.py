@@ -1,6 +1,8 @@
 #!/usr/local/bin/python
 """
     Main console app
+    Combines mains from various modules by matching the first arg to a submodule main
+    and passing remaining args from there
 """
 
 import argparse
