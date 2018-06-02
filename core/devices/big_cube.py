@@ -67,7 +67,7 @@ class BigCube(Device):
         # TODO: Move period when we have pattern gen capabailities
         pixels = self.pixels
 
-        # Phase as a percentage
+        # Shift pixel ordering according to period phase
         shift = int(len(pixels)*(time.time() % period)/period)
         pixels = np.concatenate([pixels[shift:], pixels[:shift]])
 
