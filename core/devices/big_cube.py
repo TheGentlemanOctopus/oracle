@@ -2,6 +2,7 @@ import numpy as np
 
 from device import Device
 from core.layouts.strip import Strip
+import colorsys
 
 class BigCube(Device):
     """
@@ -50,5 +51,23 @@ class BigCube(Device):
 
         # Form pixels by channel dict
         self.pixels_by_channel = {
-            channel: np.concatenate([strip.pixels for strip in self.strips])
+            channel: self.pixels
         }
+
+    @property
+    def pixels(self):
+        return np.concatenate([strip.pixels for strip in self.strips])
+    
+    def update(self):
+        pixels = self.pixels
+
+        # One lap of the color wheel in the order
+        s = 1 # Saturation
+        v = 1 # Value
+        for i, h in enumerate(np.linspace(0, 1, len(pixels))):
+            pixel = pixels[i]
+
+            pixel.r, pixel.g, pixel.b = colorsys.hsv_to_rgb(h,s,v)
+
+
+
