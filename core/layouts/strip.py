@@ -1,6 +1,7 @@
 from core.devices.pixel import Pixel
 
 import numpy as np
+from numpy.linalg import norm
 
 class Strip:
     """
@@ -9,7 +10,8 @@ class Strip:
         spacing/num_pixels are scalars
     """
     def __init__(self, start, direction, spacing, num_pixels):
-        # TODO: normalise direction
+        normed_direction = direction/norm(direction)
+
         self.pixels = []
         for i in range(num_pixels):
-            self.pixels.append(Pixel(np.array(start) + i*spacing*np.array(direction)))
+            self.pixels.append(Pixel(np.array(start) + i*spacing*normed_direction))
