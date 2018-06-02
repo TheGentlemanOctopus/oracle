@@ -28,7 +28,7 @@
             "args": {
                 "channel": 1,
                 "led_spacing" : 0.2,
-                "strip_spacing": 0.15
+                "strip_spacing": 0.05
             }
         }
     ]

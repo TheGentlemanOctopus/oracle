@@ -14,7 +14,7 @@ class BigCube(Device):
         super(BigCube, self).__init__()
 
         # The vertices of the cube
-        vertices = np.float([
+        vertices = np.array([
             (1, -1, -1),
             (1, 1, -1),
             (-1, -1, -1),
@@ -23,7 +23,7 @@ class BigCube(Device):
             (1, 1, 1),
             (-1, 1, 1),
             (-1, -1, 1)
-        ])
+        ]).astype(float)
 
         # TODO: Set cube length and orientation
         edge_length = 2
