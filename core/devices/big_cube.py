@@ -55,6 +55,7 @@ class BigCube(Device):
             channel: self.pixels
         }
 
+    # Makes the self.pixels method act as a variable
     @property
     def pixels(self):
         """
