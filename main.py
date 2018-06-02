@@ -1,15 +1,46 @@
-import json
+#!/usr/local/bin/python
+"""
+    Main console app
+"""
+
+import argparse
 import sys
-from core.utilities import process_descriptor 
+import core.sim_generator
+import core.scene_manager
 
+# Main commands
+# The first argument in the app matches the key whose value is called with the remaining args
+commands = {
+    "sim": core.sim_generator.main,
+    "scene": core.scene_manager.main
+}
 
+# Create parser
+parser = argparse.ArgumentParser(
+    description='THE ORACLE', 
+    formatter_class=argparse.RawTextHelpFormatter,
+    add_help=False,
+    prefix_chars=" " # Dummy to remove help prefix
+)
 
-if __name__ == '__main__':
+# Command choice
+parser.add_argument("mode", 
+    help="Choose your mode", 
+    nargs="?", 
+    default=None, 
+    choices=commands.keys(), 
+)
 
-	print sys.argv[1]
+# Parse
+try:
+    known_args, remaining_args = parser.parse_known_args(sys.argv[1:])
+except:
+    parser.print_help()
+    quit()
 
-	scene_descriptor = process_descriptor.read_json(sys.argv[1])
-
-	process_descriptor.print_element(scene_descriptor,'InputDevices')
-	process_descriptor.print_element(scene_descriptor,'OutputDevices')
+# Run command
+if known_args.mode in commands:
+    commands[known_args.mode](remaining_args)
+else:
+    parser.print_help()
 
