@@ -5,6 +5,7 @@ from device import Device
 import cube_strip
 import lonely
 import big_cube
+import strip_panel
 
 # Generates dictionary with the class name as key and class as value. 
 # Useful for constructing device class instances
