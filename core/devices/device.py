@@ -1,5 +1,5 @@
 import time
-from multiprocessing import Queue
+from multiprocessing import Queue, Lock
 from core.utilities.sleep_timer import SleepTimer
 
 class Device(object):
@@ -15,6 +15,9 @@ class Device(object):
         """
         # Output queue
         self.out_queue = Queue()
+
+        # Mutex for the queues
+        self.queue_mutex = Lock()
 
         # A dictionary where the key is the channel (int) and the value is a list of pixel objects
         self.pixels_by_channel = {}
@@ -47,12 +50,15 @@ class Device(object):
         """
             Clears output queue and appends data
         """
+        # Get the mutex
+        self.queue_mutex.acquire()
 
-        # TODO: Make clear function, should this need to be thread-safe?
         while not self.out_queue.empty():
             self.out_queue.get()
 
         self.out_queue.put(data)
+        # Release the mutex
+        self.queue_mutex.release()
 
     def update(self):
         """
