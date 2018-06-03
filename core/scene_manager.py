@@ -1,4 +1,4 @@
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Lock
 import time
 import opc
 import sys
@@ -60,9 +60,14 @@ class SceneManager(object):
             
             # Update pixel lists if new data has arrived
             for i, device in enumerate(devices):
-                # TODO: Should the call to .empty() require a mutex?
+
+                # Get the device queue mutex
+                device.queue_mutex.acquire()
                 if not device.out_queue.empty():
                     device_pixel_dictionary_list[i] = device.out_queue.get()
+                # Release the device queue mutex
+                device.queue_mutex.release()
+    
 
             # Combine the scene pixels into one concatenated dictionary keyed by channel number
             # Multiple devices using the same channel are combined with the same ordering as the devices list
