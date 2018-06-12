@@ -57,8 +57,8 @@ class Device(object):
 
     def process_in_queue(self):
         """
-            Process the entire in queue for the latest things
-            TODO: general support rather than fft data
+            Process the entire in queue to update data
+            TODO: general support for input types rather than fft data
         """
 
         while not self.in_queue.empty():

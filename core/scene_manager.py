@@ -68,11 +68,11 @@ class SceneManager(object):
             # get_nowait() throws an exception if nothing is in the queue
             # TODO: Clear the queue for good housekeeping?
             try:
+                # Get fft data and normalise to [0,1]
                 fft_bands = [band/1024.0 for band in fft_server.fft_queue.get_nowait()]
 
+                # Safety first, make a fresh array for each device. TODO: necessary?
                 for device in devices:
-                    # Safety first, copy the queue
-                    # TODO: Is this necessary?
                     device.in_queue.put(fft_bands[:])
 
             except:

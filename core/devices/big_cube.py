@@ -65,6 +65,7 @@ class BigCube(Device):
     
     def update(self, period=5, hue_range=0.2):
         # Period is the number of seconds it takes a color to lap the cube
+        # hue_range defines the range of colors used as a prop of the color wheel
         # TODO: Move period when we have pattern gen capabailities
         pixels = self.pixels
 
