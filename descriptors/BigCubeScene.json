@@ -5,24 +5,20 @@
         "opc_host": "127.0.0.1",
         "opc_port": 7890
     },
-    "InputDevices": [
-        {
-            "type": "fft",
-            "args": {
-                "arduino_ip": "192.168.1.177",
-                "local_ip": "",
-                "start_port": 5003,
-                "data_port": 5009,
-                "start_message": "Start",
-                "buffer_size": 100,
-                "fft_extent_reset_time": 10,
-                "autogainEnable": 0,
-                "no_sound_frequency": 0.2,
-                "ambient_level": 512,
-                "no_mic_level": 100
-            } 
-        }
-    ],
+    "fft_server":
+    {
+        "arduino_ip": "192.168.1.177",
+        "local_ip": "",
+        "start_port": 5003,
+        "data_port": 5009,
+        "start_message": "Start",
+        "buffer_size": 100,
+        "fft_extent_reset_time": 10,
+        "autogainEnable": 0,
+        "no_sound_frequency": 0.2,
+        "ambient_level": 512,
+        "no_mic_level": 100
+    },
     "OutputDevices": [
         {
             "name": "BigDaddy",

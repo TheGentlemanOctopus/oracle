@@ -7,6 +7,7 @@ import utilities.process_descriptor as pd
 from utilities.sleep_timer import SleepTimer
 import argparse
 
+from core.udp.fft_server import FftServer
 from core.devices import construct_devices, combine_channel_dicts
 
 class SceneManager(object):
@@ -37,7 +38,7 @@ class SceneManager(object):
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-    def start(self, devices):
+    def start(self, devices, fft_server=None):
         """
             Runs the scene forever. 
             devices is a list of device objects
@@ -92,12 +93,15 @@ def main(args):
 
     parsed_scene = pd.read_json(parser_args.scene_path)
 
+    # TODO: There should be a run from json function
+
     # Prepare for scene time...
     scene = SceneManager(**parsed_scene["SceneDetails"])
     devices = construct_devices(parsed_scene["OutputDevices"])
+    fft_server = FftServer(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
 
     # Yaaay! Scene time
-    scene.start(devices)
+    scene.start(devices, fft_server=fft_server)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
