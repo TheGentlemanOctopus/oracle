@@ -25,6 +25,9 @@ class Device(object):
         # A dictionary where the key is the channel (int) and the value is a list of pixel objects
         self.pixels_by_channel = {}
 
+        # An array of fft band intensities from bass to treble
+        self.fft_data = [0.0]*7
+
     def main(self):
         """
             This should be called to start the process
@@ -51,8 +54,13 @@ class Device(object):
         return all_pixels
 
     def process_in_queue(self):
+        """
+            Process the entire in queue for the latest things
+            TODO: general support rather than fft data
+        """
+
         while not self.in_queue.empty():
-            item = self.in_queue.get()
+            self.fft_data = self.in_queue.get()
             
     def put(self, data):
         """
