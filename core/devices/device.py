@@ -16,6 +16,9 @@ class Device(object):
         # Output queue
         self.out_queue = Queue()
 
+        # Input Queue
+        self.in_queue = Queue()
+
         # Mutex for the queues
         self.queue_mutex = Lock()
 
@@ -30,6 +33,7 @@ class Device(object):
         while True:
             sleep_timer.start()
 
+            self.process_in_queue()
             self.update()
             self.put(self.pixel_colors_by_channel_255)
 
@@ -45,6 +49,12 @@ class Device(object):
             all_pixels[channel] = [pixel.color_255 for pixel in pixel_list]
 
         return all_pixels
+
+    def process_in_queue(self):
+        while not self.in_queue.empty():
+            item = self.in_queue.get()
+            
+            # TODO
 
     def put(self, data):
         """
