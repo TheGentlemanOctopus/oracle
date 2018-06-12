@@ -16,10 +16,10 @@ class SceneManager(object):
         TODO: Handling for input devices
     """
     def __init__(self, 
-                scene_fps=60, 
-                device_fps=30, 
-                opc_host="127.0.0.1", 
-                opc_port=7890
+            scene_fps=60, 
+            device_fps=30, 
+            opc_host="127.0.0.1", 
+            opc_port=7890
         ):
         """
             Initialisation connects to the opc server

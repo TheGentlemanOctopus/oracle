@@ -13,19 +13,18 @@ def map_val(x, in_min, in_max, out_min, out_max):
 
 class UDPServer(threading.Thread):
     """docstring for UDPServer"""
-    def __init__(self,
-        dataqueue, 
-        arduino_ip = '192.168.1.177',
-        local_ip = '',
-        start_port = 5003,
-        data_port = 5009,
-        start_message = "Start",
-        buffer_size = 100,
-        fft_extent_reset_time = 10,
-        autogainEnable = 0,
-        no_sound_frequency = 0.2,
-        ambient_level = 512,
-        no_mic_level = 100,
+    def __init__(self, 
+            arduino_ip = '192.168.1.177',
+            local_ip = '',
+            start_port = 5003,
+            data_port = 5009,
+            start_message = "Start",
+            buffer_size = 100,
+            fft_extent_reset_time = 10,
+            autogainEnable = 0,
+            no_sound_frequency = 0.2,
+            ambient_level = 512,
+            no_mic_level = 100,
         ):
 
         self.arduino_ip = arduino_ip
@@ -52,7 +51,7 @@ class UDPServer(threading.Thread):
         self.connected = False
         self.buffer_size = buffer_size
 
-        self.fft_queue = dataqueue
+        self.fft_queue = Queue.Queue()
         self.no_sound_frequency = no_sound_frequency
 
         self.reset_fft_extents()
