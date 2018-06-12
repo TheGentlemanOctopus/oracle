@@ -62,13 +62,10 @@ class SceneManager(object):
             for i, device in enumerate(devices):
 
                 # Get the device queue mutex
-                device.queue_mutex.acquire()
-                if not device.out_queue.empty():
-                    device_pixel_dictionary_list[i] = device.out_queue.get()
-                # Release the device queue mutex
-                device.queue_mutex.release()
+                with device.queue_mutex:
+                    if not device.out_queue.empty():
+                        device_pixel_dictionary_list[i] = device.out_queue.get()
     
-
             # Combine the scene pixels into one concatenated dictionary keyed by channel number
             # Multiple devices using the same channel are combined with the same ordering as the devices list
             channels_combined = {}
