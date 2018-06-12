@@ -54,8 +54,6 @@ class Device(object):
         while not self.in_queue.empty():
             item = self.in_queue.get()
             
-            # TODO
-
     def put(self, data):
         """
             Clears output queue and appends data

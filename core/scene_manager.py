@@ -42,6 +42,7 @@ class SceneManager(object):
         """
             Runs the scene forever. 
             devices is a list of device objects
+            TODO: Break into helper functions?
         """
 
         # A list of dictionaries which are the device's pixel colors by channel
@@ -54,11 +55,29 @@ class SceneManager(object):
             p = Process(target=device.main)
             p.start()
 
+        # Start fft_server
+        if fft_server:
+            fft_server.start()
+
         # Main loop
         sleep_timer = SleepTimer(1.0/self.scene_fps)
         while True:
             sleep_timer.start()
             
+            # Retrieve fft data and pass onto devices
+            # get_nowait() throws an exception if nothing is in the queue
+            # TODO: Clear the queue for good housekeeping?
+            try:
+                fft_bands = [band/1024.0 for band in fft_server.fft_queue.get_nowait()]
+
+                for device in devices:
+                    # Safety first, copy the queue
+                    # TODO: Is this necessary?
+                    device.in_queue.put(fft_bands[:])
+
+            except:
+                pass
+
             # Update pixel lists if new data has arrived
             for i, device in enumerate(devices):
 
