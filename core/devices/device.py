@@ -61,14 +61,11 @@ class Device(object):
             Clears output queue and appends data
         """
         # Get the mutex
-        self.queue_mutex.acquire()
+        with self.queue_mutex:
+            while not self.out_queue.empty():
+                self.out_queue.get()
 
-        while not self.out_queue.empty():
-            self.out_queue.get()
-
-        self.out_queue.put(data)
-        # Release the mutex
-        self.queue_mutex.release()
+            self.out_queue.put(data)
 
     def update(self):
         """
