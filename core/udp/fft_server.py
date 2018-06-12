@@ -11,7 +11,7 @@ import argparse
 def map_val(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
-class UDPServer(threading.Thread):
+class FftServer(threading.Thread):
     """docstring for UDPServer"""
     def __init__(self, 
             arduino_ip = '192.168.1.177',
