@@ -26,11 +26,6 @@ class StreamCSV(threading.Thread):
                     #TODO account for socket send
                     time.sleep(1.0/self.framerate)
 
-
-
-
-
-
 if __name__ == '__main__':
     # Argin the parsin
     parser = argparse.ArgumentParser(description="Stream the FFT")
@@ -49,6 +44,3 @@ if __name__ == '__main__':
     print "Streaming", args.file, "to", args.host + ":" + str(args.port)
     while True:
         pass
-
-
-
