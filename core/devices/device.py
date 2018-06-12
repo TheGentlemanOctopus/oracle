@@ -1,5 +1,7 @@
 import time
 from multiprocessing import Queue, Lock
+import numpy as np
+
 from core.utilities.sleep_timer import SleepTimer
 
 class Device(object):
@@ -26,7 +28,7 @@ class Device(object):
         self.pixels_by_channel = {}
 
         # An array of fft band intensities from bass to treble
-        self.fft_data = [0.0]*7
+        self.fft_data = np.zeros((7,))
 
     def main(self):
         """
@@ -60,7 +62,7 @@ class Device(object):
         """
 
         while not self.in_queue.empty():
-            self.fft_data = self.in_queue.get()
+            self.fft_data = np.array(self.in_queue.get())
             
     def put(self, data):
         """
