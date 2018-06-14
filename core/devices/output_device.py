@@ -16,14 +16,7 @@ class OutputDevice(Device):
         """
             This base constructor should be called by every subclass
         """
-        # Output queue
-        self.out_queue = Queue()
-
-        # Input Queue
-        self.in_queue = Queue()
-
-        # Mutex for the queues
-        self.queue_mutex = Lock()
+        super(OutputDevice, self).__init__()
 
         # A dictionary where the key is the channel (int) and the value is a list of pixel objects
         self.pixels_by_channel = {}
