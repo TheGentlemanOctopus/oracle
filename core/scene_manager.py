@@ -52,8 +52,8 @@ class SceneManager(object):
         # Start Processes
         for device in output_devices:
             device.fps = self.device_fps
-            p = Process(target=device.main)
-            p.start()
+            device.start()
+    
 
         # Start fft_server
         if fft_server:
