@@ -1,11 +1,11 @@
 import numpy as np
 
-from device import Device
+from output_device import OutputDevice
 from core.layouts.strip import Strip
 import colorsys
 import time
 
-class BigCube(Device):
+class BigCube(OutputDevice):
     """
         Big daddy cube
     """

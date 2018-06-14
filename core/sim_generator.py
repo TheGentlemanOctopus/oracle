@@ -3,7 +3,7 @@
     Expects gl_server to be on the search path
 """
 
-from devices import construct_devices, combine_channel_dicts
+from devices import construct_output_devices, combine_channel_dicts
 import utilities.process_descriptor as pd
 
 import json
@@ -33,7 +33,7 @@ def main(args):
     scene_data = pd.read_json(parser_args.scene_path)
 
     # construct devices and combine into one big dict
-    devices = construct_devices(scene_data["OutputDevices"])
+    devices = construct_output_devices(scene_data["OutputDevices"])
     channels_combined = combine_channel_dicts(devices)
 
     # gl_server requires a json file for every channel, even if they have no pixels

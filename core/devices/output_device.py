@@ -4,7 +4,7 @@ import numpy as np
 
 from core.utilities.sleep_timer import SleepTimer
 
-class Device(object):
+class OutputDevice(object):
     """
         Component of a scene that runs as its own process 
         TODO: abstract for output/input device
