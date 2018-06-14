@@ -2,3 +2,4 @@
 
 class Device(object):
     pass
+
