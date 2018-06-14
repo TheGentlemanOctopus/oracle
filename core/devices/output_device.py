@@ -2,9 +2,10 @@ import time
 from multiprocessing import Queue, Lock
 import numpy as np
 
+from device import Device
 from core.utilities.sleep_timer import SleepTimer
 
-class OutputDevice(object):
+class OutputDevice(Device):
     """
         Component of a scene that runs as its own process 
         TODO: abstract for output/input device
