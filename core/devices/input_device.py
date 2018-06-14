@@ -1,4 +1,4 @@
-from device import device
+from device import Device
 
-class InputDevice(device):
-    pass
+class InputDevice(Device):
+    pass         
