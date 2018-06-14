@@ -1,5 +1,7 @@
 import time
 from multiprocessing import Queue, Lock
+import numpy as np
+
 from core.utilities.sleep_timer import SleepTimer
 
 class Device(object):
@@ -24,6 +26,9 @@ class Device(object):
 
         # A dictionary where the key is the channel (int) and the value is a list of pixel objects
         self.pixels_by_channel = {}
+
+        # An array of fft band intensities from bass to treble
+        self.fft_data = np.zeros((7,))
 
     def main(self):
         """
@@ -51,11 +56,14 @@ class Device(object):
         return all_pixels
 
     def process_in_queue(self):
-        while not self.in_queue.empty():
-            item = self.in_queue.get()
-            
-            # TODO
+        """
+            Process the entire in queue to update data
+            TODO: general support for input types rather than fft data
+        """
 
+        while not self.in_queue.empty():
+            self.fft_data = np.array(self.in_queue.get())
+            
     def put(self, data):
         """
             Clears output queue and appends data

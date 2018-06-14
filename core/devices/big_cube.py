@@ -63,8 +63,9 @@ class BigCube(Device):
         """
         return np.concatenate([strip.pixels for strip in self.strips])
     
-    def update(self, period=5):
+    def update(self, period=5, hue_range=0.2):
         # Period is the number of seconds it takes a color to lap the cube
+        # hue_range defines the range of colors used as a prop of the color wheel
         # TODO: Move period when we have pattern gen capabailities
         pixels = self.pixels
 
@@ -75,10 +76,14 @@ class BigCube(Device):
         # One lap of the color wheel in the order
         s = 1 # Saturation
         v = 1 # Value
-        for i, h in enumerate(np.linspace(0, 1, len(pixels))):
-            pixel = pixels[i]
+        for i, h in enumerate(np.linspace(0, hue_range, len(pixels))):
+            # shift hue with weighted fft avg that favours bass :)
+            weights = np.array(range(len(self.fft_data)))[::-1]
+            h_shift = np.average(self.fft_data, weights=weights)
+            h_shifted = (h + h_shift) % 1
 
-            pixel.r, pixel.g, pixel.b = colorsys.hsv_to_rgb(h,s,v)
+            pixel = pixels[i]
+            pixel.r, pixel.g, pixel.b = colorsys.hsv_to_rgb(h_shifted,s,v)
 
 
 
