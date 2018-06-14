@@ -1,4 +1,4 @@
-from multiprocessing import Queue, Lock
+from multiprocessing import Process, Queue, Lock
 
 class Device(object):
     def __init__(self):
@@ -17,6 +17,14 @@ class Device(object):
         """
         raise NotImplementedException("Need to define main for %s"%self.__class__.__name__)
 
+    def start(self):
+        """
+            Starts itself in a new process
+            Returns: the new process
+        """
+        p = Process(target=self.main)
+        p.start()
+        return p
 
 def get_nowait(queue):
     """
