@@ -10,10 +10,8 @@ class FftDevice(Device):
         super(FftDevice, self).__init__()
 
         # Wrap it up!
-        self.fft_server = FftServer(**fft_server_kwargs)
-        self.fft_server.fft_queue = self.out_queue
+        self.fft_server = FftServer(self.out_queue, **fft_server_kwargs)
 
     def main(self):
-        self.fft_server.start()
-        print "STARTED fft server"
+        self.fft_server.run()
 

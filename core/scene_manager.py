@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue, Lock
+from Queue import Empty
 import time
 import opc
 import sys
@@ -38,7 +39,7 @@ class SceneManager(object):
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-    def start(self, output_devices, fft_server=None):
+    def start(self, output_devices, fft_device=None):
         """
             Runs the scene forever. 
             devices is a list of device objects
@@ -56,8 +57,8 @@ class SceneManager(object):
     
 
         # Start fft_server
-        if fft_server:
-            fft_server.start()
+        if fft_device:
+            fft_device.start()
 
         # Main loop
         sleep_timer = SleepTimer(1.0/self.scene_fps)
@@ -69,13 +70,13 @@ class SceneManager(object):
             # TODO: Clear the queue for good housekeeping?
             try:
                 # Get fft data and normalise to [0,1]
-                fft_bands = [band/1024.0 for band in fft_server.fft_queue.get_nowait()]
+                fft_bands = [band/1024.0 for band in fft_device.out_queue.get_nowait()]
 
                 # Safety first, make a fresh array for each device. TODO: necessary?
                 for device in output_devices:
                     device.in_queue.put(fft_bands[:])
 
-            except:
+            except Empty as e:
                 pass
 
             # Update pixel lists if new data has arrived
@@ -117,10 +118,10 @@ def main(args):
     # Prepare for scene time...
     scene = SceneManager(**parsed_scene["SceneDetails"])
     output_devices = construct_output_devices(parsed_scene["OutputDevices"])
-    fft_server = FftDevice(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
+    fft_device = FftDevice(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
 
     # Yaaay! Scene time
-    scene.start(output_devices, fft_server=fft_server)
+    scene.start(output_devices, fft_device=fft_device)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

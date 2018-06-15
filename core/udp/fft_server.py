@@ -11,9 +11,10 @@ import argparse
 def map_val(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
-class FftServer(threading.Thread):
+class FftServer:
     """docstring for UDPServer"""
     def __init__(self, 
+            fft_queue,
             arduino_ip = '192.168.1.177',
             local_ip = '',
             start_port = 5003,
@@ -38,9 +39,6 @@ class FftServer(threading.Thread):
 
         self.autogainEnable = autogainEnable
 
-        threading.Thread.__init__(self)
-        self.daemon = True
-
         # There are 7 FFT channels being read from the MSGEQ7
         self.num_fft_chan = 7
 
@@ -51,7 +49,7 @@ class FftServer(threading.Thread):
         self.connected = False
         self.buffer_size = buffer_size
 
-        self.fft_queue = Queue.Queue()
+        self.fft_queue = fft_queue
         self.no_sound_frequency = no_sound_frequency
 
         self.reset_fft_extents()
@@ -71,7 +69,6 @@ class FftServer(threading.Thread):
         if not self.connected:
             try:
                 self.sock.sendto(self.start_message, (self.arduino_ip, self.start_port))
-                print "MUEXING"
             except:
                 self.FFTData = "0,0,0,0,0,0,0"
 
@@ -87,7 +84,6 @@ class FftServer(threading.Thread):
     def run(self):
 
         while True:
-            print "RUNNONG"
             self.udp_reader()
 
             # Parse the data csv style
@@ -131,9 +127,10 @@ class FftServer(threading.Thread):
                 levels = 512*(np.cos(2*np.pi*self.no_sound_frequency*time.time() + offsets) + 1)
                 parsedData = levels.tolist()
 
+            # Clear the queue
+            while not self.fft_queue.empty():
+                self.fft_queue.get()
 
-            with self.fft_queue.mutex:
-                self.fft_queue.queue.clear()
             #add to the queue
             self.fft_queue.put(parsedData)
 
