@@ -55,9 +55,12 @@ class OutputDevice(Device):
             TODO: general support for input types rather than fft data
         """
 
-        while not self.in_queue.empty():
-            self.fft_data = np.array(self.in_queue.get())
-            
+        fft_data = self.get_in_queue()
+        while fft_data:
+            self.fft_data = fft_data
+            fft_data = self.get_in_queue()
+        
+
     def put(self, data):
         """
             Clears output queue and appends data
