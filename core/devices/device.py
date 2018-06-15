@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue, Lock
+from Queue import Empty
 
 class Device(object):
     def __init__(self):
@@ -26,6 +27,20 @@ class Device(object):
         p.start()
         return p
 
+    def get_in_queue(self):
+        """
+            No wait by default
+            Saves having to do an empty check and safer
+        """
+        return get_nowait(self.in_queue)
+
+    def get_out_queue(self):
+        """
+            Saves having to do an empty check and safer
+        """
+        return get_nowait(self.out_queue)
+
+
 def get_nowait(queue):
     """
         A helper to get something from a queue
@@ -36,5 +51,5 @@ def get_nowait(queue):
     try:
         return queue.get_nowait()
 
-    except Exception:
+    except Empty as e:
         return None
