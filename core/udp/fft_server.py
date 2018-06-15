@@ -67,9 +67,11 @@ class FftServer(threading.Thread):
 
 
     def udp_reader(self):
+        
         if not self.connected:
             try:
                 self.sock.sendto(self.start_message, (self.arduino_ip, self.start_port))
+                print "MUEXING"
             except:
                 self.FFTData = "0,0,0,0,0,0,0"
 
@@ -85,7 +87,7 @@ class FftServer(threading.Thread):
     def run(self):
 
         while True:
-
+            print "RUNNONG"
             self.udp_reader()
 
             # Parse the data csv style
@@ -130,7 +132,6 @@ class FftServer(threading.Thread):
                 parsedData = levels.tolist()
 
 
-            
             with self.fft_queue.mutex:
                 self.fft_queue.queue.clear()
             #add to the queue

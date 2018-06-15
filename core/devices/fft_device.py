@@ -1,15 +1,19 @@
-from input_device import InputDevice
+from device import Device
 from core.udp.fft_server import FftServer
 
-class FftDevice(InputDevice):
+class FftDevice(Device):
     """
         A wrapper around the hack fft server
         TODO: merge fft_server into this
     """
-    def main(self, **fft_server_kwargs):
-        fft_server = FftServer(**fft_server_kwargs)
+    def __init__(self, **fft_server_kwargs):
+        super(FftDevice, self).__init__()
 
-        self.out_queue = fft_server.fft_queue
+        # Wrap it up!
+        self.fft_server = FftServer(**fft_server_kwargs)
+        self.fft_server.fft_queue = self.out_queue
 
-        fft_server.start()
+    def main(self):
+        self.fft_server.start()
+        print "STARTED fft server"
 

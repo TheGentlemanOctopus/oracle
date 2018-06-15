@@ -7,7 +7,7 @@ import utilities.process_descriptor as pd
 from utilities.sleep_timer import SleepTimer
 import argparse
 
-from core.udp.fft_server import FftServer
+from core.devices.fft_device import FftDevice
 from core.devices import construct_output_devices, combine_channel_dicts
 
 class SceneManager(object):
@@ -117,7 +117,7 @@ def main(args):
     # Prepare for scene time...
     scene = SceneManager(**parsed_scene["SceneDetails"])
     output_devices = construct_output_devices(parsed_scene["OutputDevices"])
-    fft_server = FftServer(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
+    fft_server = FftDevice(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
 
     # Yaaay! Scene time
     scene.start(output_devices, fft_server=fft_server)
