@@ -66,18 +66,14 @@ class SceneManager(object):
             sleep_timer.start()
             
             # Retrieve fft data and pass onto devices
-            # get_nowait() throws an exception if nothing is in the queue
             # TODO: Clear the queue for good housekeeping?
-            try:
-                # Get fft data and normalise to [0,1]
-                fft_bands = [band/1024.0 for band in fft_device.out_queue.get_nowait()]
-
-                # Safety first, make a fresh array for each device. TODO: necessary?
-                for device in output_devices:
-                    device.in_queue.put(fft_bands[:])
-
-            except Empty as e:
-                pass
+            # TODO: Generalise for sets of output devices
+            if fft_device:
+                fft_bands = fft_device.get_out_queue()
+                
+                if fft_bands:
+                    for device in output_devices:
+                        device.in_queue.put(fft_bands[:])   
 
             # Update pixel lists if new data has arrived
             for i, device in enumerate(output_devices):

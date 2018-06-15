@@ -44,7 +44,9 @@ class Device(object):
 def get_nowait(queue):
     """
         A helper to get something from a queue
-        I think this is nicer than catching an exception from get_nowait()
+        Queue.get_nowait() throws an exception if nothing is in the queue
+        And python docs say you shouldn't assume Queue.empty() is reliable
+        I think this is nicer than catching an exception
         TODO: should this be in utils or something?
     """
 

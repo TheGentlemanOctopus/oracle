@@ -1,4 +1,4 @@
-from device import Device
+from device import Device, get_nowait
 from core.udp.fft_server import FftServer
 
 class FftDevice(Device):
@@ -15,3 +15,14 @@ class FftDevice(Device):
     def main(self):
         self.fft_server.run()
 
+    def get_out_queue(self):
+        """
+            No wait by default
+            Saves having to do an empty check and safer
+        """
+        fft_bands = get_nowait(self.out_queue)
+
+        if fft_bands is not None:
+            fft_bands = [band/1024.0 for band in fft_bands]
+
+        return fft_bands
