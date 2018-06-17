@@ -8,7 +8,9 @@ import time
 from core.layouts.big_cube import BigCube
 
 class BigCubeDevice(OutputDevice):
-
+    """
+        A device with a big cube only
+    """
 
     def __init__(self, channel, led_spacing, strip_spacing):
         super(BigCube, self).__init__()
