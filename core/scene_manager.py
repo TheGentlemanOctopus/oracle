@@ -72,14 +72,14 @@ class SceneManager(object):
         for input_device in self.input_devices:
             # Get data from the queue until cleared
             while True:
-                item = input_device.get_in_queue()
+                item = input_device.get_out_queue()
 
                 if item is None:
                     break
 
                 # Pass onto output devices
                 for output_device in self.output_devices:
-                    output_device.put(item)
+                    output_device.in_queue.put(item)
 
     def process_output_devices(self):
         """
@@ -91,6 +91,7 @@ class SceneManager(object):
             # Get the device queue mutex
             with device.queue_mutex:
                 pixel_dict = device.get_out_queue()
+
                 if pixel_dict:
                     self.output_device_pixel_dictionary_list[i] = pixel_dict
 

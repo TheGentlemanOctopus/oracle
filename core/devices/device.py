@@ -40,22 +40,6 @@ class Device(object):
         """
         return get_nowait(self.out_queue)
 
-def get_device_out_queues(devices):
-    """
-        Combines data from a set of input devices
-    """
-    data = []
-    for device in devices:
-        while True:
-            item = device.get_in_queue()
-
-            if item is None:
-                break
-            
-            else:
-                data.append(item)
-
-    return data
 
 def get_nowait(queue):
     """
