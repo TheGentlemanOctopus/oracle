@@ -5,6 +5,7 @@ import numpy as np
 from device import Device
 from core.utilities.sleep_timer import SleepTimer
 
+from core.animations import animations_by_layout
 from core.animations.animation import Animation
 from core.layouts.pixel_list import PixelList
 
@@ -42,15 +43,20 @@ class OutputDevice(Device):
 
             sleep_timer.sleep()
 
-    def set_animation(self, name):
+    def set_animation(self, name, params={}):
         """
             Switches the current animation
+            Params is a set of initialisation parameters
         """
-        pass
+        if name not in animations_by_layout:
+            # TODO: Log error
+            return
+
+        self.animation = animations_by_layout[name](**params)
 
     def animations_list(self):
         """
-            Returns a list of possible animations
+            TODO: Returns a list of possible animations
         """
         pass
 
