@@ -48,7 +48,29 @@ class SceneManager(object):
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
         self.output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in self.output_devices]
 
-    def init_output_devices(self):
+    def start(self):
+        """
+            Runs the scene forever. 
+            devices is a list of device objects
+        """
+        # Initialise
+        self.start_input_devices()
+        self.start_output_devices()
+
+        # Main loop
+        sleep_timer = SleepTimer(1.0/self.scene_fps)
+        while True:
+            sleep_timer.start()
+            
+            self.process_input_devices()
+            self.process_output_devices()
+            self.update_opc()
+
+            sleep_timer.sleep()
+
+        # TODO: kill input/output device processes
+
+    def start_output_devices(self):
         """
             Start output device processes
         """
@@ -56,7 +78,7 @@ class SceneManager(object):
             device.fps = self.device_fps
             device.start()
 
-    def init_input_devices(self):  
+    def start_input_devices(self):  
         """
             Start input device processes
         """
@@ -112,28 +134,6 @@ class SceneManager(object):
         # Pass onto OPC client
         for channel, pixels in channels_combined.items():
             self.client.put_pixels(pixels, channel=channel)
-
-    def start(self):
-        """
-            Runs the scene forever. 
-            devices is a list of device objects
-        """
-        # Initialise
-        self.init_input_devices()
-        self.init_output_devices()
-
-        # Main loop
-        sleep_timer = SleepTimer(1.0/self.scene_fps)
-        while True:
-            sleep_timer.start()
-            
-            self.process_input_devices()
-            self.process_output_devices()
-            self.update_opc()
-
-            sleep_timer.sleep()
-
-        # TODO: kill input/output device processes
 
 def run_scene(scene_path):
     """
