@@ -9,7 +9,7 @@ from utilities.sleep_timer import SleepTimer
 import argparse
 
 from core.devices.fft_device import FftDevice
-from core.devices import construct_output_devices, combine_channel_dicts, get_device_out_queues
+from core.devices import construct_output_devices, combine_channel_dicts
 
 class SceneManager(object):
     """
@@ -60,7 +60,7 @@ class SceneManager(object):
         """
             Start input device processes
         """
-        for device in self.input_device:
+        for device in self.input_devices:
             device.start()
 
     def process_input_devices(self):
@@ -72,7 +72,7 @@ class SceneManager(object):
         for input_device in self.input_devices:
             # Get data from the queue until cleared
             while True:
-                item = device.get_in_queue()
+                item = input_device.get_in_queue()
 
                 if item is None:
                     break
@@ -134,23 +134,32 @@ class SceneManager(object):
 
         # TODO: kill input/output device processes
 
+def run_scene(scene_path):
+    """
+        Runs a scene from a scene path
+    """
+    parsed_scene = pd.read_json(scene_path)
+
+    # Form devices
+    output_devices = construct_output_devices(parsed_scene["OutputDevices"])
+    
+    input_devices = []
+    if "fft_server" in parsed_scene:
+        input_devices.append(FftDevice(**parsed_scene["fft_server"]))
+
+    scene = SceneManager(input_devices, output_devices, **parsed_scene["SceneDetails"])
+
+    # Yaaay! Scene time
+    scene.start()
+
 def main(args):
     # Parse Args
     parser = argparse.ArgumentParser(description="Run a scene for us all to marvel")
     parser.add_argument("scene_path", help="Path to scene json file")   
     parser_args = parser.parse_args(args)
 
-    parsed_scene = pd.read_json(parser_args.scene_path)
+    run_scene(parser_args.scene_path)
 
-    # TODO: There should be a run from json function
-
-    # Prepare for scene time...
-    scene = SceneManager(**parsed_scene["SceneDetails"])
-    output_devices = construct_output_devices(parsed_scene["OutputDevices"])
-    fft_device = FftDevice(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
-
-    # Yaaay! Scene time
-    scene.start(output_devices, fft_device=fft_device)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
