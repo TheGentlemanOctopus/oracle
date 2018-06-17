@@ -14,7 +14,7 @@ class Animation(object):
         """
         self.params = params
 
-    def process_input(data):
+    def process_input(self, data):
         """
             Represents real time dictionary of data the an animcation may react upon (eg fft data)
         """
