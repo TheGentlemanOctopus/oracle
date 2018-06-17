@@ -39,7 +39,17 @@ class SceneManager(object):
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-    def start(self, output_devices, fft_device=None):
+    def init_output_devices(self, devices):
+        # Start Output Processes
+        for device in devices:
+            device.fps = self.device_fps
+            device.start()
+
+    def init_input_devices(self, devices):  
+        for device in device:
+            device.start()
+
+    def start(self, output_devices, input_devices):
         """
             Runs the scene forever. 
             devices is a list of device objects
@@ -50,15 +60,9 @@ class SceneManager(object):
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
         output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in output_devices]
 
-        # Start Processes
-        for device in output_devices:
-            device.fps = self.device_fps
-            device.start()
-    
-
-        # Start fft_server
-        if fft_device:
-            fft_device.start()
+        # Initialise
+        self.init_output_devices(output_devices)
+        self.init_input_devices(input_devices)
 
         # Main loop
         sleep_timer = SleepTimer(1.0/self.scene_fps)
