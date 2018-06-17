@@ -13,7 +13,18 @@ class Animation(object):
         self.params = {}
 
         # An array of fft band intensities from bass to treble
-        self.fft = np.zeros((7,))
+        self._fft = np.zeros((7,))
+
+    @property
+    def fft(self):
+        """I'm the 'x' property."""
+        return self._fft
+
+    # This decorator is similar to @property but for setting
+    # Ensures fft data is always a np array
+    @fft.setter
+    def fft(self, value):
+        self._fft = np.array(value)
 
     def add_param(self, name, value):
         """
@@ -21,18 +32,6 @@ class Animation(object):
             TODO: Add min/max features. Will be useful to avoid acceptions
         """
         self.params[name] = value
-
-    def process_input(self, data):
-        """
-            Represents real time dictionary of data the an animcation may react upon (eg fft data)
-        """
-        for input_type, value in data.items():
-            if input_type=="fft":
-                self.fft = value
-
-            else:
-                # TODO: Log if fft data is not available
-                pass
 
     def update(self):
         """

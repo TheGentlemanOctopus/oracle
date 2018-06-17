@@ -59,16 +59,14 @@ class OutputDevice(Device):
 
         # Clear the queue
         while True:
-            fft_data = self.get_in_queue()
+            item = self.get_in_queue()
 
-            if fft_data is None:
+            if item is None:
                 break
 
             # Pass onto animation
-            self.animation.process_input({
-                "fft": fft_data
-            })
-        
+            # TODO: Generalise here
+            self.animation.fft = item
 
     def put(self, data):
         """
@@ -83,7 +81,8 @@ class OutputDevice(Device):
 
     def update(self):
         """
-            Updates the pixel colors, should be defined by subclasses          
+            Updates the pixel colors can by overriden subclasses
+            but generally shoudn't need to be if using animations          
         """
         self.animation.update()
 
