@@ -1,7 +1,8 @@
-from device import Device, get_nowait
+from device import get_nowait
+from input_device import InputDevice
 from core.udp.fft_server import FftServer
 
-class FftDevice(Device):
+class FftDevice(InputDevice):
     """
         A wrapper around the hack fft server
         TODO: merge fft_server into this
