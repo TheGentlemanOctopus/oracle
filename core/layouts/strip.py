@@ -1,9 +1,10 @@
 from core.devices.pixel import Pixel
+from layput import Layout
 
 import numpy as np
 from numpy.linalg import norm
 
-class Strip:
+class Strip(Layout):
     """
         Represents a strip of Leds
         start/direction are two element arrays (x,y)

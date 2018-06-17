@@ -1,5 +1,6 @@
+from layout import Layout
 
-class PixelList:
+class PixelList(Layout):
     """
         Nothing fancy here, just a list of pixels
     """
