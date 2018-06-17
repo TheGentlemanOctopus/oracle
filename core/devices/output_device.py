@@ -58,14 +58,16 @@ class OutputDevice(Device):
         """
 
         # Clear the queue
-        fft_data = self.get_in_queue()
-        while fft_data:
+        while True:
             fft_data = self.get_in_queue()
 
-        # Pass onto animation
-        self.animation.process_input({
-            "fft": fft_data
-        })
+            if fft_data is None:
+                break
+
+            # Pass onto animation
+            self.animation.process_input({
+                "fft": fft_data
+            })
         
 
     def put(self, data):

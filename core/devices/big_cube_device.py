@@ -17,6 +17,8 @@ class BigCubeDevice(OutputDevice):
         super(BigCubeDevice, self).__init__()
 
         self.big_cube = BigCube(led_spacing, strip_spacing)
+
+        # TODO: Generalise so we can actively switch between animation sets
         self.animation = BigCubeWalk(self.big_cube)
 
         # Form pixels by channel dict

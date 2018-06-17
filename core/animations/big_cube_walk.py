@@ -1,12 +1,16 @@
 from animation import Animation
+import time
+import numpy as np
+import colorsys
 
 class BigCubeWalk(Animation):
     def __init__(self, big_cube, period=5, hue_range=0.2):
-    """
-        Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
-        period is the number of seconds it takes a color to lap the cube
-        hue_range defines the range of colors used as a prop of the color wheel
-    """
+        """
+            Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
+            period is the number of seconds it takes a color to lap the cube
+            hue_range defines the range of colors used as a prop of the color wheel
+        """
+
         super(BigCubeWalk, self).__init__()
 
         self.add_param("period", period)
@@ -17,7 +21,7 @@ class BigCubeWalk(Animation):
         self.big_cube = big_cube
 
     def update(self):
-        pixels = self.pixels
+        pixels = self.big_cube.pixels
 
         period = self.params["period"]
         hue_range = self.params["hue_range"]
@@ -31,10 +35,9 @@ class BigCubeWalk(Animation):
         v = 1 # Value
         for i, h in enumerate(np.linspace(0, hue_range, len(pixels))):
             # shift hue with weighted fft avg that favours bass :)
-            weights = np.array(range(len(self.fft_data)))[::-1]
-            h_shift = np.average(self.fft_data, weights=weights)
+            weights = np.array(range(len(self.fft)))[::-1]
+            h_shift = np.average(self.fft, weights=weights)
             h_shifted = (h + h_shift) % 1
 
             pixel = pixels[i]
             pixel.r, pixel.g, pixel.b = colorsys.hsv_to_rgb(h_shifted,s,v)
-

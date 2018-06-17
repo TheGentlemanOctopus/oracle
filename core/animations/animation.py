@@ -13,9 +13,9 @@ class Animation(object):
         self.params = {}
 
         # An array of fft band intensities from bass to treble
-        self.fft_data = np.zeros([0,0,0,0,0,0,0])
+        self.fft = np.zeros((7,))
 
-    def add_param(name, value):
+    def add_param(self, name, value):
         """
             Adds a parameter to the dict
             TODO: Add min/max features. Will be useful to avoid acceptions
@@ -28,7 +28,7 @@ class Animation(object):
         """
         for input_type, value in data.items():
             if input_type=="fft":
-                self.fft_data = value
+                self.fft = value
 
             else:
                 # TODO: Log if fft data is not available
