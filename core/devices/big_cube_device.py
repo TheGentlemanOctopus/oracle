@@ -13,7 +13,7 @@ class BigCubeDevice(OutputDevice):
     """
 
     def __init__(self, channel, led_spacing, strip_spacing):
-        super(BigCube, self).__init__()
+        super(BigCubeDevice, self).__init__()
 
         self.big_cube = BigCube(led_spacing, strip_spacing)
 

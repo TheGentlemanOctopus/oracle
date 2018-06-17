@@ -22,7 +22,7 @@
     "OutputDevices": [
         {
             "name": "BigDaddy",
-            "type": "BigCube",
+            "type": "BigCubeDevice",
             "args": {
                 "channel": 1,
                 "led_spacing" : 0.2,
