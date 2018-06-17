@@ -17,7 +17,9 @@ class SceneManager(object):
         Runs a set of devices (currently only output devices), combines pixel data and forwards onto server
         TODO: Handling for input devices
     """
-    def __init__(self, 
+    def __init__(self,
+            input_devices,
+            output_devices,
             scene_fps=60, 
             device_fps=30, 
             opc_host="127.0.0.1", 
@@ -39,38 +41,67 @@ class SceneManager(object):
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-    def init_output_devices(self, devices):
-        # Start Output Processes
-        for device in devices:
+        self.input_devices = input_devices
+        self.output_devices = output_devices
+
+        # A list of dictionaries which are the device's pixel colors by channel
+        # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
+        self.output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in self.output_devices]
+
+    def init_output_devices(self):
+        """
+            Start output device processes
+        """
+        for device in self.output_devices:
             device.fps = self.device_fps
             device.start()
 
-    def init_input_devices(self, devices):  
-        for device in device:
+    def init_input_devices(self):  
+        """
+            Start input device processes
+        """
+        for device in self.input_device:
             device.start()
 
-    def update_output_devices(self, data, devices):
+    def process_input_devices(self):
         """
-            Global broadcast for now
-            Data is an list of update data
+            Gets data from input devices and passes them onto output devices
+            TODO: broadcast to specific devices
         """
-        for item in data:
-            for device in devices:
-                device.in_queue.put(item)
 
-    def combine_channels(self):
+        for input_device in self.input_devices:
+            # Get data from the queue until cleared
+            while True:
+                item = device.get_in_queue()
+
+                if item is None:
+                    break
+
+                # Pass onto output devices
+                for output_device in self.output_devices:
+                    output_device.put(item)
+
+    def process_output_devices(self):
+        """
+            Retrieve pixels from all output devices
+        """
+
         # Update pixel lists if new data has arrived
-        for i, device in enumerate(output_devices):
+        for i, device in enumerate(self.output_devices):
             # Get the device queue mutex
             with device.queue_mutex:
                 pixel_dict = device.get_out_queue()
                 if pixel_dict:
-                    output_device_pixel_dictionary_list[i] = pixel_dict
+                    self.output_device_pixel_dictionary_list[i] = pixel_dict
 
+    def update_opc(self):
+        """
+            Sends the latest pixels to opc
+        """
         # Combine the scene pixels into one concatenated dictionary keyed by channel number
         # Multiple devices using the same channel are combined with the same ordering as the devices list
         channels_combined = {}
-        for pixel_dict in output_device_pixel_dictionary_list:
+        for pixel_dict in self.output_device_pixel_dictionary_list:
             for channel, pixels in pixel_dict.items():
                 if channel in channels_combined:
                     channels_combined[channel].extend(pixels)
@@ -81,37 +112,27 @@ class SceneManager(object):
         for channel, pixels in channels_combined.items():
             self.client.put_pixels(pixels, channel=channel)
 
-    def start(self, input_devices, output_devices):
+    def start(self):
         """
             Runs the scene forever. 
             devices is a list of device objects
-            TODO: Break into helper functions?
         """
-
-        # A list of dictionaries which are the device's pixel colors by channel
-        # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
-        output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in output_devices]
-
         # Initialise
-        self.init_output_devices(output_devices)
-        self.init_input_devices(input_devices)
+        self.init_input_devices()
+        self.init_output_devices()
 
         # Main loop
         sleep_timer = SleepTimer(1.0/self.scene_fps)
         while True:
             sleep_timer.start()
             
-            # Retrieve fft data and pass onto devices
-            # TODO: Clear the queue for good housekeeping?
-            # TODO: Generalise for sets of output devices
-            output_data = get_device_out_queues(input_devices)
-            self.update_output_devices(output_data, output_devices)
+            self.process_input_devices()
+            self.process_output_devices()
+            self.update_opc()
 
-            channels_combined = self.update_opc()
-
-            # The scene_fps should be at least 2x device_fps to avoid sampling issues
-            # TODO: comment above shouldn't be necessary, I think the queue clear in devices requires a mutex
             sleep_timer.sleep()
+
+        # TODO: kill input/output device processes
 
 def main(args):
     # Parse Args
