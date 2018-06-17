@@ -34,6 +34,7 @@ class BigCubeWalk(Animation):
         s = 1 # Saturation
         v = 1 # Value
         for i, h in enumerate(np.linspace(0, hue_range, len(pixels))):
+            
             # shift hue with weighted fft avg that favours bass :)
             weights = np.array(range(len(self.fft)))[::-1]
             h_shift = np.average(self.fft, weights=weights)

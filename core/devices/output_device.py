@@ -81,8 +81,7 @@ class OutputDevice(Device):
 
     def update(self):
         """
-            Updates the pixel colors can by overriden subclasses
-            but generally shoudn't need to be if using animations          
+            Updates the pixel colors. Shoudn't need to be overriden in general
         """
         self.animation.update()
 

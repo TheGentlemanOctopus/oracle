@@ -2,14 +2,13 @@ import numpy as np
 
 class Animation(object):
     """
-        The animation class can be used to generate a pattern for a device
-        The params dict represents 
+        The animation class is used to generate a pattern for an OutputDevice
+        The params dict represents high level Params represent high parameters 
+        that are configured during development (or live :)
     """
     def __init__(self):
-        """
-            Params represent high parrern parameters that should be configured when developing a pattern
-            E.g hue
-        """
+        # Dictionary of parameters, useful for higher level code
+        # to be able to retrieve an animation's params
         self.params = {}
 
         # An array of fft band intensities from bass to treble
@@ -17,7 +16,9 @@ class Animation(object):
 
     @property
     def fft(self):
-        """I'm the 'x' property."""
+        """
+            FFT is an array of 7 band intensities from bass to treble
+        """
         return self._fft
 
     # This decorator is similar to @property but for setting
@@ -29,7 +30,7 @@ class Animation(object):
     def add_param(self, name, value):
         """
             Adds a parameter to the dict
-            TODO: Add min/max features. Will be useful to avoid acceptions
+            TODO: Add min/max features. Will be useful for avoiding acceptions
         """
         self.params[name] = value
 
