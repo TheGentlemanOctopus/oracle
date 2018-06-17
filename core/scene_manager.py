@@ -9,7 +9,7 @@ from utilities.sleep_timer import SleepTimer
 import argparse
 
 from core.devices.fft_device import FftDevice
-from core.devices import construct_output_devices, combine_channel_dicts
+from core.devices import construct_output_devices, combine_channel_dicts, get_device_out_queues
 
 class SceneManager(object):
     """
@@ -49,7 +49,39 @@ class SceneManager(object):
         for device in device:
             device.start()
 
-    def start(self, output_devices, input_devices):
+    def update_output_devices(self, data, devices):
+        """
+            Global broadcast for now
+            Data is an list of update data
+        """
+        for item in data:
+            for device in devices:
+                device.in_queue.put(item)
+
+    def combine_channels(self):
+        # Update pixel lists if new data has arrived
+        for i, device in enumerate(output_devices):
+            # Get the device queue mutex
+            with device.queue_mutex:
+                pixel_dict = device.get_out_queue()
+                if pixel_dict:
+                    output_device_pixel_dictionary_list[i] = pixel_dict
+
+        # Combine the scene pixels into one concatenated dictionary keyed by channel number
+        # Multiple devices using the same channel are combined with the same ordering as the devices list
+        channels_combined = {}
+        for pixel_dict in output_device_pixel_dictionary_list:
+            for channel, pixels in pixel_dict.items():
+                if channel in channels_combined:
+                    channels_combined[channel].extend(pixels)
+                else:
+                    channels_combined[channel] = [p for p in pixels]
+
+        # Pass onto OPC client
+        for channel, pixels in channels_combined.items():
+            self.client.put_pixels(pixels, channel=channel)
+
+    def start(self, input_devices, output_devices):
         """
             Runs the scene forever. 
             devices is a list of device objects
@@ -72,35 +104,10 @@ class SceneManager(object):
             # Retrieve fft data and pass onto devices
             # TODO: Clear the queue for good housekeeping?
             # TODO: Generalise for sets of output devices
-            if fft_device:
-                fft_bands = fft_device.get_out_queue()
-                
-                if fft_bands:
-                    for device in output_devices:
-                        device.in_queue.put(fft_bands[:])   
+            output_data = get_device_out_queues(input_devices)
+            self.update_output_devices(output_data, output_devices)
 
-            # Update pixel lists if new data has arrived
-            for i, device in enumerate(output_devices):
-
-                # Get the device queue mutex
-                with device.queue_mutex:
-                    pixel_dict = device.get_out_queue()
-                    if pixel_dict:
-                        output_device_pixel_dictionary_list[i] = pixel_dict
-    
-            # Combine the scene pixels into one concatenated dictionary keyed by channel number
-            # Multiple devices using the same channel are combined with the same ordering as the devices list
-            channels_combined = {}
-            for pixel_dict in output_device_pixel_dictionary_list:
-                for channel, pixels in pixel_dict.items():
-                    if channel in channels_combined:
-                        channels_combined[channel].extend(pixels)
-                    else:
-                        channels_combined[channel] = [p for p in pixels]
-            
-            # Pass onto OPC client
-            for channel, pixels in channels_combined.items():
-                self.client.put_pixels(pixels, channel=channel)
+            channels_combined = self.update_opc()
 
             # The scene_fps should be at least 2x device_fps to avoid sampling issues
             # TODO: comment above shouldn't be necessary, I think the queue clear in devices requires a mutex
