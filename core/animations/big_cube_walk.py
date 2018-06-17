@@ -1,9 +1,13 @@
 from animation import Animation
+from core.layouts.big_cube import BigCube
+
 import time
 import numpy as np
 import colorsys
 
 class BigCubeWalk(Animation):
+    layout_type = BigCube
+
     def __init__(self, big_cube, period=5, hue_range=0.2):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in

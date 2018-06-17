@@ -1,7 +1,11 @@
 from multiprocessing import Process, Queue, Lock
 from Queue import Empty
 
+from core.layouts.pixel_list import PixelList
+
 class Device(object):
+    layout_type = PixelList
+
     def __init__(self):
         # Output queue
         self.out_queue = Queue()

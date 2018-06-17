@@ -1,11 +1,15 @@
 import numpy as np
 
+from core.layouts.pixel_list import PixelList
+
 class Animation(object):
     """
         The animation class is used to generate a pattern for an OutputDevice
         The params dict represents high level Params represent
         high level parameters that are configured during development or live
     """
+    layout_type = PixelList
+
     def __init__(self):
         # Dictionary of parameters, useful for higher level code
         # to be able to retrieve an animation's params
