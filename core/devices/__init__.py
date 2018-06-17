@@ -1,5 +1,5 @@
 import core.utilities.process_descriptor as pd
-from device import Device
+from output_device import OutputDevice
 
 # To be able construct a device, all you have to is import it here 
 import cube_strip
@@ -8,11 +8,11 @@ import big_cube
 
 # Generates dictionary with the class name as key and class as value. 
 # Useful for constructing device class instances
-device_dict = {}
-for device in Device.__subclasses__():
-    device_dict[device.__name__] = device
+output_device_dict = {}
+for output_device in OutputDevice.__subclasses__():
+    output_device_dict[output_device.__name__] = output_device
 
-def construct_devices(devices_data_dict):
+def construct_output_devices(output_devices_data_dict):
     """
         Returns a list constructed devices given a list of initialisation data
         Each element in devices_data_dict should be a dictionary with format 
@@ -24,22 +24,22 @@ def construct_devices(devices_data_dict):
 
     # TODO: Error handling
 
-    devices = []
+    output_devices = []
     # Construct device from the dictionary the device_dict above
-    for device_data in devices_data_dict:
-        device_constructor = device_dict[device_data["type"]]
-        devices.append(device_constructor(**device_data["args"]))
+    for output_device_data in output_devices_data_dict:
+        output_device_constructor = output_device_dict[output_device_data["type"]]
+        output_devices.append(output_device_constructor(**output_device_data["args"]))
 
-    return devices
+    return output_devices
 
-def combine_channel_dicts(devices):
+def combine_channel_dicts(output_devices):
     """ 
         Combines channel dictionarties from a list of devices into one big one into one
         Pixels are ordered in the same order as the array
     """
     channels_combined = {}
-    for device in devices:
-        for channel, pixels in device.pixels_by_channel.items():
+    for output_device in output_devices:
+        for channel, pixels in output_device.pixels_by_channel.items():
             if channel in channels_combined:
                 channels_combined[channel].extend(pixels)
             else:

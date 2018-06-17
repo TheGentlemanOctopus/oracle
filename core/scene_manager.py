@@ -8,7 +8,7 @@ from utilities.sleep_timer import SleepTimer
 import argparse
 
 from core.udp.fft_server import FftServer
-from core.devices import construct_devices, combine_channel_dicts
+from core.devices import construct_output_devices, combine_channel_dicts
 
 class SceneManager(object):
     """
@@ -38,7 +38,7 @@ class SceneManager(object):
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-    def start(self, devices, fft_server=None):
+    def start(self, output_devices, fft_server=None):
         """
             Runs the scene forever. 
             devices is a list of device objects
@@ -47,13 +47,13 @@ class SceneManager(object):
 
         # A list of dictionaries which are the device's pixel colors by channel
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
-        device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in devices]
+        output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in output_devices]
 
         # Start Processes
-        for device in devices:
+        for device in output_devices:
             device.fps = self.device_fps
-            p = Process(target=device.main)
-            p.start()
+            device.start()
+    
 
         # Start fft_server
         if fft_server:
@@ -72,24 +72,25 @@ class SceneManager(object):
                 fft_bands = [band/1024.0 for band in fft_server.fft_queue.get_nowait()]
 
                 # Safety first, make a fresh array for each device. TODO: necessary?
-                for device in devices:
+                for device in output_devices:
                     device.in_queue.put(fft_bands[:])
 
             except:
                 pass
 
             # Update pixel lists if new data has arrived
-            for i, device in enumerate(devices):
+            for i, device in enumerate(output_devices):
 
                 # Get the device queue mutex
                 with device.queue_mutex:
-                    if not device.out_queue.empty():
-                        device_pixel_dictionary_list[i] = device.out_queue.get()
+                    pixel_dict = device.get_out_queue()
+                    if pixel_dict:
+                        output_device_pixel_dictionary_list[i] = pixel_dict
     
             # Combine the scene pixels into one concatenated dictionary keyed by channel number
             # Multiple devices using the same channel are combined with the same ordering as the devices list
             channels_combined = {}
-            for pixel_dict in device_pixel_dictionary_list:
+            for pixel_dict in output_device_pixel_dictionary_list:
                 for channel, pixels in pixel_dict.items():
                     if channel in channels_combined:
                         channels_combined[channel].extend(pixels)
@@ -116,11 +117,11 @@ def main(args):
 
     # Prepare for scene time...
     scene = SceneManager(**parsed_scene["SceneDetails"])
-    devices = construct_devices(parsed_scene["OutputDevices"])
+    output_devices = construct_output_devices(parsed_scene["OutputDevices"])
     fft_server = FftServer(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
 
     # Yaaay! Scene time
-    scene.start(devices, fft_server=fft_server)
+    scene.start(output_devices, fft_server=fft_server)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

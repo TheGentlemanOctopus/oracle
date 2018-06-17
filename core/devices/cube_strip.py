@@ -1,11 +1,11 @@
-from device import Device
+from output_device import OutputDevice
 from pixel import Pixel
 import numpy as np
 import time
 
 from core.layouts.strip import Strip
 
-class CubeStrip(Device):
+class CubeStrip(OutputDevice):
     """
         A simple device for device purposes, just a linear array of pixels
     """

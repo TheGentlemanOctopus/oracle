@@ -1,9 +1,9 @@
-from device import Device 
+from output_device import OutputDevice 
 from pixel import Pixel
 import time
 import numpy as np
 
-class Lonely(Device):
+class Lonely(OutputDevice):
     """
         Simplest possible output device. A singular lonely pixel :(
     """
