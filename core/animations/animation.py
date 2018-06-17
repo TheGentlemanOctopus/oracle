@@ -5,14 +5,22 @@ class Animation(object):
         The animation class can be used to generate a pattern for a device
         The params dict represents 
     """
-    self.fft_data = np.zeros([0,0,0,0,0,0,0])
-
-    def __init__(self, **params):
+    def __init__(self):
         """
             Params represent high parrern parameters that should be configured when developing a pattern
             E.g hue
         """
-        self.params = params
+        self.params = {}
+
+        # An array of fft band intensities from bass to treble
+        self.fft_data = np.zeros([0,0,0,0,0,0,0])
+
+    def add_param(name, value):
+        """
+            Adds a parameter to the dict
+            TODO: Add min/max features. Will be useful to avoid acceptions
+        """
+        self.params[name] = value
 
     def process_input(self, data):
         """
@@ -25,3 +33,9 @@ class Animation(object):
             else:
                 # TODO: Log if fft data is not available
                 pass
+
+    def update(self):
+        """
+            This method is called to update the pixel colors
+        """
+        pass
