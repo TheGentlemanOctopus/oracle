@@ -14,18 +14,15 @@ class BigCubeWalk(Animation):
             period is the number of seconds it takes a color to lap the cube
             hue_range defines the range of colors used as a prop of the color wheel
         """
-
         super(BigCubeWalk, self).__init__()
+
+        self.layout = big_cube
 
         self.add_param("period", period)
         self.add_param("hue_range", hue_range)
 
-        # TODO: Generalise layout dependencies. 
-        # E.g. assocaite on animatios to the layouts they have and having general ones 
-        self.big_cube = big_cube
-
     def update(self):
-        pixels = self.big_cube.pixels
+        pixels = self.layout.pixels
 
         period = self.params["period"]
         hue_range = self.params["hue_range"]

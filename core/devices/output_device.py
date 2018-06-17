@@ -27,6 +27,7 @@ class OutputDevice(Device):
         self.pixels_by_channel = {}
 
         # The current active animation
+        self.layout = PixelList([])
         self.animation = Animation()
 
     def main(self):
@@ -43,7 +44,7 @@ class OutputDevice(Device):
 
             sleep_timer.sleep()
 
-    def set_animation(self, name, params={}):
+    def set_animation(self, name, params=None):
         """
             Switches the current animation
             Params is a set of initialisation parameters
@@ -52,7 +53,11 @@ class OutputDevice(Device):
             # TODO: Log error
             return
 
-        self.animation = animations_by_layout[name](**params)
+        if params is None:
+            params = {}
+
+        # Construct new animation
+        self.animation = animations_by_layout[name](layout, **params)
 
     def animations_list(self):
         """

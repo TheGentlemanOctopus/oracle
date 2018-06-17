@@ -16,6 +16,9 @@ class Animation(object):
         # Initialise _fft var. This should only be get/set from the properties below
         self._fft = np.zeros((7,))
 
+        # This defines the layout used for animation
+        self.layout = None
+
     @property
     def fft(self):
         """
