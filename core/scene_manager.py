@@ -9,7 +9,7 @@ from utilities.sleep_timer import SleepTimer
 import argparse
 
 from core.devices.fft_device import FftDevice
-from core.devices import construct_output_devices, combine_channel_dicts
+from core.devices import construct_output_devices, construct_input_devices, combine_channel_dicts
 
 class SceneManager(object):
     """
@@ -142,12 +142,9 @@ def run_scene(scene_path):
     parsed_scene = pd.read_json(scene_path)
 
     # Form devices
+    input_devices = construct_input_devices(parsed_scene["InputDevices"])
     output_devices = construct_output_devices(parsed_scene["OutputDevices"])
     
-    input_devices = []
-    if "fft_server" in parsed_scene:
-        input_devices.append(FftDevice(**parsed_scene["fft_server"]))
-
     scene = SceneManager(input_devices, output_devices, **parsed_scene["SceneDetails"])
 
     # Yaaay! Scene time
