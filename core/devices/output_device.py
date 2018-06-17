@@ -5,6 +5,8 @@ import numpy as np
 from device import Device
 from core.utilities.sleep_timer import SleepTimer
 
+from core.animations.animation import Animation
+
 class OutputDevice(Device):
     """
         Component of a scene that runs as its own process 
@@ -21,8 +23,8 @@ class OutputDevice(Device):
         # A dictionary where the key is the channel (int) and the value is a list of pixel objects
         self.pixels_by_channel = {}
 
-        # An array of fft band intensities from bass to treble
-        self.fft_data = np.zeros((7,))
+        # The current active animation
+        self.animation = Animation()
 
     def main(self):
         """
@@ -55,11 +57,16 @@ class OutputDevice(Device):
             TODO: general support for input types rather than fft data
         """
 
-        fft_data = self.get_in_queue()
-        while fft_data:
-            self.fft_data = fft_data
-            fft_data = self.get_in_queue()
-        
+        # Clear the queue
+        while True:
+            item = self.get_in_queue()
+
+            if item is None:
+                break
+
+            # Pass onto animation
+            # TODO: Generalise here
+            self.animation.fft = item
 
     def put(self, data):
         """
@@ -74,9 +81,9 @@ class OutputDevice(Device):
 
     def update(self):
         """
-            Updates the pixel colors, should be defined by subclasses          
+            Updates the pixel colors. Shoudn't need to be overriden in general
         """
-        raise NotImplementedError("pls define update")
+        self.animation.update()
 
 
 if __name__ == '__main__':
