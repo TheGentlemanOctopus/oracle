@@ -6,7 +6,7 @@ import numpy as np
 import colorsys
 
 class BigCubeWalk(Animation):
-    layout_type = BigCube
+    layout_type = "BigCube"
 
     def __init__(self, big_cube, period=5, hue_range=0.2):
         """

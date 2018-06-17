@@ -6,6 +6,7 @@ from device import Device
 from core.utilities.sleep_timer import SleepTimer
 
 from core.animations.animation import Animation
+from core.layouts.pixel_list import PixelList
 
 class OutputDevice(Device):
     """
@@ -13,6 +14,7 @@ class OutputDevice(Device):
         TODO: abstract for output/input device
     """
     fps = 30
+    layout_type = "PixelList"
 
     def __init__(self):
         """
@@ -39,6 +41,18 @@ class OutputDevice(Device):
             self.put(self.pixel_colors_by_channel_255)
 
             sleep_timer.sleep()
+
+    def set_animation(self, name):
+        """
+            Switches the current animation
+        """
+        pass
+
+    def animations_list(self):
+        """
+            Returns a list of possible animations
+        """
+        pass
 
     @property
     def pixel_colors_by_channel_255(self):
