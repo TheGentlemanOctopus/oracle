@@ -1,5 +1,6 @@
 from layout import Layout
 
+# Import layouts here to make them detectable to higher level code
 import big_cube
 
 # A dictionary where:

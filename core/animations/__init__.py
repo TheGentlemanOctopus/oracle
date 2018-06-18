@@ -1,5 +1,6 @@
 from animation import Animation
 
+# Import animations here to make them detectable to higher level code
 import big_cube_walk
 import swoopy_town
 
