@@ -29,7 +29,7 @@ class SwoopyTown(Animation):
             x,y,z = pixel.location
 
             h = 0.5*(1 + np.sin(2*np.pi*f*t + w*x))
-            s = 0.5*(1 + np.sin(2*np.pi*f*t+ w*y))
+            s = 0.5*(1 + np.sin(2*np.pi*f*t + w*y))
             v = 0.5*(1 + np.sin(2*np.pi*f*t + w*z))
 
             pixel.set_hsv(h,s,v)
