@@ -4,7 +4,7 @@ from Queue import Empty
 from core.layouts.pixel_list import PixelList
 
 class Device(object):
-    layout_type = PixelList
+    layout_type = "Layout"
 
     def __init__(self):
         # Output queue

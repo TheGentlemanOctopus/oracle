@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 class SwoopyTown(Animation):
-    layout_type="PixelList"
+    layout_type="Layout"
 
     def __init__(self, pixel_list, period=1, wavelength=2):
         """
@@ -28,8 +28,8 @@ class SwoopyTown(Animation):
         for pixel in pixels:
             x,y,z = pixel.location
 
-            h = np.sin(2*np.pi*f + w*x)
-            s = np.sin(2*np.pi*f + w*y)
-            v = np.sin(2*np.pi*f + w*z)
+            h = np.sin(2*np.pi*f*t + w*x)
+            s = np.sin(2*np.pi*f*t+ w*y)
+            v = np.sin(2*np.pi*f*t + w*z)
 
             pixel.set_hsv(h,s,v)
