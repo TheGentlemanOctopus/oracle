@@ -1,11 +1,16 @@
 import numpy as np
 
+from core.layouts.layout import Layout
+
 class Animation(object):
     """
         The animation class is used to generate a pattern for an OutputDevice
         The params dict represents high level Params represent
         high level parameters that are configured during development or live
     """
+
+    # Name of the layout class name as a string that the animation should be constructed with
+    # "Layout" indicates a generic animation that can operate on any layout
     layout_type = "Layout"
 
     def __init__(self):
@@ -17,7 +22,7 @@ class Animation(object):
         self._fft = np.zeros((7,))
 
         # This defines the layout used for animation
-        self.layout = None
+        self.layout = Layout()
 
     @property
     def fft(self):

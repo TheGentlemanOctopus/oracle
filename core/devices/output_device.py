@@ -14,7 +14,6 @@ class OutputDevice(Device):
         TODO: abstract for output/input device
     """
     fps = 30
-    layout_type = "Layout"
 
     def __init__(self):
         """
