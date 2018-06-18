@@ -48,7 +48,9 @@ class OutputDevice(Device):
             Switches the current animation
             Params is a set of initialisation parameters
         """
-        # Dict of possible animations include the generic the Layout type and layout specific types
+        # Dict of possible animations include:
+        #   - generic Layout type
+        #   - layout specific types
         animations = {}
         if "Layout" in animations_by_layout:
             animations.update(animations_by_layout["Layout"])
