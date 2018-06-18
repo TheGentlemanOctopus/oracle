@@ -1,5 +1,8 @@
+import numpy as np
+
 class Layout(object):
     """
         At the moment serves nothing more than a placeholder
     """
-    pass
+    def pixels(self):
+        return np.array([])

@@ -43,3 +43,4 @@ class Animation(object):
             This method is called to update the pixel colors
         """
         pass
+
