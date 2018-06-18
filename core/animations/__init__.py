@@ -7,7 +7,7 @@ import big_cube_walk
 animations_by_layout = {}
 for animation in Animation.__subclasses__():
     if animation.layout_type in animations_by_layout:
-        animations_by_layout[animation.layout_type].append(animation)
+        animations_by_layout[animation.layout_type][animation.__name__] = animation
 
     else:
-        animations_by_layout[animation.layout_type] = [animation]
+        animations_by_layout[animation.layout_type] = {animation.__name__: animation}

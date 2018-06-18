@@ -55,13 +55,7 @@ class OutputDevice(Device):
 
         animations = animations_by_layout[self.layout.__class__.__name__]
 
-        animation_constructor = None
-        for ani in animations:
-            if name == ani.__name__:
-                animation_constructor = ani
-                break
-
-        if not animation_constructor:
+        if name not in animations:
             # TODO: Log error
             return
 
@@ -69,7 +63,7 @@ class OutputDevice(Device):
             params = {}
 
         # Construct new animation
-        self.animation = animation_constructor(self.layout, **params)
+        self.animation = animations[name](self.layout, **params)
 
     def animations_list(self):
         """
