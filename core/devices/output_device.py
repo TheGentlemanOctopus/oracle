@@ -50,14 +50,14 @@ class OutputDevice(Device):
         # Dict of possible animations include:
         #   - generic Layout type
         #   - layout specific types
-        animations = {}
+        possible_animations = {}
         if "Layout" in animations_by_layout:
-            animations.update(animations_by_layout["Layout"])
+            possible_animations.update(animations_by_layout["Layout"])
 
         if self.layout.__class__.__name__ in animations_by_layout:
-            animations.update(animations_by_layout[self.layout.__class__.__name__])
+            possible_animations.update(animations_by_layout[self.layout.__class__.__name__])
 
-        if name not in animations:
+        if name not in possible_animations:
             # TODO: Log error
             return
 
@@ -65,8 +65,7 @@ class OutputDevice(Device):
             params = {}
 
         # Construct new animation
-        # TODO: Thread safety required?
-        new_animation = animations[name](self.layout, **params)
+        new_animation = possible_animations[name](self.layout, **params)
         new_animation.fft = self.animation.fft
         self.animation = new_animation
 
