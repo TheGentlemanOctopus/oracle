@@ -9,7 +9,7 @@ from utilities.sleep_timer import SleepTimer
 import argparse
 
 from core.devices.fft_device import FftDevice
-from core.devices import construct_output_devices, combine_channel_dicts
+from core.devices import construct_output_devices, construct_input_devices, combine_channel_dicts
 
 class SceneManager(object):
     """
@@ -17,7 +17,9 @@ class SceneManager(object):
         Runs a set of devices (currently only output devices), combines pixel data and forwards onto server
         TODO: Handling for input devices
     """
-    def __init__(self, 
+    def __init__(self,
+            input_devices,
+            output_devices,
             scene_fps=60, 
             device_fps=30, 
             opc_host="127.0.0.1", 
@@ -39,68 +41,114 @@ class SceneManager(object):
         self.scene_fps = scene_fps
         self.device_fps = device_fps
 
-    def start(self, output_devices, fft_device=None):
-        """
-            Runs the scene forever. 
-            devices is a list of device objects
-            TODO: Break into helper functions?
-        """
+        self.input_devices = input_devices
+        self.output_devices = output_devices
 
         # A list of dictionaries which are the device's pixel colors by channel
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
-        output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in output_devices]
+        self.output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in self.output_devices]
 
-        # Start Processes
-        for device in output_devices:
+    def init_output_devices(self):
+        """
+            Start output device processes
+        """
+        for device in self.output_devices:
             device.fps = self.device_fps
             device.start()
-    
 
-        # Start fft_server
-        if fft_device:
-            fft_device.start()
+    def init_input_devices(self):  
+        """
+            Start input device processes
+        """
+        for device in self.input_devices:
+            device.start()
+
+    def process_input_devices(self):
+        """
+            Gets data from input devices and passes them onto output devices
+            TODO: broadcast to specific devices
+        """
+
+        for input_device in self.input_devices:
+            # Get data from the queue until cleared
+            while True:
+                item = input_device.get_out_queue()
+
+                if item is None:
+                    break
+
+                # Pass onto output devices
+                for output_device in self.output_devices:
+                    output_device.in_queue.put(item)
+
+    def process_output_devices(self):
+        """
+            Retrieve pixels from all output devices
+        """
+
+        # Update pixel lists if new data has arrived
+        for i, device in enumerate(self.output_devices):
+            # Get the device queue mutex
+            with device.queue_mutex:
+                pixel_dict = device.get_out_queue()
+
+                if pixel_dict:
+                    self.output_device_pixel_dictionary_list[i] = pixel_dict
+
+    def update_opc(self):
+        """
+            Sends the latest pixels to opc
+        """
+        # Combine the scene pixels into one concatenated dictionary keyed by channel number
+        # Multiple devices using the same channel are combined with the same ordering as the devices list
+        channels_combined = {}
+        for pixel_dict in self.output_device_pixel_dictionary_list:
+            for channel, pixels in pixel_dict.items():
+                if channel in channels_combined:
+                    channels_combined[channel].extend(pixels)
+                else:
+                    channels_combined[channel] = [p for p in pixels]
+
+        # Pass onto OPC client
+        for channel, pixels in channels_combined.items():
+            self.client.put_pixels(pixels, channel=channel)
+
+    def start(self):
+        """
+            Runs the scene forever. 
+            devices is a list of device objects
+        """
+        # Initialise
+        self.init_input_devices()
+        self.init_output_devices()
 
         # Main loop
         sleep_timer = SleepTimer(1.0/self.scene_fps)
         while True:
             sleep_timer.start()
             
-            # Retrieve fft data and pass onto devices
-            # TODO: Clear the queue for good housekeeping?
-            # TODO: Generalise for sets of output devices
-            if fft_device:
-                fft_bands = fft_device.get_out_queue()
-                
-                if fft_bands:
-                    for device in output_devices:
-                        device.in_queue.put(fft_bands[:])   
+            self.process_input_devices()
+            self.process_output_devices()
+            self.update_opc()
 
-            # Update pixel lists if new data has arrived
-            for i, device in enumerate(output_devices):
-
-                # Get the device queue mutex
-                with device.queue_mutex:
-                    pixel_dict = device.get_out_queue()
-                    if pixel_dict:
-                        output_device_pixel_dictionary_list[i] = pixel_dict
-    
-            # Combine the scene pixels into one concatenated dictionary keyed by channel number
-            # Multiple devices using the same channel are combined with the same ordering as the devices list
-            channels_combined = {}
-            for pixel_dict in output_device_pixel_dictionary_list:
-                for channel, pixels in pixel_dict.items():
-                    if channel in channels_combined:
-                        channels_combined[channel].extend(pixels)
-                    else:
-                        channels_combined[channel] = [p for p in pixels]
-            
-            # Pass onto OPC client
-            for channel, pixels in channels_combined.items():
-                self.client.put_pixels(pixels, channel=channel)
-
-            # The scene_fps should be at least 2x device_fps to avoid sampling issues
-            # TODO: comment above shouldn't be necessary, I think the queue clear in devices requires a mutex
             sleep_timer.sleep()
+
+        # TODO: kill input/output device processes
+
+def run_scene(scene_path):
+    """
+        Runs a scene from a scene path
+    """
+    parsed_scene = pd.read_json(scene_path)
+
+    # Form devices
+    input_devices = construct_input_devices(parsed_scene["InputDevices"])
+    output_devices = construct_output_devices(parsed_scene["OutputDevices"])
+    
+    scene = SceneManager(input_devices, output_devices, **parsed_scene["SceneDetails"])
+
+    # Yaaay! Scene time
+    scene.start()
 
 def main(args):
     # Parse Args
@@ -108,17 +156,8 @@ def main(args):
     parser.add_argument("scene_path", help="Path to scene json file")   
     parser_args = parser.parse_args(args)
 
-    parsed_scene = pd.read_json(parser_args.scene_path)
+    run_scene(parser_args.scene_path)
 
-    # TODO: There should be a run from json function
-
-    # Prepare for scene time...
-    scene = SceneManager(**parsed_scene["SceneDetails"])
-    output_devices = construct_output_devices(parsed_scene["OutputDevices"])
-    fft_device = FftDevice(**parsed_scene["fft_server"]) if "fft_server" in parsed_scene else None
-
-    # Yaaay! Scene time
-    scene.start(output_devices, fft_device=fft_device)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

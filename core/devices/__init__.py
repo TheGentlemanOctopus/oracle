@@ -1,18 +1,32 @@
 import core.utilities.process_descriptor as pd
 from output_device import OutputDevice
+from input_device import InputDevice
 
 # To be able construct a device, all you have to is import it here 
 import cube_strip
 import lonely
 import big_cube_device
+import fft_device
 
-# Generates dictionary with the class name as key and class as value. 
-# Useful for constructing device class instances
-output_device_dict = {}
-for output_device in OutputDevice.__subclasses__():
-    output_device_dict[output_device.__name__] = output_device
-
+# Returns a list constructed devices given a list of initialisation data
 def construct_output_devices(output_devices_data_dict):
+    return construct_devices(output_devices_data_dict, constructor_dict(OutputDevice))
+
+def construct_input_devices(input_devices_data_dict):
+    return construct_devices(input_devices_data_dict, constructor_dict(InputDevice))
+
+def constructor_dict(device_superclass):
+    """
+        Generates dictionary with the class name as key and class as value. 
+        Useful for constructing device class instances
+    """
+    constructors_by_name = {}
+    for device in device_superclass.__subclasses__():
+        constructors_by_name[device.__name__] = device
+
+    return constructors_by_name
+
+def construct_devices(data_dict, device_constructor_dict):
     """
         Returns a list constructed devices given a list of initialisation data
         Each element in devices_data_dict should be a dictionary with format 
@@ -20,17 +34,17 @@ def construct_output_devices(output_devices_data_dict):
             "type": <name of device class>,
             "args": <dict of constructor args>
         }
+        
+        TODO: Error handling
     """
+    devices = []
 
-    # TODO: Error handling
-
-    output_devices = []
     # Construct device from the dictionary the device_dict above
-    for output_device_data in output_devices_data_dict:
-        output_device_constructor = output_device_dict[output_device_data["type"]]
-        output_devices.append(output_device_constructor(**output_device_data["args"]))
+    for device_data in data_dict:
+        device_constructor = device_constructor_dict[device_data["type"]]
+        devices.append(device_constructor(**device_data["args"]))
 
-    return output_devices
+    return devices
 
 def combine_channel_dicts(output_devices):
     """ 
