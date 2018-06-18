@@ -66,7 +66,10 @@ class OutputDevice(Device):
             params = {}
 
         # Construct new animation
-        self.animation = animations[name](self.layout, **params)
+        # TODO: Thread safety required?
+        new_animation = animations[name](self.layout, **params)
+        new_animation.fft = self.animation.fft
+        self.animation = new_animation
 
     def animations_list(self):
         """
