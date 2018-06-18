@@ -49,11 +49,13 @@ class OutputDevice(Device):
             Switches the current animation
             Params is a set of initialisation parameters
         """
-        if self.layout.__class__.__name__ not in animations_by_layout:
-            # TODO: Log error
-            return
+        # Dict of possible animations include the generic the Layout type and layout specific types
+        animations = {}
+        if "Layout" in animations_by_layout:
+            animations.update(animations_by_layout["Layout"])
 
-        animations = animations_by_layout[self.layout.__class__.__name__]
+        if self.layout.__class__.__name__ in animations_by_layout:
+            animations.update(animations_by_layout[self.layout.__class__.__name__])
 
         if name not in animations:
             # TODO: Log error
