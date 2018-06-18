@@ -25,7 +25,7 @@ class Pixel(object):
         """
         return (255*self.r, 255*self.g, 255*self.b)
 
-    def set_hsv(h, s, v):
+    def set_hsv(self, h, s, v):
         """
             Sets pixel color given hsv values in range 0->1
         """ 

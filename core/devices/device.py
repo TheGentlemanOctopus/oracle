@@ -1,8 +1,6 @@
 from multiprocessing import Process, Queue, Lock
 from Queue import Empty
 
-from core.layouts.pixel_list import PixelList
-
 class Device(object):
     layout_type = "Layout"
 

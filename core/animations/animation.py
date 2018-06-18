@@ -6,7 +6,7 @@ class Animation(object):
         The params dict represents high level Params represent
         high level parameters that are configured during development or live
     """
-    layout_type = "PixelList"
+    layout_type = "Layout"
 
     def __init__(self):
         # Dictionary of parameters, useful for higher level code

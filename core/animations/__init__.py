@@ -1,6 +1,7 @@
 from animation import Animation
 
 import big_cube_walk
+import swoopy_town
 
 # A dictionary where the key is the layout class the animation requires
 # and the value is the layout

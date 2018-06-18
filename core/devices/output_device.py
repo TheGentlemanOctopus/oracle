@@ -4,10 +4,9 @@ import numpy as np
 
 from device import Device
 from core.utilities.sleep_timer import SleepTimer
-
 from core.animations import animations_by_layout
 from core.animations.animation import Animation
-from core.layouts.pixel_list import PixelList
+from core.layouts.layout import Layout
 
 class OutputDevice(Device):
     """
@@ -15,7 +14,7 @@ class OutputDevice(Device):
         TODO: abstract for output/input device
     """
     fps = 30
-    layout_type = "PixelList"
+    layout_type = "Layout"
 
     def __init__(self):
         """
@@ -27,7 +26,7 @@ class OutputDevice(Device):
         self.pixels_by_channel = {}
 
         # The current active animation
-        self.layout = PixelList([])
+        self.layout = Layout()
         self.animation = Animation()
 
     def main(self):

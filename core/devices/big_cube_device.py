@@ -19,10 +19,10 @@ class BigCubeDevice(OutputDevice):
         self.layout = BigCube(led_spacing, strip_spacing)
 
         # TODO: Generalise so we can actively switch between animation sets
-        self.animation = BigCubeWalk(self.big_cube)
+        self.animation = BigCubeWalk(self.layout)
 
         # Form pixels by channel dict
         self.pixels_by_channel = {
-            channel: self.big_cube.pixels
+            channel: self.layout.pixels
         }
 

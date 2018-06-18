@@ -15,8 +15,8 @@ class SwoopyTown(Animation):
 
         self.layout = pixel_list
 
-        self.add_params("period", period)
-        self.add_params("wavelength", wavelength)
+        self.add_param("period", period)
+        self.add_param("wavelength", wavelength)
 
     def update(self):
         pixels = self.layout.pixels
@@ -28,8 +28,8 @@ class SwoopyTown(Animation):
         for pixel in pixels:
             x,y,z = pixel.location
 
-            h = np.sin(2*np.pi*f*t + w*x)
-            s = np.sin(2*np.pi*f*t+ w*y)
-            v = np.sin(2*np.pi*f*t + w*z)
+            h = 0.5*(1 + np.sin(2*np.pi*f*t + w*x))
+            s = 0.5*(1 + np.sin(2*np.pi*f*t+ w*y))
+            v = 0.5*(1 + np.sin(2*np.pi*f*t + w*z))
 
             pixel.set_hsv(h,s,v)

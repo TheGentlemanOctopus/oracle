@@ -1,5 +1,5 @@
 from core.devices.pixel import Pixel
-from layput import Layout
+from layout import Layout
 
 import numpy as np
 from numpy.linalg import norm
