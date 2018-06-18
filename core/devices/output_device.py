@@ -49,7 +49,19 @@ class OutputDevice(Device):
             Switches the current animation
             Params is a set of initialisation parameters
         """
-        if name not in animations_by_layout:
+        if self.layout.__class__.__name__ not in animations_by_layout:
+            # TODO: Log error
+            return
+
+        animations = animations_by_layout[self.layout.__class__.__name__]
+
+        animation_constructor = None
+        for ani in animations:
+            if name == ani.__name__:
+                animation_constructor = ani
+                break
+
+        if not animation_constructor:
             # TODO: Log error
             return
 
@@ -57,7 +69,7 @@ class OutputDevice(Device):
             params = {}
 
         # Construct new animation
-        self.animation = animations_by_layout[name](layout, **params)
+        self.animation = animation_constructor(self.layout, **params)
 
     def animations_list(self):
         """
