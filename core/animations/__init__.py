@@ -14,3 +14,15 @@ for animation in Animation.__subclasses__():
 
     else:
         animations_by_layout[animation.layout_type] = {animation.__name__: animation}
+
+def possible_animations(name):
+    possible_animations = {}
+    if "Layout" in animations_by_layout:
+        possible_animations.update(animations_by_layout["Layout"])
+
+    if name in animations_by_layout:
+        possible_animations.update(animations_by_layout[name])
+
+    return possible_animations
+
+
