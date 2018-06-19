@@ -28,6 +28,7 @@ class Device(object):
             Returns: the new process
         """
         p = Process(target=self.main, args=args)
+        p.daemon = True
         p.start()
         return p
 
