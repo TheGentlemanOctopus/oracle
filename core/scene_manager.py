@@ -10,6 +10,7 @@ import argparse
 
 from core.devices.fft_device import FftDevice
 from core.devices import construct_output_devices, construct_input_devices, combine_channel_dicts
+from core.devices.app.app_device import AppDevice
 
 class SceneManager(object):
     """
@@ -83,7 +84,12 @@ class SceneManager(object):
             Start input device processes
         """
         for device in self.input_devices:
-            device.start()
+            if type(device) == AppDevice:
+                device.start(self.output_devices)
+
+            else:
+                # Assume start takes no args by default
+                device.start()
 
     def process_input_devices(self):
         """

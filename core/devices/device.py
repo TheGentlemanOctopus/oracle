@@ -20,12 +20,12 @@ class Device(object):
         """
         raise NotImplementedException("Need to define main for %s"%self.__class__.__name__)
 
-    def start(self):
+    def start(self, *args):
         """
             Starts itself in a new process
             Returns: the new process
         """
-        p = Process(target=self.main)
+        p = Process(target=self.main, args=args)
         p.start()
         return p
 
