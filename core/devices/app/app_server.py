@@ -12,7 +12,12 @@ def run(host, port, output_devices):
 
 @app.route('/')
 def index():
-    device_names = [device.name for device in app.data["output_devices"]]
+    devices = [{
+        "name": device.name,
+        "possible_animations": [a for a in device.possible_animations()]
+    } for device in app.data["output_devices"]]
 
-    return render_template('index.html', device_names=device_names)
+    print "POSSOS", devices[0]["possible_animations"]
+
+    return render_template('index.html', devices=devices)
 
