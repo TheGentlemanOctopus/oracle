@@ -31,16 +31,16 @@ def switch_animation():
 
     if request.form["device_name"] not in app.data["output_devices"]:
         # TODO: log error
-        return
+        return "error: device name unknown"
     device = app.data["output_devices"][device_name]
 
     if "new_animation" not in request.form:
         # TODO: log error
-        return
+        return "error: new animation not defined"
     new_animation_name = request.form["new_animation"]
 
     # switch it up
     device.in_queue.put(switch_animation_message(new_animation_name))
 
-    
+    return "done"    
 

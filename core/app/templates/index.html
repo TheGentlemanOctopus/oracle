@@ -22,8 +22,6 @@
     <script type="text/javascript">
         // Select animation
         $(".ani_selector").change(function(){
-            alert("ANIMATIN")
-
             $.post("/switch_animation", {
                 device_name: this.name,
                 new_animation: this.value
