@@ -17,7 +17,5 @@ def index():
         "possible_animations": [a for a in device.possible_animations()]
     } for device in app.data["output_devices"]]
 
-    print "POSSOS", devices[0]["possible_animations"]
-
     return render_template('index.html', devices=devices)
 
