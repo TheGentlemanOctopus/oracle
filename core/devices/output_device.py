@@ -42,7 +42,7 @@ class OutputDevice(Device):
 
             sleep_timer.sleep()
 
-    def set_animation(self, name, params=None):
+    def set_animation(self, name, **params):
         """
             Switches the current animation
             Params is a set of initialisation parameters
@@ -55,9 +55,6 @@ class OutputDevice(Device):
         if name not in poss_animations:
             # TODO: Log error
             return
-
-        if params is None:
-            params = {}
 
         # Construct new animation
         new_animation = possible_animations[name](self.layout, **params)
@@ -103,6 +100,9 @@ class OutputDevice(Device):
             if data_type == "fft":
                 self.animation.fft = data
 
+            elif data_type == "animation":
+                self.set_animation(data["name"], **data["params"])
+
             else:
                 # TODO: log fault
                 pass
@@ -131,6 +131,12 @@ def fft_message(fft):
         fft should be an array of 7 numbers representing the bands
     """
     return ["fft", fft]
+
+def switch_animation_message(name, **params):
+    return ["animation", {
+        "name": name,
+        "params": params
+    }]
 
 if __name__ == '__main__':
     # TODO: Put this in a unit test or whatever
