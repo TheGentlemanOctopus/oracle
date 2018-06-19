@@ -14,6 +14,8 @@ class Device(object):
         # Mutex for the queues
         self.queue_mutex = Lock()
 
+        self.name = self.__class__.__name__
+
     def main(self):
         """
             This should be called to start the process

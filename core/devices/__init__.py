@@ -43,7 +43,12 @@ def construct_devices(data_dict, device_constructor_dict):
     # Construct device from the dictionary the device_dict above
     for device_data in data_dict:
         device_constructor = device_constructor_dict[device_data["type"]]
-        devices.append(device_constructor(**device_data["args"]))
+        device = device_constructor(**device_data["args"])
+
+        if "name" in device_data:
+            device.name = device_data["name"]
+
+        devices.append(device)
 
     return devices
 

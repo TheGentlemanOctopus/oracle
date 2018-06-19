@@ -14,5 +14,5 @@ def run(output_devices, in_queue, out_queue):
 
 @app.route('/')
 def index():
-    return "".join([device.__class__.__name__ for device in app.data["output_devices"]])
+    return "".join([device.name for device in app.data["output_devices"]])
 
