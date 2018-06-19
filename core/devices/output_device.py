@@ -133,6 +133,11 @@ def fft_message(fft):
     return ["fft", fft]
 
 def switch_animation_message(name, **params):
+    """
+        Used to switch an animation
+        params is a dictionary of animation parameters
+    """
+
     return ["animation", {
         "name": name,
         "params": params
