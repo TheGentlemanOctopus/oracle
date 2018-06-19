@@ -47,9 +47,6 @@ class OutputDevice(Device):
             Switches the current animation
             Params is a set of initialisation parameters
         """
-        # Dict of possible animations include:
-        #   - generic Layout type
-        #   - layout specific types
         poss_animations = self.possible_animations()
 
         if name not in poss_animations:
@@ -57,7 +54,7 @@ class OutputDevice(Device):
             return
 
         # Construct new animation
-        new_animation = possible_animations[name](self.layout, **params)
+        new_animation = poss_animations[name](self.layout, **params)
         new_animation.fft = self.animation.fft
         self.animation = new_animation
 
