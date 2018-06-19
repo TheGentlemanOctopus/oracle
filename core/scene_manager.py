@@ -10,7 +10,7 @@ import argparse
 
 from core.devices.fft_device import FftDevice
 from core.devices import construct_output_devices, construct_input_devices, combine_channel_dicts
-from core.devices.app.app_device import AppDevice
+from core.devices.app_device import AppDevice
 
 class SceneManager(object):
     """

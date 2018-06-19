@@ -1,5 +1,6 @@
-from core.devices.input_device import InputDevice
-import app_server
+from input_device import InputDevice
+
+import core.app.app_server as app_server
 
 class AppDevice(InputDevice):
     def __init__(self, host, port):
