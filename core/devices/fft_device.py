@@ -2,6 +2,8 @@ from device import get_nowait
 from input_device import InputDevice
 from core.udp.fft_server import FftServer
 
+from core.devices.output_device import fft_message
+
 class FftDevice(InputDevice):
     """
         A wrapper around the hack fft server
@@ -24,6 +26,6 @@ class FftDevice(InputDevice):
         fft_bands = get_nowait(self.out_queue)
 
         if fft_bands is not None:
-            fft_bands = [band/1024.0 for band in fft_bands]
-
+            fft_bands = fft_message([band/1024.0 for band in fft_bands])
+        
         return fft_bands

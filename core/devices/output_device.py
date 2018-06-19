@@ -81,19 +81,31 @@ class OutputDevice(Device):
     def process_in_queue(self):
         """
             Process the entire in queue to update data
-            TODO: general support for input types rather than fft data
+            Each item should be a list where first element is the command and second is the args
         """
 
         # Clear the queue
         while True:
             item = self.get_in_queue()
 
+            # Break when finished
             if item is None:
                 break
 
-            # Pass onto animation
-            # TODO: Generalise here
-            self.animation.fft = item
+            # Skip over faulty data
+            if not isinstance(item, list) or len(item)!=2:
+                # TODO: log fault
+                continue
+
+            data_type, data = item
+
+            # Process the item
+            if data_type == "fft":
+                self.animation.fft = data
+
+            else:
+                # TODO: log fault
+                pass
 
     def put(self, data):
         """
@@ -112,6 +124,13 @@ class OutputDevice(Device):
         """
         self.animation.update()
 
+
+def fft_message(fft):
+    """
+        forms the message expected in OutputDevice in_queues
+        fft should be an array of 7 numbers representing the bands
+    """
+    return ["fft", fft]
 
 if __name__ == '__main__':
     # TODO: Put this in a unit test or whatever
