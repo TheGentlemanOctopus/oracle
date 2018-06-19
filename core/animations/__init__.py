@@ -16,6 +16,11 @@ for animation in Animation.__subclasses__():
         animations_by_layout[animation.layout_type] = {animation.__name__: animation}
 
 def possible_animations(name):
+    """
+        returns a dict of possible animations that include:
+           - generic Layout type
+           - layout specific types
+    """
     possible_animations = {}
     if "Layout" in animations_by_layout:
         possible_animations.update(animations_by_layout["Layout"])
