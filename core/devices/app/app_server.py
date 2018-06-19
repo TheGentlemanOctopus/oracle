@@ -3,14 +3,11 @@ from multiprocessing import Queue
 from core.devices.input_device import InputDevice
 
 app = Flask(__name__)
-app.data = {}
+app.data = {"output_devices": []}
 
-def run(output_devices, in_queue, out_queue):
+def run(host, port, output_devices):
     app.data["output_devices"] = output_devices 
-    app.data["in_queue"] = in_queue
-    app.data["out_queue"] = out_queue
-
-    app.run()
+    app.run(host=host, port=port)
 
 @app.route('/')
 def index():
