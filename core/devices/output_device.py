@@ -4,7 +4,7 @@ import numpy as np
 
 from device import Device
 from core.utilities.sleep_timer import SleepTimer
-from core.animations import animations_by_layout
+from core.animations import animations_by_layout, possible_animations
 from core.animations.animation import Animation
 from core.layouts.layout import Layout
 
@@ -50,14 +50,9 @@ class OutputDevice(Device):
         # Dict of possible animations include:
         #   - generic Layout type
         #   - layout specific types
-        possible_animations = {}
-        if "Layout" in animations_by_layout:
-            possible_animations.update(animations_by_layout["Layout"])
+        poss_animations = self.possible_animations()
 
-        if self.layout.__class__.__name__ in animations_by_layout:
-            possible_animations.update(animations_by_layout[self.layout.__class__.__name__])
-
-        if name not in possible_animations:
+        if name not in poss_animations:
             # TODO: Log error
             return
 
@@ -69,11 +64,8 @@ class OutputDevice(Device):
         new_animation.fft = self.animation.fft
         self.animation = new_animation
 
-    def animations_list(self):
-        """
-            TODO: Returns a list of possible animations
-        """
-        pass
+    def possible_animations(self):
+        return possible_animations(self.layout.__class__.__name__)
 
     @property
     def pixel_colors_by_channel_255(self):
