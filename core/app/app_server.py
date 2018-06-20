@@ -28,7 +28,8 @@ def index():
     # Data for template rendering
     devices = [{
         "name": name,
-        "possible_animations": device.possible_animations()
+        "possible_animations": device.possible_animations(),
+        "animation": animation_data(device.animation)
     } for (name, device) in app.data["output_devices"].items()]
 
     return render_template('index.html', devices=devices)
@@ -64,4 +65,18 @@ def switch_animation():
         device.animation_cv.wait()
 
     return "done"    
+
+def animation_data(animation):
+    return {
+        "name": animation.__class__.__name__,
+        "params": [{
+            "name": name,
+            "min": param.min,
+            "max": param.max,
+            "value": param.value,
+            "step": (param.max - param.min)/30.0
+        } for (name, param) in animation.params.items()]
+    }
+
+
 

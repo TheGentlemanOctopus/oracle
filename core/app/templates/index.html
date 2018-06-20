@@ -1,6 +1,51 @@
 <html>
 
 <head>
+    <style type="text/css">
+        
+        /* Thanks: https://www.w3schools.com/howto/howto_js_rangeslider.asp */
+        .slidecontainer {
+            width: 50%; /* Width of the outside container */
+            margin: 30px  
+        }
+
+        /* Mouse-over effects */
+        .slider:hover {
+            opacity: 1; /* Fully shown on mouse-over */
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;   
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%; 
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+    </style>
+
+
     <script type=text/javascript src="{{ url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
     
 </head>
@@ -13,10 +58,26 @@
         <h2>{{device.name}}</h2>
 
         <select class="ani_selector" name="{{device.name}}">
+        
             {% for a_name in device['possible_animations'] %}
+        
                 <option value={{a_name}}> {{a_name}} </option>
+        
             {% endfor %}
+        
         </select>
+
+        {% for param in device['animation']['params'] %}
+            
+            <div class="slidecontainer">
+            <p> {{ param.name }} </p>
+                <input type="range" min="{{ param.min }}" max="{{ param.max }}" value="{{ param.value }}" class="slider" step="0.01" id="myRange">
+            </div>
+
+        {% endfor %}
+
+
+
     {% endfor %}
 
     <script type="text/javascript">
