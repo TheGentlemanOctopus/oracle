@@ -3,6 +3,7 @@ from multiprocessing import Queue
 
 from core.devices.input_device import InputDevice
 from core.devices.output_device import switch_animation_message
+from core.utilities import round_to_exponent
 
 app = Flask(__name__)
 
@@ -74,9 +75,7 @@ def animation_data(animation):
             "min": param.min,
             "max": param.max,
             "value": param.value,
-            "step": (param.max - param.min)/30.0
+            "step": round_to_exponent((param.max - param.min)/30.0)
         } for (name, param) in animation.params.items()]
     }
-
-
 

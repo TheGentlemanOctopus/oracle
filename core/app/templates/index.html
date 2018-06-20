@@ -43,6 +43,15 @@
             background: #4CAF50;
             cursor: pointer;
         }
+
+        .param_name .param_value {
+            float: left;
+            width: 50%;
+        }
+
+        .param_text_container {
+            margin: auto
+        }
     </style>
 
 
@@ -70,8 +79,10 @@
         {% for param in device['animation']['params'] %}
             
             <div class="slidecontainer">
-            <p> {{ param.name }} </p>
-                <input type="range" min="{{ param.min }}" max="{{ param.max }}" value="{{ param.value }}" class="slider" step="0.01" id="myRange">
+                <div class="param_name"> {{ param.name }} </div> 
+                <div class="param_value"> {{ param.value }}</div>
+
+                <input type="range" min="{{ param.min }}" max="{{ param.max }}" value="{{ param.value }}" class="slider" step="{{ param.step }}">
             </div>
 
         {% endfor %}
@@ -88,6 +99,14 @@
                 new_animation: this.value
             }
         )})
+
+        $(".slider").on("input", function(){
+            console.log(this.value)
+
+            $(this).parent().find(".param_value").html(this.value)
+
+            // TODO: Send to server
+        })
     </script>
 
 </body>
