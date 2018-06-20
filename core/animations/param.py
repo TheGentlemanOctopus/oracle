@@ -1,7 +1,7 @@
 class Param(object):
     """
         A parameter is a value affecting a pattern that doesn't change very often
-        If the param value is limited to its extents during setting
+        The param value is limited to its extents during setting
     """
     def __init__(self, value, minimum, maximum):
         self._value = value
