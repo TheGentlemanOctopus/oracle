@@ -37,7 +37,7 @@ class Animation(object):
     def fft(self, value):
         self._fft = np.array(value)
 
-    def add_param(self, name, value):
+    def add_param(self, name, value, min, max):
         """
             Adds a parameter to the dict
         """
