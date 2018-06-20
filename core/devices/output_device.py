@@ -1,5 +1,5 @@
 import time
-from multiprocessing import Queue, Lock
+from multiprocessing import Queue, Lock, Condition
 import numpy as np
 
 from device import Device
@@ -27,6 +27,7 @@ class OutputDevice(Device):
         # The current active animation
         self.layout = Layout()
         self.animation = Animation()
+        self.animation_cv = Condition()
 
     def main(self):
         """
@@ -98,7 +99,13 @@ class OutputDevice(Device):
                 self.animation.fft = data
 
             elif data_type == "animation":
-                self.set_animation(data["name"], **data["params"])
+                with self.animation_cv:
+                    try:
+                        self.set_animation(data["name"], **data["params"])
+                    except Exception as e:
+                        raise e
+                    finally:
+                        self.animation_cv.notify()
 
             else:
                 # TODO: log fault
