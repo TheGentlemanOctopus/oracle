@@ -65,7 +65,25 @@ def switch_animation():
         device.in_queue.put(message)
         device.animation_cv.wait()
 
-    return "done"    
+    return "done" 
+
+@app.route("/set_param", methods=["POST"])
+def set_param():
+    """
+        Sets a parameter
+    """
+    if "param_name" not in request.form:
+        return "no param name"
+
+    if "param_value" not in request.form:
+        return "no param value"
+
+    if "device_name" not in request.form:
+        return "no device name"
+
+    
+    return "done"
+
 
 def animation_data(animation):
     return {

@@ -64,7 +64,8 @@
     <h1>THE ORACLE</h1>
 
     {% for device in devices %}
-        <h2>{{device.name}}</h2>
+    <div class="device">
+        <h2 class="device_name">{{device.name}}</h2>
 
         <select class="ani_selector" name="{{device.name}}">
         
@@ -87,8 +88,7 @@
 
         {% endfor %}
 
-
-
+    </div>
     {% endfor %}
 
     <script type="text/javascript">
@@ -101,11 +101,16 @@
         )})
 
         $(".slider").on("input", function(){
-            console.log(this.value)
+            // Update Box
+            $(this).parent().find(".param_value").html(this.value);
 
-            $(this).parent().find(".param_value").html(this.value)
+            // Update Server
+            $.post("/set_param", {
+                device_name: $(this).closest(".device").find(".device_name").html(),
+                param_name: $(this).closest(".slidecontainer").find(".param_name").html(),
+                param_value: this.value
+            })
 
-            // TODO: Send to server
         })
     </script>
 
