@@ -24,8 +24,8 @@ class BigCubeWalk(Animation):
     def update(self):
         pixels = self.layout.pixels
 
-        period = self.params["period"]
-        hue_range = self.params["hue_range"]
+        period = self.params["period"].value
+        hue_range = self.params["hue_range"].value
 
         # Shift pixel ordering according to period phase
         shift = int(len(pixels)*(time.time() % period)/period)
