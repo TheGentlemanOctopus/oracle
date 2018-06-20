@@ -100,6 +100,7 @@ class OutputDevice(Device):
 
             elif data_type == "animation":
                 with self.animation_cv:
+                    # Make sure notify is called to avoid deadlock on failure
                     try:
                         self.set_animation(data["name"], **data["params"])
                     except Exception as e:

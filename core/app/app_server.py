@@ -57,7 +57,8 @@ def switch_animation():
 
     # switch it up
     message = switch_animation_message(new_animation_name)
-        
+    
+    # Send switch message and then wait until it has been processed
     with device.animation_cv:
         device.in_queue.put(message)
         device.animation_cv.wait()
