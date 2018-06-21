@@ -102,17 +102,24 @@ class OutputDevice(Device):
 
             elif data_type == "animation":
                 # Make sure something is put in queue to avoid deadlock
-                self.set_animation(data["name"], **data["params"])
-                self.animation_queue.put({
-                    "name": self.animation.__class__.__name__,
-                    "params": [{
-                        "name": name,
-                        "min": param.min,
-                        "max": param.max,
-                        "value": param.value,
-                        "step": param.step
-                    } for (name, param) in self.animation.params.items()]
-                })
+                try:
+                    self.set_animation(data["name"], **data["params"])
+
+                except Exception as e:
+                    # TODO: Log
+                    pass
+
+                finally:
+                    self.animation_queue.put({
+                        "name": self.animation.__class__.__name__,
+                        "params": [{
+                            "name": name,
+                            "min": param.min,
+                            "max": param.max,
+                            "value": param.value,
+                            "step": param.step
+                        } for (name, param) in self.animation.params.items()]
+                    })
 
             elif data_type == "param":
                 if not isinstance(data, list) or len(data)!=2:
@@ -154,7 +161,6 @@ def fft_message(fft):
         fft should be an array of 7 numbers representing the bands
     """
     return ["fft", fft]
-
 
 def switch_animation_message(name, **params):
     """

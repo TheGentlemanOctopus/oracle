@@ -53,11 +53,8 @@ def switch_animation():
         return "error: new animation not defined"
     new_animation_name = request.form["new_animation"]
 
-    # switch it up
-    message = switch_animation_message(new_animation_name)
-    
     # Send switch message and then wait until it has been processed
-    device.in_queue.put(message)
+    device.in_queue.put(switch_animation_message(new_animation_name))
     animation_data = device.animation_queue.get()
 
     return jsonify({"name": device.name, "animation": animation_data})
@@ -87,21 +84,11 @@ def set_param():
     return "done"
 
 def device_render_data(device):
+    # Request current animation data
+    device.in_queue.put(switch_animation_message(""))
+
     return {
         "name": device.name,
         "possible_animations": device.possible_animations().keys(),
-        "animation": animation_render_data(device.animation)
+        "animation": device.animation_queue.get()
     }
-
-def animation_render_data(animation):
-    return {
-        "name": animation.__class__.__name__,
-        "params": [{
-            "name": name,
-            "min": param.min,
-            "max": param.max,
-            "value": param.value,
-            "step": round_to_exponent((param.max - param.min)/30.0)
-        } for (name, param) in animation.params.items()]
-    }
-
