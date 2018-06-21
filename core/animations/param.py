@@ -1,3 +1,6 @@
+from core.utilities import round_to_exponent
+
+
 class Param(object):
     """
         A parameter is a value affecting a pattern that doesn't change very often
@@ -22,3 +25,8 @@ class Param(object):
 
         else:
             self._value = x
+
+    @property
+    def step(self):
+        return round_to_exponent((self.max - self.min)/30.0)
+    

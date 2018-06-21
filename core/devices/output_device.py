@@ -7,6 +7,7 @@ from core.utilities.sleep_timer import SleepTimer
 from core.animations import animations_by_layout, possible_animations
 from core.animations.animation import Animation
 from core.layouts.layout import Layout
+from core.utilities import round_to_exponent
 
 class OutputDevice(Device):
     """
@@ -28,6 +29,7 @@ class OutputDevice(Device):
         self.layout = Layout()
         self.animation = Animation()
         self.animation_cv = Condition()
+        self.animation_queue = Queue()
 
     def main(self):
         """
@@ -99,14 +101,18 @@ class OutputDevice(Device):
                 self.animation.fft = data
 
             elif data_type == "animation":
-                with self.animation_cv:
-                    # Make sure notify is called to avoid deadlock on failure
-                    try:
-                        self.set_animation(data["name"], **data["params"])
-                    except Exception as e:
-                        raise e
-                    finally:
-                        self.animation_cv.notify()
+                # Make sure something is put in queue to avoid deadlock
+                self.set_animation(data["name"], **data["params"])
+                self.animation_queue.put({
+                    "name": self.animation.__class__.__name__,
+                    "params": [{
+                        "name": name,
+                        "min": param.min,
+                        "max": param.max,
+                        "value": param.value,
+                        "step": param.step
+                    } for (name, param) in self.animation.params.items()]
+                })
 
             elif data_type == "param":
                 if not isinstance(data, list) or len(data)!=2:
@@ -142,13 +148,13 @@ class OutputDevice(Device):
         """
         self.animation.update()
 
-
 def fft_message(fft):
     """
         forms the message expected in OutputDevice in_queues
         fft should be an array of 7 numbers representing the bands
     """
     return ["fft", fft]
+
 
 def switch_animation_message(name, **params):
     """

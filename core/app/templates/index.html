@@ -63,8 +63,15 @@
 
     <h1>THE ORACLE</h1>
 
+    <div id="slider_prototype" class="slidecontainer" style="display:none">
+        <div class="param_name"></div> 
+        <div class="param_value"></div>
+
+        <input class="slider" type="range" min="0" max="0" value="0" step="">
+    </div>
+
     {% for device in devices %}
-    <div class="device">
+    <div class="device" id="{{ device.name }}">
         <h2 class="device_name">{{device.name}}</h2>
 
         <select class="ani_selector" name="{{device.name}}">
@@ -77,17 +84,6 @@
         
         </select>
 
-        {% for param in device['animation']['params'] %}
-            
-            <div class="slidecontainer">
-                <div class="param_name"> {{ param.name }} </div> 
-                <div class="param_value"> {{ param.value }}</div>
-
-                <input type="range" min="{{ param.min }}" max="{{ param.max }}" value="{{ param.value }}" class="slider" step="{{ param.step }}">
-            </div>
-
-        {% endfor %}
-
     </div>
     {% endfor %}
 
@@ -97,8 +93,10 @@
             $.post("/switch_animation", {
                 device_name: this.name,
                 new_animation: this.value
-            }
-        )})
+            }, function(data){
+                replace_slider(data);
+            })
+        })
 
         $(".slider").on("input", function(){
             // Update Box
@@ -110,8 +108,43 @@
                 param_name: $(this).closest(".slidecontainer").find(".param_name").html(),
                 param_value: this.value
             })
-
         })
+
+        var replace_slider = function(device){
+            var device_element = $("#"+device["name"])
+
+            // Remove old
+            device_element.find(".slidecontainer").remove()
+
+            // New slider
+            for(var j=0; j<device['animation']['params'].length; j++) 
+            {
+                var param = device['animation']['params'][j]
+
+                var slider = $("body").find("#slider_prototype").clone(true)
+                slider.css("display", "block");
+
+                slider.find(".param_name").html(param["name"])
+                slider.find(".param_value").html(param["value"])
+                slider.find(".slider").attr({
+                    min: param["min"],
+                    max: param["max"],
+                    value: param["value"],
+                    step: param["step"]
+                })
+
+                device_element.append(slider);
+            }
+        }
+
+        devices = {{ devices|tojson }}
+        for(var i=0; i<devices.length; i++)
+        {
+            replace_slider(devices[i])
+        }
+
+
+
     </script>
 
 </body>

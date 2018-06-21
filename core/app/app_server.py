@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from multiprocessing import Queue
 
 from core.devices.input_device import InputDevice
 from core.devices.output_device import switch_animation_message, update_param_message
 from core.utilities import round_to_exponent
-
+import time
 app = Flask(__name__)
 
 # Simplest way I know share data between functions in flask is to make a data dict
@@ -27,11 +27,7 @@ def index():
     """
 
     # Data for template rendering
-    devices = [{
-        "name": name,
-        "possible_animations": device.possible_animations(),
-        "animation": animation_data(device.animation)
-    } for (name, device) in app.data["output_devices"].items()]
+    devices = [device_render_data(device) for device in app.data["output_devices"].values()]
 
     return render_template('index.html', devices=devices)
 
@@ -61,11 +57,10 @@ def switch_animation():
     message = switch_animation_message(new_animation_name)
     
     # Send switch message and then wait until it has been processed
-    with device.animation_cv:
-        device.in_queue.put(message)
-        device.animation_cv.wait()
+    device.in_queue.put(message)
+    animation_data = device.animation_queue.get()
 
-    return "done" 
+    return jsonify({"name": device.name, "animation": animation_data})
 
 @app.route("/set_param", methods=["POST"])
 def set_param():
@@ -91,8 +86,14 @@ def set_param():
 
     return "done"
 
+def device_render_data(device):
+    return {
+        "name": device.name,
+        "possible_animations": device.possible_animations().keys(),
+        "animation": animation_render_data(device.animation)
+    }
 
-def animation_data(animation):
+def animation_render_data(animation):
     return {
         "name": animation.__class__.__name__,
         "params": [{
