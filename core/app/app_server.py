@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from multiprocessing import Queue
 
 from core.devices.input_device import InputDevice
-from core.devices.output_device import switch_animation_message
+from core.devices.output_device import switch_animation_message, update_param_message
 from core.utilities import round_to_exponent
 
 app = Flask(__name__)
@@ -74,14 +74,21 @@ def set_param():
     """
     if "param_name" not in request.form:
         return "no param name"
+    param_name = request.form["param_name"].strip()
 
     if "param_value" not in request.form:
         return "no param value"
+    param_value = float(request.form["param_value"])
 
     if "device_name" not in request.form:
         return "no device name"
 
-    
+    if request.form["device_name"] not in app.data["output_devices"]:
+        return "unknown device name"
+
+    device = app.data["output_devices"][request.form["device_name"]]
+    device.in_queue.put(update_param_message(param_name, param_value))
+
     return "done"
 
 

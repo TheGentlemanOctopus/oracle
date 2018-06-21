@@ -108,6 +108,19 @@ class OutputDevice(Device):
                     finally:
                         self.animation_cv.notify()
 
+            elif data_type == "param":
+                if not isinstance(data, list) or len(data)!=2:
+                    # TODO: Log
+                    continue
+
+                param_name, param_value = data
+
+                if param_name not in self.animation.params:
+                    # TODO: log
+                    continue
+
+                self.animation.params[param_name].value = param_value
+
             else:
                 # TODO: log fault
                 pass
@@ -147,6 +160,9 @@ def switch_animation_message(name, **params):
         "name": name,
         "params": params
     }]
+
+def update_param_message(param_name, value):
+    return ["param", [param_name, value]]
 
 if __name__ == '__main__':
     # TODO: Put this in a unit test or whatever
