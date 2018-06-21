@@ -6,9 +6,9 @@ import numpy as np
 import colorsys
 
 class BigCubeWalk(Animation):
-    layout_type = "BigCube"
+    layout_type = "Layout"
 
-    def __init__(self, big_cube, period=5, hue_range=0.2):
+    def __init__(self, layout, period=5, hue_range=0.2):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
             period is the number of seconds it takes a color to lap the cube
@@ -16,7 +16,7 @@ class BigCubeWalk(Animation):
         """
         super(BigCubeWalk, self).__init__()
 
-        self.layout = big_cube
+        self.layout = layout
 
         self.add_param("period", period, 0.5, 10)
         self.add_param("hue_range", hue_range, 0, 1)
