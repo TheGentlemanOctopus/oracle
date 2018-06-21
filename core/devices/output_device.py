@@ -114,8 +114,8 @@ class OutputDevice(Device):
                         "name": self.animation.__class__.__name__,
                         "params": [{
                             "name": name,
-                            "min": param.min,
-                            "max": param.max,
+                            "min": float(param.min),
+                            "max": float(param.max),
                             "value": param.value,
                             "step": param.step
                         } for (name, param) in self.animation.params.items()]

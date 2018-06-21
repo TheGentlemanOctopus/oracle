@@ -5,7 +5,7 @@
         
         /* Thanks: https://www.w3schools.com/howto/howto_js_rangeslider.asp */
         .slidecontainer {
-            width: 50%; /* Width of the outside container */
+            width: 100%; /* Width of the outside container */
             margin: 30px  
         }
 
@@ -129,9 +129,9 @@
                 slider.find(".slider").attr({
                     min: param["min"],
                     max: param["max"],
-                    value: param["value"],
                     step: param["step"]
                 })
+                slider.find(".slider").attr({value: param["value"]})
 
                 device_element.append(slider);
             }
