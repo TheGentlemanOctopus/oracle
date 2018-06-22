@@ -38,6 +38,10 @@
                 "channel": 1,
                 "led_spacing" : 0.2,
                 "strip_spacing": 0.05
+            },
+            "default_animation": {
+                "type": "SwoopyTown",
+                "args": {}
             }
         }
     ]

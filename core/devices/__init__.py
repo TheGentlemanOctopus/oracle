@@ -48,6 +48,14 @@ def construct_devices(data_dict, device_constructor_dict):
         if "name" in device_data:
             device.name = device_data["name"]
 
+        if "default_animation" in device_data:
+            ani_data = device_data["default_animation"]
+
+            ani_type = ani_data["type"] if "type" in ani_data else ""
+            args = ani_data["args"] if "args" in ani_data else {}
+
+            device.set_animation(ani_type, **args)
+
         devices.append(device)
 
     return devices
