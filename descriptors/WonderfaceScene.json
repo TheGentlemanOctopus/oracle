@@ -32,7 +32,7 @@
     ],
     "OutputDevices": [
         {
-            "name": "Wunder Gesicht",
+            "name": "WunderGesicht",
             "type": "WonderfaceDevice",
             "args": {
                 "led_spacing" : 0.2,
