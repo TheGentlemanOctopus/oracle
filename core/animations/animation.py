@@ -1,6 +1,7 @@
 import numpy as np
 
 from core.layouts.layout import Layout
+from param import Param
 
 class Animation(object):
     """
@@ -37,11 +38,11 @@ class Animation(object):
     def fft(self, value):
         self._fft = np.array(value)
 
-    def add_param(self, name, value):
+    def add_param(self, name, value, minimum, maximum):
         """
             Adds a parameter to the dict
         """
-        self.params[name] = value
+        self.params[name] = Param(value, minimum, maximum)
 
     def update(self):
         """
