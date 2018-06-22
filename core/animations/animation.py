@@ -50,3 +50,7 @@ class Animation(object):
         """
         pass
 
+    @property
+    def pixels(self):
+        return self.layout.pixels
+
