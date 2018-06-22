@@ -28,7 +28,7 @@
                 "host": "127.0.0.1",
                 "port": 5000
             }
-        }
+        },
     ],
     "OutputDevices": [
         {
@@ -40,7 +40,7 @@
                 "direction" : [1,0,0],
                 "spacing" : 0.2,
                 "num_pixels" : 10
-            }
+            },
         },
         {
             "name": "Strip1",

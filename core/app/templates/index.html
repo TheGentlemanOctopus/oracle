@@ -78,7 +78,11 @@
         
             {% for a_name in device['possible_animations'] %}
         
-                <option value={{a_name}}> {{a_name}} </option>
+                {% if a_name == device['animation']['name'] %}
+                    <option value={{a_name}} selected> {{a_name}} </option>
+                {% else %}
+                    <option value={{a_name}}> {{a_name}} </option>
+                {% endif %}
         
             {% endfor %}
         
