@@ -14,18 +14,22 @@ class Device(object):
         # Mutex for the queues
         self.queue_mutex = Lock()
 
+        # Default to the class name, overwrite this for a unique human-readable reference
+        self.name = self.__class__.__name__
+
     def main(self):
         """
             This should be called to start the process
         """
         raise NotImplementedException("Need to define main for %s"%self.__class__.__name__)
 
-    def start(self):
+    def start(self, *args):
         """
-            Starts itself in a new process
-            Returns: the new process
+            Starts itself in a new process, all *args are passed to device main
+            Returns the new process
         """
-        p = Process(target=self.main)
+        p = Process(target=self.main, args=args)
+        p.daemon = True
         p.start()
         return p
 

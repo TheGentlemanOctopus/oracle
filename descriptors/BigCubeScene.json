@@ -21,6 +21,13 @@
                 "ambient_level": 512,
                 "no_mic_level": 100
             }
+        },
+        {
+            "type": "AppDevice",
+            "args": {
+                "host": "127.0.0.1",
+                "port": 5000
+            }
         }
     ],
     "OutputDevices": [

@@ -1,0 +1,34 @@
+<html>
+
+<head>
+    <script type=text/javascript src="{{ url_for('static', filename='jquery-3.2.1.min.js') }}"></script>
+    
+</head>
+
+<body>
+
+    <h1>THE ORACLE</h1>
+
+    {% for device in devices %}
+        <h2>{{device.name}}</h2>
+
+        <select class="ani_selector" name="{{device.name}}">
+            {% for a_name in device['possible_animations'] %}
+                <option value={{a_name}}> {{a_name}} </option>
+            {% endfor %}
+        </select>
+    {% endfor %}
+
+    <script type="text/javascript">
+        // Select animation
+        $(".ani_selector").change(function(){
+            $.post("/switch_animation", {
+                device_name: this.name,
+                new_animation: this.value
+            }
+        )})
+    </script>
+
+</body>
+
+</html>
