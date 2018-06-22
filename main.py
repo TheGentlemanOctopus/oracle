@@ -9,12 +9,14 @@ import argparse
 import sys
 import core.sim_generator
 import core.scene_manager
+import core.utilities.configure
 
 # Main commands
 # The first argument in the app matches the key whose value is called with the remaining args
 commands = {
     "sim": core.sim_generator.main,
-    "scene": core.scene_manager.main
+    "scene": core.scene_manager.main,
+    "configure": core.utilities.configure.main
 }
 
 # Create parser
