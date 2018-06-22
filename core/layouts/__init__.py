@@ -2,6 +2,7 @@ from layout import Layout
 
 # Import layouts here to make them detectable to higher level code
 import big_cube
+import pixel_list
 
 # A dictionary where:
 #     key: name of layout as a string

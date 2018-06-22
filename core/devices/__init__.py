@@ -8,6 +8,7 @@ import lonely
 import big_cube_device
 import fft_device
 import app_device
+import wonderface_device
 
 # Returns a list constructed devices given a list of initialisation data
 def construct_output_devices(output_devices_data_dict):
