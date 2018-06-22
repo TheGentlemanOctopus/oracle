@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from multiprocessing import Queue
 
 from core.devices.input_device import InputDevice
-from core.devices.output_device import switch_animation_message
-
+from core.devices.output_device import switch_animation_message, update_param_message
+from core.utilities import round_to_exponent
+import time
 app = Flask(__name__)
 
 # Simplest way I know share data between functions in flask is to make a data dict
@@ -26,10 +27,7 @@ def index():
     """
 
     # Data for template rendering
-    devices = [{
-        "name": name,
-        "possible_animations": device.possible_animations()
-    } for (name, device) in app.data["output_devices"].items()]
+    devices = [device_render_data(device) for device in app.data["output_devices"].values()]
 
     return render_template('index.html', devices=devices)
 
@@ -55,13 +53,42 @@ def switch_animation():
         return "error: new animation not defined"
     new_animation_name = request.form["new_animation"]
 
-    # switch it up
-    message = switch_animation_message(new_animation_name)
-    
     # Send switch message and then wait until it has been processed
-    with device.animation_cv:
-        device.in_queue.put(message)
-        device.animation_cv.wait()
+    device.in_queue.put(switch_animation_message(new_animation_name))
+    animation_data = device.animation_queue.get()
 
-    return "done"    
+    return jsonify({"name": device.name, "animation": animation_data})
 
+@app.route("/set_param", methods=["POST"])
+def set_param():
+    """
+        Sets a parameter
+    """
+    if "param_name" not in request.form:
+        return "no param name"
+    param_name = request.form["param_name"].strip()
+
+    if "param_value" not in request.form:
+        return "no param value"
+    param_value = float(request.form["param_value"])
+
+    if "device_name" not in request.form:
+        return "no device name"
+
+    if request.form["device_name"] not in app.data["output_devices"]:
+        return "unknown device name"
+
+    device = app.data["output_devices"][request.form["device_name"]]
+    device.in_queue.put(update_param_message(param_name, param_value))
+
+    return "done"
+
+def device_render_data(device):
+    # Request current animation data
+    device.in_queue.put(switch_animation_message(""))
+
+    return {
+        "name": device.name,
+        "possible_animations": device.possible_animations().keys(),
+        "animation": device.animation_queue.get()
+    }
