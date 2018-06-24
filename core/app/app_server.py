@@ -31,7 +31,10 @@ def index():
     # Data for template rendering
     devices = [device_render_data(device) for device in app.data["output_devices"].values()]
 
-    return render_template('index.html', devices=devices)
+    return render_template('index.html', 
+        devices=devices, 
+        fft_recorder=app.data["fft_in_queue"] is not None
+    )
 
 @app.route('/switch_animation', methods=['POST'])
 def switch_animation():

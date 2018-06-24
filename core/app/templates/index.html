@@ -95,10 +95,13 @@
 
     <!-- Thanks: https://codepen.io/aeewhite/pen/BjzbOL -->
     <!-- Record button -->
-    <h1> FFT Recorder </h1>
+    {% if fft_recorder %}
+        <h1> FFT Recorder </h1>
 
-    <p class="record_elapsed"></p>
-    <button class="record" id="recButton"></button>
+        <p class="record_elapsed"></p>
+        <button class="record" id="recButton"></button>
+    {% endif %}
+
 
     <script type="text/javascript">
         /*
