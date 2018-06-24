@@ -12,5 +12,5 @@ class AppDevice(InputDevice):
         self.host=host
         self.port=port
 
-    def main(self, output_devices):
-        app_server.run(self.host, self.port, output_devices)
+    def main(self, output_devices, fft_in_queue):
+        app_server.run(self.host, self.port, output_devices, fft_in_queue)

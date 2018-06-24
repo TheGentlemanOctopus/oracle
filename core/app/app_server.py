@@ -13,12 +13,13 @@ app.data = {
     "fft_in_queue": None
 }
 
-def run(host, port, output_devices):
+def run(host, port, output_devices, fft_in_queue):
     """
         Call this function to start the server
     """
     
     app.data["output_devices"] = {device.name: device for device in output_devices} 
+    app.data["fft_in_queue"] = fft_in_queue
     app.run(host=host, port=port)
 
 @app.route('/')
@@ -93,12 +94,12 @@ def put_fft_in_queue(self, message):
 
     app.data["fft_in_queue"].put(message)
 
-@app.route("/start_record"):
+@app.route("/start_record")
 def start_record():
     put_fft_in_queue("start_record")
     return "done"
 
-@app.route("/stop_record"):
+@app.route("/stop_record")
 def stop_record():
     put_fft_in_queue("stop_record")
     return "done"
