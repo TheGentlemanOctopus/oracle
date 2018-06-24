@@ -1,6 +1,8 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='record_button.css') }}">
+
     <style type="text/css">
         
         /* Thanks: https://www.w3schools.com/howto/howto_js_rangeslider.asp */
@@ -91,6 +93,53 @@
     </div>
     {% endfor %}
 
+    <!-- Thanks: https://codepen.io/aeewhite/pen/BjzbOL -->
+    <!-- Record button -->
+    <h1> FFT Recorder </h1>
+
+    <p class="record_elapsed"></p>
+    <button class="record" id="recButton"></button>
+
+    <script type="text/javascript">
+        /*
+            Script for handling record button functions
+            Thanks: https://codepen.io/aeewhite/pen/BjzbOL
+        */
+
+        $('.record').addClass("notRec");
+
+        // Function to update the elapsed time element
+        var start_time;
+        var timer_fun = function(){
+            var elapsed =  Math.round((new Date() - start_time)/1000);
+
+            $(".record_elapsed").html("Time Elapsed: " + elapsed.toString() + "s");
+        }
+        var timer;
+        
+        // Record button click functions
+        $('.record').click(function() {
+            
+            if($('.record').hasClass('notRec')){
+                $('.record').removeClass("notRec");
+                $('.record').addClass("Rec");
+
+                // Start the time
+                start_time = new Date();
+                timer_fun();
+                timer = setInterval(timer_fun, 1000);
+            }
+            else {
+                $('.record').removeClass("Rec");
+                $('.record').addClass("notRec");
+
+                // Stop the timer
+                clearInterval(timer);
+                $(".record_elapsed").html("")
+            }
+        }); 
+    </script>
+
     <script type="text/javascript">
         // Select animation
         $(".ani_selector").change(function(){
@@ -146,7 +195,6 @@
         {
             replace_slider(devices[i])
         }
-
 
 
     </script>
