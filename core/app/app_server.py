@@ -85,7 +85,7 @@ def set_param():
 
     return "done"
 
-def put_fft_in_queue(self, message):
+def put_fft_in_queue(message):
     """
         Puts an item in the fft queue if there is one
     """
