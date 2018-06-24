@@ -32,10 +32,10 @@ class FftDevice(InputDevice):
             if item is None:
                 break
 
-            if item=="record_start":
+            if item=="start_record":
                 self.start_record()
 
-            elif item=="record_stop":
+            elif item=="stop_record":
                 self.stop_record()
 
             else:

@@ -9,7 +9,8 @@ app = Flask(__name__)
 
 # Simplest way I know share data between functions in flask is to make a data dict
 app.data = {
-    "output_devices": {} # key: device name, value: device
+    "output_devices": {}, # key: device name, value: device
+    "fft_in_queue": None
 }
 
 def run(host, port, output_devices):
@@ -81,6 +82,25 @@ def set_param():
     device = app.data["output_devices"][request.form["device_name"]]
     device.in_queue.put(update_param_message(param_name, param_value))
 
+    return "done"
+
+def put_fft_in_queue(self, message):
+    """
+        Puts an item in the fft queue if there is one
+    """
+    if app.data["fft_in_queue"] is None:
+        return
+
+    app.data["fft_in_queue"].put(message)
+
+@app.route("/start_record"):
+def start_record():
+    put_fft_in_queue("start_record")
+    return "done"
+
+@app.route("/stop_record"):
+def stop_record():
+    put_fft_in_queue("stop_record")
     return "done"
 
 def device_render_data(device):
