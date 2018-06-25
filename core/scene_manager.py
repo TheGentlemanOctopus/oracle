@@ -83,9 +83,17 @@ class SceneManager(object):
         """
             Start input device processes
         """
+        # HACK: Need a more generic way to share queues between devices
+        # App device must be specified after fft in this way
+        fft_in_queue = None
+
         for device in self.input_devices:
             if type(device) == AppDevice:
-                device.start(self.output_devices)
+                device.start(self.output_devices, fft_in_queue)
+
+            elif type(device) == FftDevice:
+                fft_in_queue = device.in_queue
+                device.start()
 
             else:
                 # Assume start takes no args by default

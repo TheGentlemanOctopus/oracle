@@ -9,15 +9,17 @@ app = Flask(__name__)
 
 # Simplest way I know share data between functions in flask is to make a data dict
 app.data = {
-    "output_devices": {} # key: device name, value: device
+    "output_devices": {}, # key: device name, value: device
+    "fft_in_queue": None
 }
 
-def run(host, port, output_devices):
+def run(host, port, output_devices, fft_in_queue):
     """
         Call this function to start the server
     """
     
     app.data["output_devices"] = {device.name: device for device in output_devices} 
+    app.data["fft_in_queue"] = fft_in_queue
     app.run(host=host, port=port)
 
 @app.route('/')
@@ -29,7 +31,10 @@ def index():
     # Data for template rendering
     devices = [device_render_data(device) for device in app.data["output_devices"].values()]
 
-    return render_template('index.html', devices=devices)
+    return render_template('index.html', 
+        devices=devices, 
+        fft_recorder=app.data["fft_in_queue"] is not None
+    )
 
 @app.route('/switch_animation', methods=['POST'])
 def switch_animation():
@@ -81,6 +86,25 @@ def set_param():
     device = app.data["output_devices"][request.form["device_name"]]
     device.in_queue.put(update_param_message(param_name, param_value))
 
+    return "done"
+
+def put_fft_in_queue(message):
+    """
+        Puts an item in the fft queue if there is one
+    """
+    if app.data["fft_in_queue"] is None:
+        return
+
+    app.data["fft_in_queue"].put(message)
+
+@app.route("/start_record")
+def start_record():
+    put_fft_in_queue("start_record")
+    return "done"
+
+@app.route("/stop_record")
+def stop_record():
+    put_fft_in_queue("stop_record")
     return "done"
 
 def device_render_data(device):
