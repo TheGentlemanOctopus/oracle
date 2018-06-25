@@ -12,6 +12,7 @@
 
     <h1>THE ORACLE</h1>
 
+    <!-- Slider Prototype. Gets cloned in slider.js to create sliders -->
     <div id="slider_prototype" class="slidecontainer" style="display:none">
         <div class="param_name"></div> 
         <div class="param_value"></div>
@@ -19,10 +20,13 @@
         <input class="slider" type="range" min="0" max="0" value="0" step="">
     </div>
 
+    <!-- Device Controls -->
     {% for device in devices %}
     <div class="device" id="{{ device.name }}">
+
         <h2 class="device_name">{{device.name}}</h2>
 
+        <!-- Parameters sliders -->
         <div class="select_container">
         <select class="ani_selector" name="{{device.name}}">
         
@@ -55,109 +59,18 @@
         </div>
     {% endif %}
 
+    <script type=text/javascript src="{{ url_for('static', filename='record.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='slider.js') }}"></script>
 
+    <!-- Initialise sliders -->
     <script type="text/javascript">
-        /*
-            Script for handling record button functions
-            Thanks: https://codepen.io/aeewhite/pen/BjzbOL
-        */
+        var devices = {{ devices|tojson }}
 
-        var not_rec_message = $(".record_elapsed").html()
-
-        $('.record').addClass("notRec");
-
-        // Function to update the elapsed time element
-        var start_time;
-        var timer_fun = function(){
-            var elapsed =  Math.round((new Date() - start_time)/1000);
-
-            $(".record_elapsed").html("RECORDING " + elapsed.toString() + "s elapsed");
-        }
-        var timer;
-        
-        // Record button click functions
-        $('.record').click(function() {
-            
-            if($('.record').hasClass('notRec')){
-                $('.record').removeClass("notRec");
-                $('.record').addClass("Rec");
-
-                // Start the time
-                start_time = new Date();
-                timer_fun();
-                timer = setInterval(timer_fun, 1000);
-
-                $.get("/start_record")
-            }
-            else {
-                $('.record').removeClass("Rec");
-                $('.record').addClass("notRec");
-
-                // Stop the timer
-                clearInterval(timer);
-                $(".record_elapsed").html(not_rec_message)
-                $.get("/stop_record")
-            }
-        }); 
-    </script>
-
-    <script type="text/javascript">
-        // Select animation
-        $(".ani_selector").change(function(){
-            $.post("/switch_animation", {
-                device_name: this.name,
-                new_animation: this.value
-            }, function(data){
-                replace_slider(data);
-            })
-        })
-
-        $(".slider").on("input", function(){
-            // Update Box
-            $(this).parent().find(".param_value").html(this.value);
-
-            // Update Server
-            $.post("/set_param", {
-                device_name: $(this).closest(".device").find(".device_name").html(),
-                param_name: $(this).closest(".slidecontainer").find(".param_name").html(),
-                param_value: this.value
-            })
-        })
-
-        var replace_slider = function(device){
-            var device_element = $("#"+device["name"])
-
-            // Remove old
-            device_element.find(".slidecontainer").remove()
-
-            // New slider
-            for(var j=0; j<device['animation']['params'].length; j++) 
-            {
-                var param = device['animation']['params'][j]
-
-                var slider = $("body").find("#slider_prototype").clone(true)
-                slider.css("display", "block");
-
-                slider.find(".param_name").html(param["name"])
-                slider.find(".param_value").html(param["value"])
-                slider.find(".slider").attr({
-                    min: param["min"],
-                    max: param["max"],
-                    step: param["step"]
-                })
-                slider.find(".slider").attr({value: param["value"]})
-
-                device_element.append(slider);
-            }
-        }
-
-        devices = {{ devices|tojson }}
+        // Initialise slider set
         for(var i=0; i<devices.length; i++)
         {
             replace_slider(devices[i])
         }
-
-
     </script>
 
 </body>

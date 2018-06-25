@@ -9,6 +9,10 @@ body {
     width: 200px;
 }
 
+.ani_selector {
+    font-weight: bold;
+}
+
 select {
   margin: 20px;
   width: 150px;
