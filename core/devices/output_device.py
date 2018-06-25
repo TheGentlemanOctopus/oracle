@@ -4,8 +4,9 @@ import numpy as np
 
 from device import Device
 from core.utilities.sleep_timer import SleepTimer
-
+from core.animations import animations_by_layout, possible_animations
 from core.animations.animation import Animation
+from core.layouts.layout import Layout
 
 class OutputDevice(Device):
     """
@@ -24,6 +25,7 @@ class OutputDevice(Device):
         self.pixels_by_channel = {}
 
         # The current active animation
+        self.layout = Layout()
         self.animation = Animation()
 
     def main(self):
@@ -39,6 +41,31 @@ class OutputDevice(Device):
             self.put(self.pixel_colors_by_channel_255)
 
             sleep_timer.sleep()
+
+    def set_animation(self, name, params=None):
+        """
+            Switches the current animation
+            Params is a set of initialisation parameters
+        """
+        # Dict of possible animations include:
+        #   - generic Layout type
+        #   - layout specific types
+        poss_animations = self.possible_animations()
+
+        if name not in poss_animations:
+            # TODO: Log error
+            return
+
+        if params is None:
+            params = {}
+
+        # Construct new animation
+        new_animation = possible_animations[name](self.layout, **params)
+        new_animation.fft = self.animation.fft
+        self.animation = new_animation
+
+    def possible_animations(self):
+        return possible_animations(self.layout.__class__.__name__)
 
     @property
     def pixel_colors_by_channel_255(self):

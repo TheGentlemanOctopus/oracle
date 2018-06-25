@@ -1,7 +1,9 @@
-from strip import Strip
 import numpy as np
 
-class BigCube:
+from strip import Strip
+from layout import Layout
+
+class BigCube(Layout):
     def __init__(self, led_spacing, strip_spacing):
         """
             Big daddy cube

@@ -2,6 +2,8 @@ from multiprocessing import Process, Queue, Lock
 from Queue import Empty
 
 class Device(object):
+    layout_type = "Layout"
+
     def __init__(self):
         # Output queue
         self.out_queue = Queue()

@@ -1,3 +1,5 @@
+import colorsys
+
 class Pixel(object):
     """
         Pixel object holds location and color data
@@ -22,3 +24,9 @@ class Pixel(object):
             tuple scaled for 8-bit
         """
         return (255*self.r, 255*self.g, 255*self.b)
+
+    def set_hsv(self, h, s, v):
+        """
+            Sets pixel color given hsv values in range 0->1
+        """ 
+        self.r, self.g, self.b = colorsys.hsv_to_rgb(h,s,v)
