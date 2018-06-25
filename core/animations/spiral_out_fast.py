@@ -37,7 +37,7 @@ class SpiralOutFast(Animation):
         g_slowness = overall_slowness*self.params["g_slowness"].value
         b_slowness = overall_slowness*self.params["b_slowness"].value
 
-        current_time = np.float16((time.time() - self.start_time) % 1000)
+        current_time = np.float16((time.time() - self.start_time))
         dt = current_time - self.previous_time
         self.previous_time = current_time
 
