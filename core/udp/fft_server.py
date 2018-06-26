@@ -87,6 +87,7 @@ class FftServer:
             self.udp_reader()
 
             # Parse the data csv style
+            self.fft_queue.put(["raw", self.FFTData])
             parsedData = self.FFTData.split(",", self.num_fft_chan)
 
             if time.time() - self.last_fft_extent_reset > self.fft_extent_reset_time:
@@ -117,7 +118,6 @@ class FftServer:
                     parsedData = [0,0,0,0,0,0,0]
                     break
 
-
             if self.max_fft > self.no_mic_level:
                 self.no_sound = False
 
@@ -132,7 +132,7 @@ class FftServer:
                 self.fft_queue.get()
 
             #add to the queue
-            self.fft_queue.put(parsedData)
+            self.fft_queue.put(["processed", parsedData])
 
 
 
