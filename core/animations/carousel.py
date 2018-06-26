@@ -6,7 +6,7 @@ import random
 import itertools
 import numpy as np
 
-default_set = [
+default_animation_set = [
     {"type": "SwoopyTown"},
     {"type": "SpiralOutFast"}
 ]
@@ -16,7 +16,7 @@ class Carousel(Animation):
     layout_type="Layout"
 
     def __init__(self, layout, 
-        animations=default_set, 
+        animations=default_animation_set, 
         min_transition_time=30,
         max_transition_time=200
     ):
@@ -49,6 +49,9 @@ class Carousel(Animation):
         self.current_animation = Animation()
         for i in animations:
             self.next_animation()
+
+        # Set first animation as current
+        self.next_animation()
 
     def next_animation(self):
         """
