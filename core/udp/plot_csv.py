@@ -32,9 +32,12 @@ def plot_csv(filepath):
     plt.pcolor(X, Y, bands.T)
 
     plt.xlabel('Time (s)')
-    plt.ylabel('Intensity')
+    plt.ylabel('Band #')
+
+    cbar = plt.colorbar()
+    cbar.set_label('Intensity')
+
     plt.legend()
-    plt.colorbar()
     plt.title(filepath)
     plt.show()
 
