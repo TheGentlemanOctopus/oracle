@@ -7,6 +7,7 @@ import itertools
 import numpy as np
 
 default_set = [
+    {"type": "LavaLamp"},
     {"type": "SwoopyTown"},
     {"type": "SpiralOutFast"}
 ]
@@ -72,7 +73,7 @@ class Carousel(Animation):
             self.params["min_transition_time"].value,
             self.params["max_transition_time"].value
         ]) 
-        
+
         return mini + random.random()*(maxi - mini)
 
     def update(self):
