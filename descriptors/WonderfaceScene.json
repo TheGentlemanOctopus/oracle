@@ -44,7 +44,10 @@
             },
             "default_animation": {
                 "type": "Carousel",
-                "args": {}
+                "args": {
+                    "min_transition_time": 10,
+                    "max_transition_time": 30
+                }
             }
         }
     ]
