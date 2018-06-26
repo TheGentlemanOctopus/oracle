@@ -5,6 +5,7 @@ import big_cube_walk
 import swoopy_town
 import spiral_out_fast
 import carousel
+import lava_lamp
 
 import utils
 
