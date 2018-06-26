@@ -71,4 +71,6 @@ class Carousel(Animation):
             self.next_switch += switch_time
             self.next_animation()
 
+        # Update
+        self.current_animation.fft = self.fft
         self.current_animation.update()
