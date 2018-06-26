@@ -19,7 +19,8 @@ class FftDevice(InputDevice):
         self.fft_server = FftServer(self.out_queue, **fft_server_kwargs)
 
         # Recording flag
-        self.record_file = None
+        self.raw_record_file = None
+        self.processed_record_file = None
         self.record_start_time = time.time()
 
     def main(self):
@@ -52,29 +53,51 @@ class FftDevice(InputDevice):
         # Filename for csv
         now = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
         filename = "fft_%s.csv"%now
-        self.record_file = open(filename, "w")
+        self.raw_record_file = open("raw_"+filename, "w")
+        self.processed_record_file = open("processed_"+filename, "w")
+
         self.record_start_time = time.time()
 
     def stop_record(self):
         """
             Stops the recording of a csv recording
         """
-        if self.record_file is not None:
-            self.record_file.close()
-            self.record_file = None
+        if self.raw_record_file is not None:
+            self.raw_record_file.close()
+            self.raw_record_file = None
 
-    def record(self, fft):
+        if self.processed_record_file is not None:
+            self.processed_record_file.close()
+            self.processed_record_file = None
+
+    @property
+    def elapsed(self):
+        """
+            Returns elapsed time of fft recording
+        """
+        return time.time() - self.record_start_time
+
+    def record_processed(self, fft):
         """
             Records a sample
             Col 1 is time, Cols 2-9 are the fft bands
         """
-        if self.record_file is None:
+        if self.processed_record_file is None:
             return
 
-        elapsed = time.time() - self.record_start_time
-        csv_data = [elapsed] + fft
+        csv_data = [self.elapsed] + fft
 
-        self.record_file.write(",".join([str(x) for x in csv_data]) + "\n")
+        self.processed_record_file.write(",".join([str(x) for x in csv_data]) + "\n")
+
+    def record_raw(self, message):
+        """
+            Writes the line in format [elasped time, ",", message]
+        """
+        if self.raw_record_file is None:
+            return
+
+        csv_data = [self.elapsed, message]
+        self.raw_record_file.write(",".join([str(x) for x in csv_data]) + "\n")
 
     def get_out_queue(self):
         """
@@ -84,10 +107,24 @@ class FftDevice(InputDevice):
         # HACK: This should go in the main loop somehow but fft_server is blocking atm
         self.process_in_queue()
 
-        fft_bands = get_nowait(self.out_queue)
+        item = get_nowait(self.out_queue)
 
-        if fft_bands is not None:
-            self.record(fft_bands)
-            fft_bands = fft_message([band/1024.0 for band in fft_bands])
-        
-        return fft_bands
+        # Empty queue check
+        if item is None:
+            return
+
+        # Item format check
+        if not isinstance(item, list) and len(item)!=2:
+            #TODO: log
+            return
+
+        msg_type, msg = item
+
+        # Process Message
+        if msg_type=="raw":
+            self.record_raw(msg)
+
+        elif msg_type=="processed":
+            self.record_processed(msg)
+            return fft_message([band/1024.0 for band in msg])
+
