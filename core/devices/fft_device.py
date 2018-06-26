@@ -114,7 +114,7 @@ class FftDevice(InputDevice):
             return
 
         # Item format check
-        if not isinstance(item, list) and len(item)!=2:
+        if not isinstance(item, list) or len(item)!=2:
             #TODO: log
             return
 
