@@ -2,6 +2,7 @@ from animation import Animation
 import utils
 
 import time
+import random
 import itertools
 import numpy as np
 
@@ -14,7 +15,11 @@ class Carousel(Animation):
     # TODO: only works on generic animations atm
     layout_type="Layout"
 
-    def __init__(self, layout, animations=default_set, transition_time=3):
+    def __init__(self, layout, 
+        animations=default_set, 
+        min_transition_time=30,
+        max_transition_time=200
+    ):
         """
             THE CAROUSEL
             goes round-and-round-and-round-and-round-and-round-and-round
@@ -28,9 +33,10 @@ class Carousel(Animation):
 
         self.layout = layout
 
-        self.add_param("transition_time", transition_time, 1, 100)
+        self.add_param("min_transition_time", min_transition_time, 1, 200)
+        self.add_param("max_transition_time", max_transition_time, 1, 300)
 
-        self.next_switch = time.time() + transition_time
+        self.next_switch = time.time() + self.generate_switch_time()
 
         self.animation_dict = utils.possible_animations(layout.__class__.__name__)
         if "Carousel" in self.animation_dict:
@@ -61,14 +67,20 @@ class Carousel(Animation):
         # Construct
         self.current_animation = self.animation_dict[ani_type](self.layout, **args)
 
+    def generate_switch_time(self):
+        mini, maxi = sorted([
+            self.params["min_transition_time"].value,
+            self.params["max_transition_time"].value
+        ]) 
+        
+        return mini + random.random()*(maxi - mini)
+
     def update(self):
         """
             Update-o
         """
-        switch_time = self.params["transition_time"].value
-
         if time.time() > self.next_switch:
-            self.next_switch += switch_time
+            self.next_switch += self.generate_switch_time()
             self.next_animation()
 
         # Update
