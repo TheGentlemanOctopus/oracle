@@ -43,8 +43,11 @@
                 }
             },
             "default_animation": {
-                "type": "SpiralOutFast",
-                "args": {}
+                "type": "Carousel",
+                "args": {
+                    "min_transition_time": 10,
+                    "max_transition_time": 30
+                }
             }
         }
     ]
