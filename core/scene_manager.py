@@ -24,7 +24,10 @@ class SceneManager(object):
             scene_fps=60, 
             device_fps=30, 
             opc_host="127.0.0.1", 
-            opc_port=7890
+            opc_port=7890,
+            r_scaling = 0.5,
+            g_scaling = 0.5,
+            b_scaling = 0.5
         ):
         """
             Initialisation connects to the opc server
@@ -44,6 +47,8 @@ class SceneManager(object):
 
         self.input_devices = input_devices
         self.output_devices = output_devices
+
+        self.scaling = np.array([r_scaling, g_scaling, b_scaling])
 
         # A list of dictionaries which are the device's pixel colors by channel
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
@@ -147,7 +152,8 @@ class SceneManager(object):
 
         # Pass onto OPC client
         for channel, pixels in channels_combined.items():
-            self.client.put_pixels(pixels, channel=channel)
+            scaled_pixels = np.array(np.array(pixels) * self.scaling).astype(int)
+            self.client.put_pixels(scaled_pixels, channel=channel)
 
 def run_scene(scene_path):
     """
