@@ -8,7 +8,7 @@ import numpy as np
 
 default_animation_set = [
     {"type": "BigCubeWalk"},
-    {"type": "SwoopyTown"},
+    # {"type": "SwoopyTown"},
     {"type": "SpiralOutFast"}
 ]
 
