@@ -32,16 +32,22 @@
     ],
     "OutputDevices": [
         {
-            "name": "BigDaddy",
-            "type": "BigCubeDevice",
+            "name": "WunderGesicht",
+            "type": "WonderfaceDevice",
             "args": {
-                "channel": 1,
                 "led_spacing" : 0.2,
-                "strip_spacing": 0.05
+                "strip_spacing": 0.2,
+                "pixels_per_channel": {
+                    "1": 10,
+                    "3": 20 
+                }
             },
             "default_animation": {
-                "type": "SwoopyTown",
-                "args": {}
+                "type": "Carousel",
+                "args": {
+                    "min_transition_time": 10,
+                    "max_transition_time": 30
+                }
             }
         }
     ]

@@ -1,5 +1,5 @@
 import time
-from multiprocessing import Queue, Lock
+from multiprocessing import Queue, Lock, Condition
 import numpy as np
 
 from device import Device
@@ -7,6 +7,7 @@ from core.utilities.sleep_timer import SleepTimer
 from core.animations import animations_by_layout, possible_animations
 from core.animations.animation import Animation
 from core.layouts.layout import Layout
+from core.utilities import round_to_exponent
 
 class OutputDevice(Device):
     """
@@ -27,6 +28,8 @@ class OutputDevice(Device):
         # The current active animation
         self.layout = Layout()
         self.animation = Animation()
+        self.animation_cv = Condition()
+        self.animation_queue = Queue()
 
     def main(self):
         """
@@ -42,25 +45,19 @@ class OutputDevice(Device):
 
             sleep_timer.sleep()
 
-    def set_animation(self, name, params=None):
+    def set_animation(self, name, **params):
         """
             Switches the current animation
             Params is a set of initialisation parameters
         """
-        # Dict of possible animations include:
-        #   - generic Layout type
-        #   - layout specific types
         poss_animations = self.possible_animations()
 
         if name not in poss_animations:
             # TODO: Log error
             return
 
-        if params is None:
-            params = {}
-
         # Construct new animation
-        new_animation = possible_animations[name](self.layout, **params)
+        new_animation = poss_animations[name](self.layout, **params)
         new_animation.fft = self.animation.fft
         self.animation = new_animation
 
@@ -81,19 +78,65 @@ class OutputDevice(Device):
     def process_in_queue(self):
         """
             Process the entire in queue to update data
-            TODO: general support for input types rather than fft data
+            Each item should be a list where first element is the command and second is the args
         """
 
         # Clear the queue
         while True:
             item = self.get_in_queue()
 
+            # Break when finished
             if item is None:
                 break
 
-            # Pass onto animation
-            # TODO: Generalise here
-            self.animation.fft = item
+            # Skip over faulty data
+            if not isinstance(item, list) or len(item)!=2:
+                # TODO: log fault
+                continue
+
+            data_type, data = item
+
+            # Process the item
+            if data_type == "fft":
+                self.animation.fft = data
+
+            elif data_type == "animation":
+                # Make sure something is put in queue to avoid deadlock
+                try:
+                    self.set_animation(data["name"], **data["params"])
+
+                except Exception as e:
+                    # TODO: Log
+                    pass
+
+                finally:
+                    self.animation_queue.put({
+                        "name": self.animation.__class__.__name__,
+                        "params": [{
+                            "name": name,
+                            "min": float(param.min),
+                            "max": float(param.max),
+                            "value": param.value,
+                            "step": param.step
+                        } for (name, param) in self.animation.params.items()]
+                    })
+
+            elif data_type == "param":
+                if not isinstance(data, list) or len(data)!=2:
+                    # TODO: Log
+                    continue
+
+                param_name, param_value = data
+
+                if param_name not in self.animation.params:
+                    # TODO: log
+                    continue
+
+                self.animation.params[param_name].value = param_value
+
+            else:
+                # TODO: log fault
+                pass
 
     def put(self, data):
         """
@@ -112,6 +155,26 @@ class OutputDevice(Device):
         """
         self.animation.update()
 
+def fft_message(fft):
+    """
+        forms the message expected in OutputDevice in_queues
+        fft should be an array of 7 numbers representing the bands
+    """
+    return ["fft", fft]
+
+def switch_animation_message(name, **params):
+    """
+        Used to switch an animation
+        params is a dictionary of animation parameters
+    """
+
+    return ["animation", {
+        "name": name,
+        "params": params
+    }]
+
+def update_param_message(param_name, value):
+    return ["param", [param_name, value]]
 
 if __name__ == '__main__':
     # TODO: Put this in a unit test or whatever

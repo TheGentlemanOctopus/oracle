@@ -16,8 +16,8 @@ class SwoopyTown(Animation):
 
         self.layout = layout
 
-        self.add_param("period", period)
-        self.add_param("wavelength", wavelength)
+        self.add_param("period", period, 0.1, 10)
+        self.add_param("wavelength", wavelength, 0.1, 10)
 
     def update(self):
         """
@@ -26,8 +26,8 @@ class SwoopyTown(Animation):
         pixels = self.layout.pixels
 
         t = time.time()
-        f = 1.0/self.params["period"]
-        w = self.params["wavelength"]
+        f = 1.0/self.params["period"].value
+        w = self.params["wavelength"].value
 
         for pixel in pixels:
             x,y,z = pixel.location

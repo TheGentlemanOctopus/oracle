@@ -18,6 +18,15 @@ class Pixel(object):
     def color(self):
         return (self.r, self.g, self.b)
 
+    @color.setter
+    def color(self, c):
+        if len(c)!=3:
+            raise Exception("Need 3 values to set color")
+
+        self.r = c[0]
+        self.g = c[1]
+        self.b = c[2]
+
     @property
     def color_255(self):
         """
