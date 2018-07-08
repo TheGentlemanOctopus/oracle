@@ -56,7 +56,12 @@ def switch_animation():
     new_animation_name = request.form["new_animation"]
 
     # switch it up
-    device.in_queue.put(switch_animation_message(new_animation_name))
+    message = switch_animation_message(new_animation_name)
+    
+    # Send switch message and then wait until it has been processed
+    with device.animation_cv:
+        device.in_queue.put(message)
+        device.animation_cv.wait()
 
     return "done"    
 
