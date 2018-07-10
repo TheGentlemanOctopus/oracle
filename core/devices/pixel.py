@@ -32,7 +32,7 @@ class Pixel(object):
         """
             tuple scaled for 8-bit
         """
-        return (255*self.r, 255*self.g, 255*self.b)
+        return (int(255*self.r), int(255*self.g), int(255*self.b))
 
     def set_hsv(self, h, s, v):
         """

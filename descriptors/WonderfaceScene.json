@@ -2,8 +2,11 @@
     "SceneDetails": {
         "scene_fps" : 60,
         "device_fps": 30,
-        "opc_host": "127.0.0.1",
-        "opc_port": 7890
+        "opc_host": "192.168.1.52",
+        "opc_port": 7890,
+        "r_scaling": 0.5,
+        "g_scaling": 0.5,
+        "b_scaling": 0.5
     },
     "InputDevices": [
         {
@@ -38,8 +41,7 @@
                 "led_spacing" : 0.2,
                 "strip_spacing": 0.2,
                 "pixels_per_channel": {
-                    "1": 10,
-                    "3": 20 
+                    "0": 1170
                 }
             },
             "default_animation": {
