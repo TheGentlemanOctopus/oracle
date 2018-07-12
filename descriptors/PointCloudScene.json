@@ -1,0 +1,46 @@
+{
+    "SceneDetails": {
+        "scene_fps" : 60,
+        "device_fps": 30,
+        "opc_host": "192.168.1.52",
+        "opc_port": 7890,
+        "r_scaling": 0.5,
+        "g_scaling": 0.5,
+        "b_scaling": 0.5
+    },
+    "InputDevices": [
+        {
+            "type": "FftDevice",
+            "args": {
+                "arduino_ip": "192.168.1.177",
+                "local_ip": "",
+                "start_port": 5003,
+                "data_port": 5009,
+                "start_message": "Start",
+                "buffer_size": 100,
+                "fft_extent_reset_time": 10,
+                "autogainEnable": 0,
+                "no_sound_frequency": 0.2,
+                "ambient_level": 512,
+                "no_mic_level": 100
+            }
+        },
+        {
+            "type": "AppDevice",
+            "args": {
+                "host": "127.0.0.1",
+                "port": 5000
+            }
+        }
+    ],
+    "OutputDevices": [
+        {
+            "name": "Cloudface",
+            "type": "PointCloudDevice",
+            "args": {
+                "channel": 1,
+                "pixels": "face.json"
+            }
+        }
+    ]
+}
