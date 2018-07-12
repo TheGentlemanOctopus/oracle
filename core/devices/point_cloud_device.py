@@ -5,40 +5,31 @@ from pixel import Pixel
 
 from core.layouts.pixel_list import PixelList
 from core.animations.spiral_out_fast import SpiralOutFast
-import core.point_clouds as point_clouds
-
-import json
+from core.point_clouds import load_point_cloud
 
 class PointCloudDevice(OutputDevice):
     """
-        A generic device that is just a list of points
-        pixels can be a list of pixel objects
+        A generic device that is just a point cloud (list of points)
+        pixels can either be a list of pixel objects
         or a string that indicates filepath relative to /core/point_clouds/
     """
     def __init__(self, channel, pixels=None):
         super(PointCloudDevice, self).__init__()
 
-
         pixel_list = None
 
-        # A direct list of pixels
+        # list of pixels given directly
         if isinstance(pixels, list):
             pixel_list = pixels
         
-        # A path
+        # path to point cloud
         elif isinstance(pixels, basestring):
-
-            # Load from file
-            with open(point_clouds.path+pixels) as f:
-                data = json.load(f)
-
-            pixel_list = []
-            for point in data:
-                pixel_list.append(Pixel(point["point"]))
+            pixel_list = load_point_cloud(pixels)
 
         else:
             raise Exception("pixels must be list or a string (that indicates filepath relative to /core/point_clouds/)")
 
+        # Set her up
         self.pixels_by_channel = {channel: pixel_list}
         self.layout = PixelList(pixel_list)
         self.animation = SpiralOutFast(self.layout)
