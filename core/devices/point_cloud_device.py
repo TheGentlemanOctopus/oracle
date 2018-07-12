@@ -12,6 +12,8 @@ import json
 class PointCloudDevice(OutputDevice):
     """
         A generic device that is just a list of points
+        pixels can be a list of pixel objects
+        or a string that indicates filepath relative to /core/point_clouds/
     """
     def __init__(self, channel, pixels=None):
         super(PointCloudDevice, self).__init__()
