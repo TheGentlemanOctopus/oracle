@@ -70,7 +70,7 @@ class QueueListener(object):
     """
     _sentinel = None
 
-    def __init__(self, queue, handlers, respect_handler_level=False):
+    def __init__(self, queue, respect_handler_level=False, *handlers):
         """
         Initialise an instance with the specified queue and
         handlers.

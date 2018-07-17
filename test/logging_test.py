@@ -41,8 +41,8 @@ if __name__ == '__main__':
 	logger1 = TestLog()
 	logger2 = TestLog()
 
-	logger1_listener = QueueListener(logger1.log_queue, [fh], True)
-	logger2_listener = QueueListener(logger2.log_queue, [fh], True)
+	logger1_listener = QueueListener(logger1.log_queue, True, fh)
+	logger2_listener = QueueListener(logger2.log_queue, True, fh)
 
 	p1 = Process(target=logger1.main, args=(['Process 1']))
 	p1.daemon = True
