@@ -1,6 +1,6 @@
 import logging
 import threading
-
+from multiprocessing import Queue
 class QueueHandler(logging.Handler):
     """
     This handler sends events to a queue. Typically, it would be used together
@@ -70,7 +70,7 @@ class QueueListener(object):
     """
     _sentinel = None
 
-    def __init__(self, queue, *handlers, respect_handler_level=False):
+    def __init__(self, queue, handlers, respect_handler_level=False):
         """
         Initialise an instance with the specified queue and
         handlers.
@@ -139,7 +139,7 @@ class QueueListener(object):
                 self.handle(record)
                 if has_task_done:
                     q.task_done()
-            except queue.Empty:
+            except q.empty():
                 break
 
     def enqueue_sentinel(self):
