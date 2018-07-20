@@ -6,6 +6,8 @@ import sys
 import numpy as np
 import utilities.process_descriptor as pd
 from utilities.sleep_timer import SleepTimer
+import core.utilities.logging_server
+
 import argparse
 
 from core.devices.fft_device import FftDevice
@@ -175,6 +177,11 @@ def main(args):
     parser = argparse.ArgumentParser(description="Run a scene for us all to marvel")
     parser.add_argument("scene_path", help="Path to scene json file")   
     parser_args = parser.parse_args(args)
+
+    # Start the logging server
+    logging_process = Process(target=core.utilities.logging_server.main)
+    logging_process.daemon = True
+    logging_process.start()
 
     run_scene(parser_args.scene_path)
 

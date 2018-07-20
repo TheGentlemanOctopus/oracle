@@ -1,8 +1,8 @@
 import logging
+import logging.handlers
 from queue_logging import QueueHandler, QueueListener
 from multiprocessing import Process, Lock, Queue
 import time
-from utilities.logging_server import LogRecordSocketReceiver
 
 class TestLog(object):
 	def __init__(self, process_name):
