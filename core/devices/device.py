@@ -1,5 +1,6 @@
 from multiprocessing import Process, Queue, Lock
 from Queue import Empty
+from core.utilities import logging_handler_setup
 
 class Device(object):
     layout_type = "Layout"
@@ -23,12 +24,18 @@ class Device(object):
         """
         raise NotImplementedException("Need to define main for %s"%self.__class__.__name__)
 
+    def run_main(self):
+        # TODO: Make this accept a device name
+        self.logger = logging_handler_setup(self.name)
+        self.logger.info("starting Process")
+        self.main()
+
     def start(self, *args):
         """
             Starts itself in a new process, all *args are passed to device main
             Returns the new process
         """
-        p = Process(target=self.main, args=args)
+        p = Process(target=self.run_main, args=args)
         p.daemon = True
         p.start()
         return p

@@ -6,10 +6,10 @@ import sys
 import numpy as np
 import utilities.process_descriptor as pd
 from utilities.sleep_timer import SleepTimer
-import core.utilities.logging_server
-
+import logging
+import utilities.logging_server
 import argparse
-
+from utilities import logging_handler_setup
 from core.devices.fft_device import FftDevice
 from core.devices import construct_output_devices, construct_input_devices, combine_channel_dicts
 from core.devices.app_device import AppDevice
@@ -55,6 +55,8 @@ class SceneManager(object):
         # A list of dictionaries which are the device's pixel colors by channel
         # Serves as a reference of all the scene pixel colors that get sent to opc in the loop
         self.output_device_pixel_dictionary_list = [device.pixel_colors_by_channel_255 for device in self.output_devices]
+
+        self.logger = logging_handler_setup("SceneManager")
 
     def start(self):
         """
@@ -179,7 +181,7 @@ def main(args):
     parser_args = parser.parse_args(args)
 
     # Start the logging server
-    logging_process = Process(target=core.utilities.logging_server.main)
+    logging_process = Process(target=utilities.logging_server.main)
     logging_process.daemon = True
     logging_process.start()
 

@@ -36,6 +36,7 @@ class OutputDevice(Device):
             This should be called to start the process
         """
         sleep_timer = SleepTimer(1.0/self.fps)
+        self.logger.info("Process Started")
         while True:
             sleep_timer.start()
 
