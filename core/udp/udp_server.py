@@ -12,7 +12,7 @@ class UdpServer():
         self.misread_count = 0
 
 
-    def connect(self, timeout=10):
+    def connect(self, timeout=5):
         ''' is there a way to detect failed socket binding? '''
 
         self.sock = socket.socket(socket.AF_INET, # Internet
@@ -28,6 +28,7 @@ class UdpServer():
     def disconnect(self):
         self.sock.shutdown()
         self.sock.close()
+        self.connected = False
 
     def send(self, msg):
 
@@ -44,9 +45,9 @@ class UdpServer():
             mStr, addr = self.sock.recvfrom(1024)
             if len(mStr) < 1:
                 print 'udp_server, received unsufficient data'
-                self.misread_count += 1
             return mStr, addr
         except socket.timeout, e:
+            self.misread_count += 1
             return '',''
 
         
