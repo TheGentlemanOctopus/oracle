@@ -75,6 +75,7 @@ class UdpClient():
     def send(self, msg):
 
         result = self.sock.sendto(msg, (self.ip, self.port_s))
+        # print result
         if result < len(msg):
             print 'not all bytes sent'
             ''' try again '''

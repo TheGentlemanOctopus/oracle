@@ -9,7 +9,7 @@ class UdpServer():
         self.port_r = udp_port_rec
         self.port_s = udp_port_send
         self.connected = False
-        
+        self.misread_count = 0
 
 
     def connect(self, timeout=10):
@@ -18,6 +18,8 @@ class UdpServer():
         self.sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
         self.sock.bind((self.ip, self.port_r))
+
+        self.sock.settimeout(timeout)
 
         self.connected = True
 
@@ -38,5 +40,13 @@ class UdpServer():
             return True
 
     def receive(self):
-        mStr, addr = self.sock.recvfrom(1024) # buffer size is 1024 bytes
-        return mStr, addr
+        try:
+            mStr, addr = self.sock.recvfrom(1024)
+            if len(mStr) < 1:
+                print 'udp_server, received unsufficient data'
+                self.misread_count += 1
+            return mStr, addr
+        except socket.timeout, e:
+            return '',''
+
+        

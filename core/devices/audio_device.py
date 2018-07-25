@@ -32,7 +32,22 @@ class AudioDevice(InputDevice):
         self.processed_record_file = None
         self.record_start_time = time.time()
 
+    def __del__(self):
+        if self.server.connected:
+            self.server.disconnect()
 
+    def start_client_stream(self, msg='Start'):
+        if self.server.send('Start'):
+            ''' wait for first data for success '''
+            mStr, addr = self.server.receive() 
+            if len(mStr) > 0:
+                ''' success '''
+                return True
+            else:
+                return False
+        else:
+            print 'Error: no bytes sent'
+            return False
 
     def main(self):
         
@@ -41,53 +56,64 @@ class AudioDevice(InputDevice):
                 udp_port_send=self.udp_port_send)
         self.server.connect()
 
-        if self.server.connected:
+        while self.server.connected:
             time.sleep(5)
 
-            ''' initiate fft client with start message '''
-            result = self.server.send('Start')
-
-            ''' prepare history storage '''
-            history_length = 30
-            bin_history = [[] for x in xrange(7)]    
-            
-            ''' create beat detection object '''
-            beat_detectors = [BeatDetect(wait=self.beat_args['wait'], threshold=self.beat_args['threshold'], history=history_length) for x in xrange(7)]
+            ''' initiate fft client with start message 
+            if no bytes written, loop around and wait 5 seconds 
+            before trying again '''
+            print 'sending Start'
 
             
-            ''' populate history '''
-            while (len(bin_history[0]) < history_length):
-                ''' get data '''
-                mStr, addr = self.server.receive() # buffer size is 1024 bytes
-                data = [int(e) if e.isdigit() else e for e in mStr.split(',')]
-                # print "received message:", data, len(data), type(data)
-                for x in xrange(7):
-                    bin_history[x].append(data[x])
+            while not self.start_client_stream('Start'):
+                print 'still waiting for fft to send first udp'
+                time.sleep(.5)
+            print 'success fft sent first udp'
 
+            if self.server.send('Start'):
+                print 'send start inside now'
+                ''' prepare history storage '''
+                history_length = 30
+                bin_history = [[] for x in xrange(7)]    
+                
+                ''' create beat detection object '''
+                beat_detectors = [BeatDetect(wait=self.beat_args['wait'], threshold=self.beat_args['threshold'], history=history_length) for x in xrange(7)]
 
-            while True:
-                ''' TODO: need to detect if client has fallen to resend start message '''
-
-                ''' get data '''
-                mStr, addr = self.server.receive() # buffer size is 1024 bytes
-
-                if len(mStr) > 0:
-                    ''' still connected '''
-                    fft_data = [int(e) if e.isdigit() else e for e in mStr.split(',')]
-                    
-                    beat_data = []
+                
+                ''' populate history '''
+                while (len(bin_history[0]) < history_length):
+                    ''' get data '''
+                    mStr, addr = self.server.receive() # buffer size is 1024 bytes
+                    data = [int(e) if e.isdigit() else e for e in mStr.split(',')]
+                    # print "received message:", data, len(data), type(data)
                     for x in xrange(7):
-                        bin_history[x].pop(0)
-                        bin_history[x].append(fft_data[x])
-                        beat_data.append(
-                            beat_detectors[x].detect(bin_history[x][:])
-                            )
+                        bin_history[x].append(data[x])
 
-                    self.data_out(["processed", fft_data+beat_data])
-                else:
-                    print 'No data read from UDP, misread count:', self.server.misread_count
-                    ''' need to resent connection '''
-                    ''' if misread_count > n then resent start message? '''
+
+                while True:
+                    ''' TODO: need to detect if client has fallen to resend start message '''
+
+                    ''' get data '''
+                    mStr, addr = self.server.receive() # buffer size is 1024 bytes
+
+                    if len(mStr) > 0:
+                        ''' still connected '''
+                        fft_data = [int(e) if e.isdigit() else e for e in mStr.split(',')]
+                        
+                        beat_data = []
+                        for x in xrange(7):
+                            bin_history[x].pop(0)
+                            bin_history[x].append(fft_data[x])
+                            beat_data.append(
+                                beat_detectors[x].detect(bin_history[x][:])
+                                )
+
+                        print fft_data+beat_data
+                        self.data_out(["processed", fft_data+beat_data])
+                    else:
+                        print 'No data read from UDP, misread count:', self.server.misread_count
+                        ''' need to resent connection '''
+                        ''' if misread_count > n then resent start message? '''
 
 
 
