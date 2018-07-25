@@ -74,7 +74,7 @@ class AudioDevice(InputDevice):
 
         active = False
         while self.server.connected:
-            time.sleep(5)
+            time.sleep(1)
 
             
             print 'sending Start'
@@ -105,7 +105,7 @@ class AudioDevice(InputDevice):
                                 beat_detectors[x].detect(bin_history[x][:])
                                 )
 
-                        print fft_data+beat_data
+                        # print fft_data+beat_data
                         self.data_out(["processed", fft_data+beat_data])
                     else:
                         print 'No data read from UDP, misread count:', self.server.misread_count
@@ -233,5 +233,9 @@ class AudioDevice(InputDevice):
         elif msg_type=="processed":
             self.record_processed(msg)
             ''' TODO: ammend for the context of beats '''
-            return fft_message([band/1024.0 for band in msg])
+            # for x in xrange(7):
+            #     msg[x] = msg[x]/1024.0
+
+
+            return fft_message([band/1024.0 for band in msg[:7]] + msg[7:])
 
