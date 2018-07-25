@@ -84,7 +84,7 @@ class OutputDevice(Device):
         # Clear the queue
         while True:
             item = self.get_in_queue()
-
+            # print item
             # Break when finished
             if item is None:
                 break
