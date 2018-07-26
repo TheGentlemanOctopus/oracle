@@ -6,7 +6,7 @@ import swoopy_town
 import spiral_out_fast
 import carousel
 import lava_lamp
-import Talker
+import talker
 
 import utils
 

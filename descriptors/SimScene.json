@@ -50,12 +50,11 @@
                 }
             },
             "default_animation": {
-                "type": "SpiralOutFast",
+                "type": "Talker",
                 "args": {
-                    "r_slowness":1.2, 
-                    "g_slowness":1.7, 
-                    "b_slowness":2, 
-                    "overall_slowness":0.5
+                    "r":0.2, 
+                    "g":0.7, 
+                    "b":0.5
                 }
             }
         }
