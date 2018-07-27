@@ -20,9 +20,9 @@ class Talker(Animation):
         super(Talker, self).__init__()
         self.layout = layout
 
-        self.add_param("r", r_slowness, 0, 1)
-        self.add_param("g", g_slowness, 0, 1)
-        self.add_param("b", b_slowness, 0, 1)
+        self.add_param("r", r, 0, 1)
+        self.add_param("g", g, 0, 1)
+        self.add_param("b", b, 0, 1)
 
 
     def clear_pixels(self):
