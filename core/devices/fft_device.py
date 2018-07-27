@@ -24,7 +24,6 @@ class FftDevice(InputDevice):
         self.record_start_time = time.time()
 
     def main(self):
-        self.logger.info("FFT Started")
         self.fft_server.run()
 
     def process_in_queue(self):

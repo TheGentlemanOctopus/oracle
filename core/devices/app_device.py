@@ -13,5 +13,4 @@ class AppDevice(InputDevice):
         self.port=port
 
     def main(self, output_devices, fft_in_queue):
-    	self.logger.info("App Started")
         app_server.run(self.host, self.port, output_devices, fft_in_queue)

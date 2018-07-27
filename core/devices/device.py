@@ -25,9 +25,8 @@ class Device(object):
         raise NotImplementedException("Need to define main for %s"%self.__class__.__name__)
 
     def run_main(self, *args):
-        # TODO: Make this accept a device name
         self.logger = logging_handler_setup(self.name)
-        self.logger.info("Starting Process")
+        self.logger.info("Starting Process %s"%self.name)
         self.main(*args)
 
     def start(self, *args):
@@ -37,8 +36,12 @@ class Device(object):
         """
         p = Process(target=self.run_main, args=args)
         p.daemon = True
-        p.start()
-        return p
+        try:
+            p.start()
+            return p
+        except Exception as e:
+            raise e
+
 
     def get_in_queue(self):
         """
