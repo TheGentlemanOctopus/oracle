@@ -73,7 +73,7 @@ class AudioDevice(InputDevice):
         self.server = UdpServer(udp_ip=self.udp_ip, 
                 udp_port_rec=self.udp_port_rec, 
                 udp_port_send=self.udp_port_send)
-        self.server.connect()
+        self.server.connect(timeout=.5)
 
         ''' prepare history storage '''
         history_length = 30
@@ -139,8 +139,10 @@ class AudioDevice(InputDevice):
                             offsets = np.linspace(0, (12.0/7)*np.pi, 7)
                             levels = 512*(np.cos(2*np.pi*self.no_sound_frequency*time.time() + offsets) + 1)
                             fft_data = levels.tolist()
-                        else:
-                            self.data_out(["processed", fft_data+beat_data])
+                            beat_data = [1,0,1,0,0,0,0]
+
+                        
+                        self.data_out(["processed", fft_data+beat_data])
 
 
                     else:
