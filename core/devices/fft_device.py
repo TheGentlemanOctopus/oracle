@@ -5,6 +5,7 @@ import time
 from device import get_nowait
 from input_device import InputDevice
 from core.udp.fft_server import FftServer
+# from core.audioanalysis.server import AudioServer
 from core.devices.output_device import fft_message
 
 class FftDevice(InputDevice):
@@ -16,6 +17,7 @@ class FftDevice(InputDevice):
         super(FftDevice, self).__init__()
 
         # Wrap it up!
+
         self.fft_server = FftServer(self.out_queue, **fft_server_kwargs)
 
         # Recording flag

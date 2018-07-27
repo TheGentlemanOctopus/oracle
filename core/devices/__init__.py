@@ -10,6 +10,7 @@ import fft_device
 import app_device
 import wonderface_device
 import point_cloud_device
+import audio_device
 
 # Returns a list constructed devices given a list of initialisation data
 def construct_output_devices(output_devices_data_dict):
