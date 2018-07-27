@@ -31,12 +31,12 @@ class OutputDevice(Device):
         self.animation_cv = Condition()
         self.animation_queue = Queue()
 
-    def main(self):
+    def main(self, *args):
         """
             This should be called to start the process
         """
         sleep_timer = SleepTimer(1.0/self.fps)
-        self.logger.info("Process Started")
+        self.logger.info("Output Device Started")
         while True:
             sleep_timer.start()
 

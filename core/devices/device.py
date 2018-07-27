@@ -24,11 +24,11 @@ class Device(object):
         """
         raise NotImplementedException("Need to define main for %s"%self.__class__.__name__)
 
-    def run_main(self):
+    def run_main(self, *args):
         # TODO: Make this accept a device name
         self.logger = logging_handler_setup(self.name)
-        self.logger.info("starting Process")
-        self.main()
+        self.logger.info("Starting Process")
+        self.main(*args)
 
     def start(self, *args):
         """
