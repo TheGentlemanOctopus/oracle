@@ -10,6 +10,8 @@ from core.audioanalysis.beatdetection import BeatDetect
 # from core.audioanalysis.server import AudioServer
 from core.devices.output_device import fft_message
 
+import numpy as np
+
 class AudioDevice(InputDevice):
     """
         A wrapper around the hack fft server
@@ -23,7 +25,15 @@ class AudioDevice(InputDevice):
         self.udp_port_rec = fft_server_kwargs['data_port']
         self.udp_port_send = fft_server_kwargs['start_port']
         self.beat_args = fft_server_kwargs['beat_args']
+        self.quiet_timeout = fft_server_kwargs['quiet_timeout']
+        self.min_volume = fft_server_kwargs['no_mic_level']
+        self.no_sound_frequency = fft_server_kwargs['no_sound_frequency']
 
+        self.quiet = {
+            'too_quiet' : False,
+            'elapsed_time' : 0.0,
+            'too_quiet_start' : 0.0
+        }
 
         self.audio_data = []
 
@@ -105,8 +115,34 @@ class AudioDevice(InputDevice):
                                 beat_detectors[x].detect(bin_history[x][:])
                                 )
 
-                        # print fft_data+beat_data
-                        self.data_out(["processed", fft_data+beat_data])
+                        ''' react according to audio condition '''
+                        if self.calc_volume(fft_data) < self.min_volume:
+                            if not self.quiet['elapsed_time'] > 0.0:
+                                self.quiet['too_quiet_start'] = time.time()
+                            
+                            self.quiet['elapsed_time'] = time.time()-self.quiet['too_quiet_start']
+
+                            if self.quiet['elapsed_time'] > self.quiet_timeout:
+                                ''' go to sine wave '''
+                                self.too_quiet = True
+                            else:
+                                ''' stay with fft '''
+                                self.too_quiet = False
+                            
+                        else:
+                            self.quiet['elapsed_time'] = 0.0
+                            self.too_quiet = False
+                            
+
+                        if self.too_quiet:
+                            print 'too_quiet'
+                            offsets = np.linspace(0, (12.0/7)*np.pi, 7)
+                            levels = 512*(np.cos(2*np.pi*self.no_sound_frequency*time.time() + offsets) + 1)
+                            fft_data = levels.tolist()
+                        else:
+                            self.data_out(["processed", fft_data+beat_data])
+
+
                     else:
                         print 'No data read from UDP, misread count:', self.server.misread_count
                         if self.server.misread_count > 1:
@@ -118,7 +154,9 @@ class AudioDevice(InputDevice):
                 print 'is socket connected properly?'
             
 
-
+    def calc_volume(self,fft_channels):
+        # print sum(fft_channels)/len(fft_channels)
+        return sum(fft_channels)/len(fft_channels)
             
             
 

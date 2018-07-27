@@ -42,7 +42,7 @@ class Talker(Animation):
 
             if self.check_beat(ch_range=[x,x+1]):
                 self.pixel_its[x] = (self.pixel_its[x]+1)%30
-            self.layout.pixels[self.pixel_its[x]].color = (self.fft[x], self.fft[x+2], self.fft[x+1])    
+            self.layout.pixels[self.pixel_its[x]].color = (1.0, self.fft[x+2], self.fft[x+1])    
                 
         
 
