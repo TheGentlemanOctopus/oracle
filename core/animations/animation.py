@@ -3,6 +3,8 @@ import numpy as np
 from core.layouts.layout import Layout
 from param import Param
 
+from core.utilities import logging_handler_setup
+
 class Animation(object):
     """
         The animation class is used to generate a pattern for an OutputDevice
@@ -24,6 +26,11 @@ class Animation(object):
 
         # This defines the layout used for animation
         self.layout = Layout()
+        
+        self.name = self.__class__.__name__
+        # Make a logger object
+        self.logger = logging_handler_setup(self.name)
+
 
     @property
     def fft(self):
