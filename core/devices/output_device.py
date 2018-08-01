@@ -31,7 +31,7 @@ class OutputDevice(Device):
         self.animation_cv = Condition()
         self.animation_queue = Queue()
 
-    def main(self):
+    def main(self, *args):
         """
             This should be called to start the process
         """
