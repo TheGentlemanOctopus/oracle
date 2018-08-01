@@ -22,26 +22,7 @@ class Diffusion(Animation):
 
         self.pixels_np = np.array(self.pixels)
 
-        self.add_heat(200)
-        self.count = 0
-
         self.blur_speed = 0.5
-
-    def add_heat(self, num_pixels):
-        # For dev purposes
-        start = random.choice(range(len(self.pixels)))
-        for pixel in self.pixels[start:start+num_pixels]:
-            pixel.r = random.random() 
-
-        # For dev purposes
-        # start = random.choice(range(len(self.pixels)))
-        # for pixel in self.pixels[start:start+num_pixels]:
-        #     pixel.g = random.random() 
-
-        # For dev purposes
-        start = random.choice(range(len(self.pixels)))
-        for pixel in self.pixels[start:start+num_pixels]:
-            pixel.b = random.random()   
 
     def blur(self):
         """
@@ -62,12 +43,40 @@ class Diffusion(Animation):
             blur_intensity = np.mean([p.b for p in self.pixels_np[neighbour_indices]])
             pixel.b = self.blur_speed*blur_intensity + (1-self.blur_speed)*pixel.b
 
-    def update(self):
+    def update(self, blur_prob=0.2, num_heated_pixels=100):
+        """
+            Blurs pixels and randomly adds heat to random pixels sometimes
+            For illustrative purposes rather than actually pattern to be used
+        """
+        # Blur it up
         self.blur()
 
-        self.count+=1
-        print "count", self.count
+        # HACK : Setting heat_count here if its not previously defined
+        #   Doing this because I want to show how blur works and don't want extra 
+        #   vars that aren't useful in general inherited in the object
+        try:
+           self.heat_count
+        except AttributeError:
+           self.heat_count=0
 
-        if self.count > 50:
-            self.add_heat(100)
-            self.count=0
+        # Add some HEAT, sometimes
+        if random.random() < blur_prob:
+            self.add_random_heat(num_heated_pixels)
+
+    def add_random_heat(self, num_pixels, r_max=1, g_max=0.1, b_max=1):
+        """
+            Adds red and blue heat to a consecutive set of pixels form a random starting point
+            max is 0->1  
+        """ 
+        # TODO: DRY this up
+        start = random.choice(range(len(self.pixels)))
+        for pixel in self.pixels[start:start+num_pixels]:
+            pixel.r = random.random()*r_max
+
+        start = random.choice(range(len(self.pixels)))
+        for pixel in self.pixels[start:start+num_pixels]:
+            pixel.g = random.random()*g_max
+
+        start = random.choice(range(len(self.pixels)))
+        for pixel in self.pixels[start:start+num_pixels]:
+            pixel.b = random.random()*b_max 
