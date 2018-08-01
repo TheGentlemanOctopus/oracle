@@ -4,7 +4,7 @@ from output_device import OutputDevice
 from pixel import Pixel
 
 from core.layouts.pixel_list import PixelList
-from core.animations.spiral_out_fast import SpiralOutFast
+from core.animations.diffusion import Diffusion
 from core.point_clouds import load_point_cloud
 
 class PointCloudDevice(OutputDevice):
@@ -32,5 +32,5 @@ class PointCloudDevice(OutputDevice):
         # Set her up
         self.pixels_by_channel = {channel: pixel_list}
         self.layout = PixelList(pixel_list)
-        self.animation = SpiralOutFast(self.layout)
+        self.animation = Diffusion(self.layout)
 
