@@ -6,7 +6,7 @@ from sklearn.neighbors import kneighbors_graph
 import matplotlib.pyplot as plt
 import random
 
-class Diffusion(Animation):
+class Diffusor(Animation):
     def __init__(self, layout, num_neighbours=4):
         super(Diffusion, self).__init__()
         self.layout = layout
@@ -22,12 +22,15 @@ class Diffusion(Animation):
 
         self.pixels_np = np.array(self.pixels)
 
-        self.blur_speed = 0.5
+        # How quickly pixels blur (0->1)
+        self.add_param("blur_speed", 0.5, 0, 1)
 
     def blur(self):
         """
             Blur pixels by averaging over neighbouring pixel intensities for each color
         """
+        blur_speed = self.params["blur_speed"].value
+
         # Loop over each pixel
         for i, pixel in enumerate(self.pixels):
             # Neighbouring pixels
@@ -35,13 +38,13 @@ class Diffusion(Animation):
     
             # TODO: DRY this up
             blur_intensity = np.mean([p.r for p in self.pixels_np[neighbour_indices]])
-            pixel.r = self.blur_speed*blur_intensity + (1-self.blur_speed)*pixel.r
+            pixel.r = blur_speed*blur_intensity + (1-blur_speed)*pixel.r
 
             blur_intensity = np.mean([p.g for p in self.pixels_np[neighbour_indices]])
-            pixel.g = self.blur_speed*blur_intensity + (1-self.blur_speed)*pixel.g
+            pixel.g = blur_speed*blur_intensity + (1-blur_speed)*pixel.g
 
             blur_intensity = np.mean([p.b for p in self.pixels_np[neighbour_indices]])
-            pixel.b = self.blur_speed*blur_intensity + (1-self.blur_speed)*pixel.b
+            pixel.b = blur_speed*blur_intensity + (1-blur_speed)*pixel.b
 
     def update(self, blur_prob=0.2, num_heated_pixels=100):
         """
@@ -65,7 +68,7 @@ class Diffusion(Animation):
 
     def add_random_heat(self, num_pixels, r_max=1, g_max=0.1, b_max=1):
         """
-            Adds red and blue heat to a consecutive set of pixels form a random starting point
+            Adds red and blue heat to a consecutive set of pixels from a random starting point
             max is 0->1  
         """ 
         # TODO: DRY this up
