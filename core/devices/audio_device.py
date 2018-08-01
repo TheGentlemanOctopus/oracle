@@ -6,14 +6,17 @@ from device import get_nowait
 from input_device import InputDevice
 # from core.udp.fft_server import FftServer
 from core.udp.udp_server import UdpServer
-from core.audioanalysis.beatdetection import BeatDetect
+from core.audioanalysis.beat_detection import BeatDetect
 # from core.audioanalysis.server import AudioServer
 from core.devices.output_device import fft_message
 
 class AudioDevice(InputDevice):
     """
-        A wrapper around the hack fft server
-        TODO: merge fft_server into this
+        A wrapper around the hack fft server.
+        This class creats a udp server for the fft data,
+        processes the data through beat detection, then 
+        sends a 14 element array in to the queue. Thats
+        [0...fft....6,7....beats.....13]
     """
     def __init__(self, **fft_server_kwargs):
         super(AudioDevice, self).__init__()
@@ -66,7 +69,7 @@ class AudioDevice(InputDevice):
         self.server.connect()
 
         ''' prepare history storage '''
-        history_length = 30
+        history_length = self.beat_args['history_length']
         bin_history = [[] for x in xrange(7)]    
         ''' create beat detection object '''
         beat_detectors = [BeatDetect(wait=self.beat_args['wait'], threshold=self.beat_args['threshold'], history=history_length) for x in xrange(7)]

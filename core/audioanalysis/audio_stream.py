@@ -7,7 +7,7 @@ import os
 import platform
 import time
 
-class Audio():
+class AudioStream():
 
     def __init__(self, source=None, output=False):
         '''
@@ -15,20 +15,6 @@ class Audio():
             {'input':'mic','device':0,'datasize':2048} or 
             {'input':'wav','path':'resources/DaftPunk.wav','datasize':2048} 
         
-        Notes on pyaudio & sampling:
-            Notes on parameters - http://support.ircam.fr/docs/AudioSculpt/3.0/co/Window%20Size.html
-            - "RATE" is the "sampling rate", i.e. the number of frames per second
-                ... Nyquist theorem dictates that freqMax is half sample rate.
-            - "CHUNK" is the (arbitrarily chosen) number of frames the (potentially very long) signals are split into in this example
-            - Lowest detectable frequency:
-                
-                The duration of the window must be five time longer than the period of the signal, that is :
-                T(Window) = 5* T(Signal).
-
-                For instance, the window size for a 440 Hz signal should be  :
-                    5*(1/440)  : 0.025 seconds
-
-                F0 = 5*(44100/1024) = 215 Hz.
         '''
 
         p = pyaudio.PyAudio()
@@ -120,7 +106,7 @@ class Audio():
 
 if __name__ == '__main__':
 
-    audio = Audio(source={'input':'wav','path':'resources/DaftPunk.wav','datasize':2048},
+    audio = AudioStream(source={'input':'wav','path':'resources/DaftPunk.wav','datasize':2048},
                   output=True)
 
     while True:

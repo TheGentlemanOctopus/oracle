@@ -26,7 +26,8 @@
                 "beat_args":
                 {
                     "wait": 0.2,
-                    "threshold": 200
+                    "threshold": 200,
+                    "history_length": 30
                 }
             }
         },

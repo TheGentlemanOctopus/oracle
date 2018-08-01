@@ -2,11 +2,8 @@ import numpy as np
 import time
 from multiprocessing import Process, Queue
 
-# import matplotlib.pyplot as plt
-
-from audiostream import Audio
+from audio_stream import AudioStream
 from fft import Fft
-# from beatdetection import BeatDetect
 import socket
 
 class UdpClient():
@@ -129,7 +126,7 @@ class FftClient(Process):
                 audio = Audio(source={'input':'wav','path':'resources/DaftPunk.wav','datasize':self.datasize},
                         output=True)
             if self.mode == 'mic':
-                audio = Audio(source={'input':'mic','datasize':self.datasize, 'rate':self.frate},
+                audio = AudioStream(source={'input':'mic','datasize':self.datasize, 'rate':self.frate},
                         output=False)
 
             ''' create fft '''
