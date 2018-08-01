@@ -8,18 +8,23 @@ import random
 
 class Diffusor(Animation):
     def __init__(self, layout, num_neighbours=4):
+        """
+            An animation with diffusion (blurring) capabilities
+            Performs k-nearest neighbour to find the neighbours used for blurring
+        """
         super(Diffusion, self).__init__()
         self.layout = layout
 
         points = np.array([p.location for p in self.layout.pixels])
 
-        # TODO: I think triangulation would be better, this tends to give stitchy results
         # Adjacency Matrix: https://en.wikipedia.org/wiki/Adjacency_matrix
+        # TODO: I think triangulation would be better, this tends to give stitchy results
         self.points_graph = kneighbors_graph(points, num_neighbours, 
             mode='connectivity', 
             include_self=False
         ).toarray()
 
+        # TODO: Move this somewhere more generic
         self.pixels_np = np.array(self.pixels)
 
         # How quickly pixels blur (0->1)
@@ -27,15 +32,16 @@ class Diffusor(Animation):
 
     def blur(self):
         """
-            Blur pixels by averaging over neighbouring pixel intensities for each color
+            Blur (diffuse) pixels by averaging over neighbouring pixel intensities for each color
         """
         blur_speed = self.params["blur_speed"].value
 
         # Loop over each pixel
         for i, pixel in enumerate(self.pixels):
-            # Neighbouring pixels
+            # Find the neighbs
             neighbour_indices = np.nonzero(self.points_graph[i])
     
+            # Average across each color
             # TODO: DRY this up
             blur_intensity = np.mean([p.r for p in self.pixels_np[neighbour_indices]])
             pixel.r = blur_speed*blur_intensity + (1-blur_speed)*pixel.r
@@ -48,7 +54,7 @@ class Diffusor(Animation):
 
     def update(self, blur_prob=0.2, num_heated_pixels=100):
         """
-            Blurs pixels and randomly adds heat to random pixels sometimes
+            Blurs pixels and adds random heat to random pixels sometimes
             For illustrative purposes rather than actually pattern to be used
         """
         # Blur it up
