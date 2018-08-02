@@ -41,7 +41,6 @@ class BeatDetect():
         ''' decrement beat_history '''
         self.history-=1   
         self.history = np.array([ x for x in self.history if (x > 0)])
-        print 'x', len(self.history), self.history
         
 
 
