@@ -69,46 +69,30 @@ fmap = {
 
 class FaceSection():
 
-    modes = ['blank','fill','burst','ripple','fade','vu']
-    mode = 'blank'
 
-    def __init__(self, length=10):
+
+    def __init__(self, length=10,section='left'):
 
 
         self.length = length
+        self.section = section
 
-
-        self.master_col = [0.5,0.5,0.5]
-        self.target_master_col = [0.5,0.5,0.5]
-
-        self.ramp_up = 1.0
-        self.ramp_down = 1.0
-
-        self.period = 50.0 # second
-        self.width = 0.5
 
         self.cycle_start = time.time()
 
         self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
 
-        self.logger = logging_handler_setup('face section')
+        self.logger = logging_handler_setup('face section - %s'%self.section)
 
-        self.carrier = .5
+        
 
-    def update(self, *args):
+    def update(self, fft, carrier):
 
-        t_delta = time.time()-self.cycle_start
-        if t_delta > self.period:
-            self.cycle_start = time.time()
+        if self.check_beat(fft[8:10]):
+            panel_it = random.randint(0,len(fmap[self.section])-1)
+            h = random.uniform(carrier-.1, carrier+.1)
 
-        t_phase_b = t_delta / self.period
-        self.carrier = np.sin(t_phase_b)
-
-        if self.check_beat(args[0][8:10]):
-            panel_it = random.randint(0,len(fmap['left'])-1)
-            h = random.uniform(self.carrier-.1, self.carrier+.1)
-
-            for x in xrange(fmap['left'][panel_it][0],fmap['left'][panel_it][1]+1):
+            for x in xrange(fmap[self.section][panel_it][0],fmap[self.section][panel_it][1]+1):
                 self.temp_pixels[x] = colorsys.hsv_to_rgb(h,.9,.9)
 
         self.temp_pixels = self.decay_pixels()
@@ -155,7 +139,9 @@ class TestPanels(Animation):
         self.add_param("g", g, 0, 1)
         self.add_param("b", b, 0, 1)
         
-        self.left = FaceSection(length=fmap['stats']['l_pixels'])
+        self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
+        self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
+        self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
         self.cycle_start = time.time()
 
     def clear_pixels(self):
@@ -170,43 +156,45 @@ class TestPanels(Animation):
         g = self.params["g"].value
         b = self.params["b"].value
 
+
+
+
+
         self.clear_pixels()
         
-        speed = 10 #- ((1.01-fft[1])*3)
+        period = 50 #- ((1.01-fft[1])*3)
         t_delta = time.time()-self.cycle_start
-        if t_delta > speed:
+        if t_delta > period:
             self.cycle_start = time.time()
 
-        t_phase_b = t_delta / speed
+        t_phase = t_delta / period
 
-        # t_delta = time.time()-self.cycle_start
-        # if t_delta > self.period:
-        #     self.cycle_start = time.time()
+        self.carrier = np.sin(t_phase)
 
-        # t_phase_b = t_delta / self.period
-        # self.carrier = np.sin(t_phase_b)
+        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, self.carrier)):
+            old_pix.color = new_pix
 
-        # self.mouth.master_col = [0.0, self.fft[0], 0.0]
+        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, self.carrier)):
+            old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels, self.left.update(self.fft)):
+        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, self.carrier)):
             old_pix.color = new_pix
 
 
-        t = np.linspace(0, 1, fmap['stats']['l_pixels']+1)
-        sig = np.sin(2 * np.pi * (t+t_phase_b))
-        i = signal.square((2 * np.pi * 25 * (t-t_phase_b)), duty=(sig+1)/2)
+        t = np.linspace(0, 1, 512*3)
+        sig = np.sin(2 * np.pi * (t+(t_phase*5)))
+        i = signal.square((2 * np.pi * 25 * (t-(t_phase*5))), duty=(sig+1)/2)
         i+=1
         i/2
 
         bass_factor = np.power((self.fft[4]*10),3) / 1000.0
 
-        
-        for x in xrange(len(i)):
-            if i[x] > .8:
-                r = colorsys.hsv_to_rgb((self.left.carrier+(self.fft[0]/2.))%1.0,1.0,1.0)
-                # r = colorsys.hsv_to_rgb((self.left.carrier+(2.))%1.0,1.0,1.0)
-                p = [(c[0]+c[1])/2.0 for c in zip(r,self.pixels[x].color)]
-                self.pixels[x].color = p
+        # for x in xrange(len(i)):
+        #     if i[x] > .8:
+        #         # r = colorsys.hsv_to_rgb((self.carrier+(self.fft[0]/2.))%1.0,1.0,1.0)
+        #         r = colorsys.hsv_to_rgb((self.carrier+(.2))%1.0,1.0,1.0)
+        #         p = [(c[0]+c[1])/2.0 for c in zip(r,self.pixels[x].color)]
+        #         self.pixels[x].color = p
 
     
 

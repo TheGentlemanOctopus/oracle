@@ -48,7 +48,7 @@
                 "led_spacing" : 0.2,
                 "strip_spacing": 0.2,
                 "pixels_per_channel": {
-                    "1": 1170
+                    "1": 2048
                 }
             },
             "default_animation": {
