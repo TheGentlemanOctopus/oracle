@@ -17,7 +17,7 @@ class UdpServer():
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
-        self.sock.bind((self.ip, self.port_r))
+        self.sock.bind(('', self.port_r))
 
         self.sock.settimeout(timeout)
 
