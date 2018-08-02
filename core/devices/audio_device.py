@@ -72,7 +72,6 @@ class AudioDevice(InputDevice):
         return active
 
     def main(self):
-        
         self.server = UdpServer(udp_ip=self.udp_ip, 
                 udp_port_rec=self.udp_port_rec, 
                 udp_port_send=self.udp_port_send)

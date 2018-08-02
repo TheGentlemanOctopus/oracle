@@ -5,6 +5,7 @@ import numpy as np
 import time
 import random
 
+import colorsys
 
 
 ''' right 8 extra pixel '''
@@ -64,57 +65,6 @@ fmap = {
                 [300, 319]]
 }
 
-# right_face_panels = [[0,   27],
-#                 [28,  43],
-#                 [44,  65],
-#                 [66,  81],
-#                 [82,  91],
-#                 [92,  111],
-#                 [112, 135],
-#                 [136, 152],
-#                 [153, 165],
-#                 [166, 191],
-#                 [192, 214],
-#                 [215, 240],
-#                 [241, 263],
-#                 [264, 298],
-#                 [299, 318]]
-
-# centre_face_panels = [[0,   27],
-#                 [28,  53],
-#                 [54,  66],
-#                 [67,  80],
-#                 [81,  89],
-#                 [90,  102],
-#                 [103, 128],
-#                 [129, 155],
-#                 [156, 224],
-#                 [225, 241],
-#                 [242, 272],
-#                 [273, 289],
-#                 [290, 318],
-#                 [319, 338],
-#                 [339, 355],
-#                 [356, 385]]
-
-# left_face_panels = [[0,   27],
-#                 [28,  43],
-#                 [44,  65],
-#                 [66,  81],
-#                 [82,  91],
-#                 [92,  111],
-#                 [112, 136],
-#                 [137, 153],
-#                 [154, 166],
-#                 [167, 192],
-#                 [193, 215],
-#                 [216, 241],
-#                 [242, 264],
-#                 [265, 299],
-#                 [300, 319]]
-
-
-
 
 
 class FaceSection():
@@ -122,13 +72,11 @@ class FaceSection():
     modes = ['blank','fill','burst','ripple','fade','vu']
     mode = 'blank'
 
-    def __init__(self, pixels_ref, pixel_index=[0,0]):
+    def __init__(self, length=10):
 
-        self.start = pixel_index[0]
-        self.end = pixel_index[1]
-        self.length = self.end - self.start
 
-        self.pixels = pixels_ref
+        self.length = length
+
 
         self.master_col = [0.5,0.5,0.5]
         self.target_master_col = [0.5,0.5,0.5]
@@ -136,12 +84,12 @@ class FaceSection():
         self.ramp_up = 1.0
         self.ramp_down = 1.0
 
-        self.period = 30.0 # second
+        self.period = 50.0 # second
         self.width = 0.5
 
         self.cycle_start = time.time()
 
-        self.temp_pixels = [[0,0,0]] * fmap['stats']['total_pixels']
+        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
 
         self.logger = logging_handler_setup('face section')
 
@@ -153,31 +101,31 @@ class FaceSection():
             self.cycle_start = time.time()
 
         t_phase_b = t_delta / self.period
-
-
         carrier = np.sin(t_phase_b)
-        carrierb = np.sin(t_phase_b)
-
-        self.logger.debug("Carrier value %d"%carrier)
 
         if self.check_beat(args[0][8:10]):
-            # print 'beat'
+            # self.logger.debug('new panel')
             panel_it = random.randint(0,len(fmap['left'])-1)
-
             h = random.uniform(carrier-.1, carrier+.1)
-            v = random.uniform(carrier-.1, carrier+.1)
-            # b = random.uniform(0.0, 1.0)
-
 
             for x in xrange(fmap['left'][panel_it][0],fmap['left'][panel_it][1]+1):
-                self.pixels[x+self.start].set_hsv(h,0.9,.9)
+                self.temp_pixels[x] = colorsys.hsv_to_rgb(h,.9,.9)
 
+                # self.pixels[x+self.start].set_hsv(h,0.9,.9)
 
-        # print r
+        # print 'before decay', self.temp_pixels
+        self.temp_pixels = self.decay_pixels()
+        # print 'after decay', self.temp_pixels
+        return self.temp_pixels
         
+    def decay_pixels(self):
+        i = np.vectorize(self.add_random)
+        return i(self.temp_pixels,-.01,0.0)
+        
+    def add_random(self,x,lower,upper):
+        return x + random.uniform(lower,upper)
 
     def check_beat(self, beats):
-        # print beats
         if sum(beats) > 0:
             return True
         else:
@@ -207,17 +155,8 @@ class TestPanels(Animation):
         self.add_param("r", r, 0, 1)
         self.add_param("g", g, 0, 1)
         self.add_param("b", b, 0, 1)
-
-        # face_it = 15
-        # s = centre_face_panels[face_it][0]
-        # f = centre_face_panels[face_it][1]
-        # self.mouth = FaceSection(self.layout.pixels, pixel_index=[face_panels[face_it][0],face_panels[face_it][1]])
-        self.left = FaceSection(self.layout.pixels, pixel_index=[0,318])
-
-        # self.middle = FaceSection(self.layout.pixels, pixel_index=[512,512+385])
-        # self.right = FaceSection(self.layout.pixels, pixel_index=[(512*2),(512*2)+318])
         
-
+        self.left = FaceSection(length=fmap['stats']['l_pixels'])
 
 
     def clear_pixels(self):
@@ -232,17 +171,15 @@ class TestPanels(Animation):
         g = self.params["g"].value
         b = self.params["b"].value
 
-        # self.clear_pixels()
+        self.clear_pixels()
         
         # self.mouth.master_col = [0.0, self.fft[0], 0.0]
-        self.left.update(self.fft) 
-        # self.middle.update(self.fft) 
-        # self.right.update(self.fft)   
 
-        # self.eye.master_col = [self.fft[1], 0.0, 0.0]
-        # self.eye.update()  
-        # self.nose.master_col = [self.fft[3], 0.2, 0.7]
-        # self.nose.update(self.fft) 
+        for old_pix, new_pix in zip(self.layout.pixels, self.left.update(self.fft)):
+            # print old_pix.color, new_pix
+            old_pix.color = new_pix
+
+
 
     
 
