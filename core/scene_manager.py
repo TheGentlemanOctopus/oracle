@@ -121,6 +121,7 @@ class SceneManager(object):
 
                 if item is None:
                     break
+                # print item
 
                 # Pass onto output devices
                 for output_device in self.output_devices:
