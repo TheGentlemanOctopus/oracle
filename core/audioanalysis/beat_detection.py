@@ -2,38 +2,47 @@ import numpy as np
 import time
 
 class BeatDetect():
+    ''' Beat detection class.
+    @param wait is minimum seconds between beats. anything inbetween is ignored.
+    @param threshold is the minimum positive step change between samples
+    @history is the length of the list containing past beats for comparison. This 
+    is only currently used if you are the plot the beats along side the fft.
+
+    All arguments set in setup json file as "beats_args":{}
+    '''
 
     def __init__(self, wait=0.2, threshold=2, history=30):
         self.lastbeat = time.time()
         self.wait = wait
         self.threshold = threshold
         self.history_length = history
-        self.history = []
-        self.beat = 0
+        self.history = np.array([])
 
     def detect(self, window):
+        ''' detect compares current value against the mean value 
+        of the history list. If greater than mean by a step of threshold
+        then a beat is acknowledged. A beat cannot then be acknowledged 
+        until a period 'wait' has passed '''
 
         self.decrement_history()
 
         ave = sum(window[:-1])/(len(window)-1)
         dif = time.time()-self.lastbeat
 
-        if ((window[-1] - ave) > self.threshold) and ((time.time()-self.lastbeat) > self.wait):
+        if ((window[-1] - ave) > self.threshold) and (dif > self.wait):
             self.lastbeat = time.time()
-            # print 'beat', dif
-            self.beat = 1 # toggle beat
-            self.history.append(self.history_length-1)
-            return self.beat
+            self.history = np.append(self.history, self.history_length-1)
+            # self.history.append(self.history_length-1)
+            return 1
         else:
-            self.beat = 0
-            return self.beat
+            return 0
 
     def decrement_history(self):
         ''' decrement beat_history '''
-        for x in xrange(len(self.history)):
-            self.history[x]-=1
-        self.history = [ x for x in self.history if (x > 0)]
-        pass
+        self.history-=1   
+        self.history = np.array([ x for x in self.history if (x > 0)])
+        print 'x', len(self.history), self.history
+        
 
 
 if __name__ == '__main__':
