@@ -93,37 +93,36 @@ class FaceSection():
 
         self.logger = logging_handler_setup('face section')
 
-    def update(self, *args):
+        self.carrier = .5
 
+    def update(self, *args):
 
         t_delta = time.time()-self.cycle_start
         if t_delta > self.period:
             self.cycle_start = time.time()
 
         t_phase_b = t_delta / self.period
-        carrier = np.sin(t_phase_b)
+        self.carrier = np.sin(t_phase_b)
 
         if self.check_beat(args[0][8:10]):
-            # self.logger.debug('new panel')
             panel_it = random.randint(0,len(fmap['left'])-1)
-            h = random.uniform(carrier-.1, carrier+.1)
+            h = random.uniform(self.carrier-.1, self.carrier+.1)
 
             for x in xrange(fmap['left'][panel_it][0],fmap['left'][panel_it][1]+1):
                 self.temp_pixels[x] = colorsys.hsv_to_rgb(h,.9,.9)
 
-                # self.pixels[x+self.start].set_hsv(h,0.9,.9)
-
-        # print 'before decay', self.temp_pixels
         self.temp_pixels = self.decay_pixels()
-        # print 'after decay', self.temp_pixels
         return self.temp_pixels
+
         
     def decay_pixels(self):
         i = np.vectorize(self.add_random)
         return i(self.temp_pixels,-.01,0.0)
+
         
     def add_random(self,x,lower,upper):
         return x + random.uniform(lower,upper)
+
 
     def check_beat(self, beats):
         if sum(beats) > 0:
@@ -157,7 +156,7 @@ class TestPanels(Animation):
         self.add_param("b", b, 0, 1)
         
         self.left = FaceSection(length=fmap['stats']['l_pixels'])
-
+        self.cycle_start = time.time()
 
     def clear_pixels(self):
         for i in range(len(self.pixels)):
@@ -173,13 +172,41 @@ class TestPanels(Animation):
 
         self.clear_pixels()
         
+        speed = 10 #- ((1.01-fft[1])*3)
+        t_delta = time.time()-self.cycle_start
+        if t_delta > speed:
+            self.cycle_start = time.time()
+
+        t_phase_b = t_delta / speed
+
+        # t_delta = time.time()-self.cycle_start
+        # if t_delta > self.period:
+        #     self.cycle_start = time.time()
+
+        # t_phase_b = t_delta / self.period
+        # self.carrier = np.sin(t_phase_b)
+
         # self.mouth.master_col = [0.0, self.fft[0], 0.0]
 
         for old_pix, new_pix in zip(self.layout.pixels, self.left.update(self.fft)):
-            # print old_pix.color, new_pix
             old_pix.color = new_pix
 
 
+        t = np.linspace(0, 1, fmap['stats']['l_pixels']+1)
+        sig = np.sin(2 * np.pi * (t+t_phase_b))
+        i = signal.square((2 * np.pi * 25 * (t-t_phase_b)), duty=(sig+1)/2)
+        i+=1
+        i/2
+
+        bass_factor = np.power((self.fft[4]*10),3) / 1000.0
+
+        
+        for x in xrange(len(i)):
+            if i[x] > .8:
+                r = colorsys.hsv_to_rgb((self.left.carrier+(self.fft[0]/2.))%1.0,1.0,1.0)
+                # r = colorsys.hsv_to_rgb((self.left.carrier+(2.))%1.0,1.0,1.0)
+                p = [(c[0]+c[1])/2.0 for c in zip(r,self.pixels[x].color)]
+                self.pixels[x].color = p
 
     
 
