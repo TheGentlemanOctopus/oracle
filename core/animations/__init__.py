@@ -7,7 +7,7 @@ import spiral_out_fast
 import carousel
 import lava_lamp
 import talker
-import test_panels
+import panel_beat
 
 import utils
 

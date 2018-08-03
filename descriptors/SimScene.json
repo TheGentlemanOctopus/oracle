@@ -52,7 +52,7 @@
                 }
             },
             "default_animation": {
-                "type": "TestPanels",
+                "type": "PanelBeat",
                 "args": {
                     "r":0.2, 
                     "g":0.7, 
