@@ -48,7 +48,14 @@
                 "led_spacing": 0.1,
                 "strip_spacing": 0.2,
                 "channel": 1,
-                "hw_chan_length": 512
+                "hw_chan_length": 512,
+                
+                "face_sections": [
+                    "left",
+                    "centre",
+                    "right",
+                    "cube"
+                ]
             },
             "default_animation": {
                 "type": "PanelBeat",
