@@ -9,6 +9,7 @@ import lava_lamp
 import talker
 import panel_beat
 import waves
+import fire_glow
 
 import utils
 

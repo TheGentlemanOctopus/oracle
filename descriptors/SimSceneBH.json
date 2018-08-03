@@ -58,7 +58,7 @@
                 ]
             },
             "default_animation": {
-                "type": "PanelBeat",
+                "type": "FireGlow",
                 "args": {
                     "r":0.2, 
                     "g":0.7, 
