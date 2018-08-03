@@ -37,7 +37,7 @@ class FaceSection():
 
     def update(self, fft, decay_time):
 
-        if self.check_beat(fft[8:10]):
+        if self.check_beat(fft[8:15]):
         
             panel_count = 0
             while True:
@@ -66,12 +66,12 @@ class FaceSection():
 
                 yh = 0.2
                 ys = 0.75
-                yv = np.cos(self.fire_waves[panel_index]*x)
+                yv = np.sin(self.fire_waves[panel_index]*x*0.5)
                 
 
                 # print(h,s,v)
 
-                self.temp_pixels[x] = np.array(colorsys.hsv_to_rgb(yh,ys,yv))* np.array(colorsys.hsv_to_rgb(rh,rs,rv))
+                self.temp_pixels[x] = np.array(colorsys.hsv_to_rgb(yh,ys,yv)) + np.array(colorsys.hsv_to_rgb(rh,rs,rv))
 
             self.fire_waves[panel_index] = self.fire_waves[panel_index] * 0.9
             self.fire_time_delta[panel_index] = time.time() - self.fire_time[panel_index]
