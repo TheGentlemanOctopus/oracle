@@ -116,7 +116,7 @@ class FaceSection():
 
  
 
-class TestPanels(Animation):
+class PanelBeat(Animation):
     layout_type = "Layout"
 
     end = 30
@@ -130,7 +130,7 @@ class TestPanels(Animation):
         b=0.0
 
     ):
-        super(TestPanels, self).__init__()
+        super(PanelBeat, self).__init__()
         self.layout = layout
 
         strip_length =512
