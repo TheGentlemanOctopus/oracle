@@ -51,7 +51,7 @@
                 "hw_chan_length": 512
             },
             "default_animation": {
-                "type": "TestPanels",
+                "type": "PanelBeat",
                 "args": {
                     "r":0.2, 
                     "g":0.7, 
