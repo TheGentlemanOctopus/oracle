@@ -47,22 +47,12 @@ class FaceSection():
 
         self.fft_history = np.insert(self.fft_history[0:-1],0,fft[3])
 
-        # sig = signal.sawtooth((2 * np.pi * 2 * (t+t_phase_b)), width=0.75)
-        # base_col = signal.square((2 * np.pi * 25 * (t+t_phase_b)), duty=(sig+1)/2)
-        # base_col = signal.square((2 * np.pi * 25 * (t+t_phase_b)), duty=0.75)
-        
-        # base_hue = (0.1+(fft[1]*0.4))
         base_hue = (t_phase_b+(.1*fft[1]))
-        # hues = np.array([base_hue]*(self.length+1))
+
+        bass_square = (signal.square((2 * np.pi * 3 * (t+t_phase_b)), duty=fft[2]*.7)+1.0)/2.0
 
 
-        bass_square = signal.square((2 * np.pi * 3 * (t+t_phase_b)), duty=fft[2]*.7)
-        bass_square+=1
-        bass_square/=2
-
-        bass_squareb = signal.square((2 * np.pi * 2 * (t-t_phase_b)), duty=fft[4]*.3)
-        bass_squareb+=1
-        bass_squareb/=2
+        bass_squareb = (signal.square((2 * np.pi * 2 * (t-t_phase_b)), duty=fft[4]*.3)+1)/2.0
 
         hues = ((np.array([base_hue]*(self.length+1))) + (accent_wave*fft[1]*.001))%1.0
 
@@ -73,63 +63,10 @@ class FaceSection():
         hues+=((bass_square*0.5)%1.0)
 
         hues+= ((self.fft_history*0.2)%1.0)
-        # # hues+=1
-        # # hues/=2
-
-        # base_col+=sig
-        # base_col+=1
-        # base_col/=2
-        # base_col+=0.2
-        # base_col = np.clip(base_col, 0,1)
-
-        # values = base_col
-
-        # accent_col = signal.square((2 * np.pi * (25*fft[3]) * (t+t_phase_b*3)),duty=fft[1])
         
-
-        # # values+= accent_col 
-        # hues += accent_col
-
-        # hues = np.clip(hues, 0,1)
-
-        # hues = np.mod(hues,1.0)
-        # # print hues
-        ''' --- '''
-        # base_col = signal.square((2 * np.pi * (25*fft[3]) * (t+t_phase_b*3)))
-
-        # b = signal.sawtooth((2 * np.pi * 6 * (t+t_phase_b)), width=0.25)*fft[1]
-        # b+=1
-        # b/=2
-
-        # g = signal.sawtooth((2 * np.pi * 2 * (t-t_phase_b)), width=0.75)*fft[2]
-        # g+=1
-        # g/=1
-
-        # r = signal.square((2 * np.pi * (25*fft[3]) * (t+t_phase_b*3)))
-        # r+=1
-        # r/=2
-        # r*=fft[3]
-
-        # b_bass = signal.sawtooth((2 * np.pi * 1 * (t+t_phase_b)), width=0.25)*fft[1]
-        # b_bass+=1
-        # b_bass/=4
-
-        # b+=b_bass
-        # b = np.clip(0,.99,b)
-
-        # r-=b_bass
-        # r = np.clip(0,1,r)
-        # g-=b_bass
-        # g = np.clip(0,1,g)
-
-        # print r
         for x in xrange(0,self.length):
-            # self.pixels[x+self.start].color = (r[x],g[x],b[x])
 
             self.temp_pixels[x] = colorsys.hsv_to_rgb(hues[x],0.9,bass_square[x])
-
-
-            # self.pixels[x+self.start].set_hsv(hues[x],0.9,bass_square[x])
 
         return self.temp_pixels
  
@@ -149,17 +86,13 @@ class Square():
         colA = colorsys.hsv_to_rgb(hue,.90,.90)
         colB = colorsys.hsv_to_rgb((hue+.5)%1.0,.90,.90)
         self.vu_fill(vu_level,colA,colB)
-
         return self.temp_pixels
 
 
     def vu_fill(self, vu_value, colorA, colorB):
         pixel_target = int(vu_value*(self.length))
-        # print pixel_target
-        # pixel_target = 29*3
         self.vu_up(pixel_target,colorA)
         self.vu_down(pixel_target,colorA, colorB)
-
 
 
     def vu_up(self,pixel_target,color):

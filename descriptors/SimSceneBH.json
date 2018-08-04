@@ -22,7 +22,7 @@
                 "autogainEnable": 0,
                 "no_sound_frequency": 0.2,
                 "ambient_level": 512,
-                "no_mic_level": 300,
+                "no_mic_level": 100,
                 "quiet_timeout": 15.0,
                 "beat_args":
                 {
@@ -51,7 +51,7 @@
                 "hw_chan_length": 512
             },
             "default_animation": {
-                "type": "Waves",
+                "type": "PanelBeat",
                 "args": {
                     "r":0.2, 
                     "g":0.7, 
