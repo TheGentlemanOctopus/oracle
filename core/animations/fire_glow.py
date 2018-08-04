@@ -40,8 +40,16 @@ class FaceSection():
 
             self.fire_reset_time.append(0)
             self.fire_reset_time_delta.append(0)
+
+        self.time_start = 0
+        self.time_delta = 0
+        self.time_period = 0
             
-    def update(self, fft, reset_time, decay_time):
+    def update(self, fft, reset_time, decay_time, colour_time):
+
+        self.time_delta = time.time() - self.time_start
+        self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.5
+        # print self.time_period
 
         if self.check_beat(fft[8:10]):
         
@@ -49,7 +57,7 @@ class FaceSection():
             while True:
                 panel_it = random.randint(0,len(fmap[self.section])-1)
                 if self.fire_reset_time_delta[panel_it] > reset_time:
-                    self.fire_waves[panel_it] = 0.5
+                    self.fire_waves[panel_it] = 0.7
                     self.fire_reset_time[panel_it] = time.time()
                     break
                 else:
@@ -63,9 +71,11 @@ class FaceSection():
 
         for panel_index, panel in enumerate(fmap[self.section]):
 
+
             for x in xrange(panel[0],panel[1]+1):
                 
-                rh = np.sin(2*np.pi*self.fire_reset_time_delta[panel_index]*x) % 0.15
+
+                rh = (np.sin(2*np.pi*self.fire_reset_time_delta[panel_index]*np.sin(x)) % 0.15) + self.time_period
                 # print rh
                 rs = 1
                 rv = np.sin(2*np.pi*self.fire_waves[panel_index]*x)
@@ -85,8 +95,9 @@ class FaceSection():
             self.fire_decay_time_delta[panel_index] = time.time() - self.fire_decay_time[panel_index]
             
             if self.fire_decay_time_delta[panel_index] > decay_time:
-                self.fire_waves[panel_index] = self.fire_waves[panel_index] * 0.9
+                self.fire_waves[panel_index] = self.fire_waves[panel_index] * 0.8
                 self.fire_decay_time[panel_index] = time.time()
+
         # self.temp_pixels = self.decay_pixels()
         return self.temp_pixels
 
@@ -135,6 +146,7 @@ class FireGlow(Animation):
         self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
         self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
         self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
+        self.cube = FaceSection(length=fmap['stats']['cube_pixel'],section='cube')
         self.cycle_start = time.time()
 
     def clear_pixels(self):
@@ -149,8 +161,8 @@ class FireGlow(Animation):
         g = self.params["g"].value
         b = self.params["b"].value
         fire_reset = 2
-        fire_decay = 0.01
-
+        fire_decay = 0.05
+        colour_time = 5
 
         self.clear_pixels()
         
@@ -162,13 +174,15 @@ class FireGlow(Animation):
         t_phase = t_delta / period
 
         self.carrier = np.sin(t_phase)
-        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, fire_reset, fire_decay)):
+        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, fire_reset, fire_decay, colour_time)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, fire_reset, fire_decay)):
+        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, fire_reset, fire_decay, colour_time)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_reset, fire_decay)):
+        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_reset, fire_decay, colour_time)):
             old_pix.color = new_pix
 
+        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixel']], self.cube.update(self.fft, fire_reset, fire_decay, colour_time)):
+            old_pix.color = new_pix
     
