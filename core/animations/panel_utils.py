@@ -12,7 +12,7 @@ fmap = {
         'r_pixels' : 319,
         'c_pixels' : 386,
         'l_pixels' : 320,
-        'cube_pixel' : 348
+        'cube_pixels' : 348
     },
     'right' : [[0,   27],
                 [28,  43],

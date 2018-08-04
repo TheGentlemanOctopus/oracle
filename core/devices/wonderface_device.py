@@ -22,7 +22,7 @@ class WonderfaceDevice(OutputDevice):
         # For placing strips
         start = np.array(([0,0,0])).astype(float)
         direction = np.array([1,0,0]).astype(float)
-        strip_offset = np.array([0, strip_spacing, 0]).astype(float)
+        strip_offset = np.array([1, strip_spacing, 1]).astype(float)
 
         # Form one strip per channel
         pixels = []

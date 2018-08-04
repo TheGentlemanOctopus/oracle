@@ -1,6 +1,6 @@
 from animation import Animation
 from core.utilities import logging_handler_setup
-from panel_utils import fmap, FaceSection
+from panel_utils import fmap
 
 from scipy import signal
 import numpy as np

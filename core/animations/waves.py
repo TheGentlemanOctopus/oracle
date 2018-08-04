@@ -1,22 +1,11 @@
 from animation import Animation
 from core.utilities import logging_handler_setup
+from panel_utils import fmap
 from scipy import signal
 import numpy as np
 import time
+import colorsys
 
-face_map = {
-    
-    'left': {
-
-    },
-    'centre': {
-        'chin':[0,19],
-        'mouth':[20,29]
-    },
-    'right': {
-
-    }
-}
 
 
 class FaceSection():
@@ -24,20 +13,21 @@ class FaceSection():
     modes = ['blank','fill','burst','ripple','fade','vu']
     mode = 'blank'
 
-    def __init__(self, pixels_ref, pixel_index=[0,0]):
+    def __init__(self, length=10,section='left'):
 
-        self.start = pixel_index[0]
-        self.end = pixel_index[1]
-        self.length = self.end - self.start
+        
+        self.length = length
+        self.section = section
 
-        self.pixels = pixels_ref
-
-        self.period = 2.0 # second
+        self.period = 10.0 # second
         self.width = 0.5
 
         self.cycle_start = time.time()
 
         self.fft_history = np.array([0.0]*(self.length+1))
+
+        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
+
 
     def update(self, *args):
 
@@ -61,7 +51,8 @@ class FaceSection():
         # base_col = signal.square((2 * np.pi * 25 * (t+t_phase_b)), duty=(sig+1)/2)
         # base_col = signal.square((2 * np.pi * 25 * (t+t_phase_b)), duty=0.75)
         
-        base_hue = (0.3+(fft[1]*0.2))
+        # base_hue = (0.1+(fft[1]*0.4))
+        base_hue = (t_phase_b+(.1*fft[1]))
         # hues = np.array([base_hue]*(self.length+1))
 
 
@@ -132,12 +123,99 @@ class FaceSection():
         # g = np.clip(0,1,g)
 
         # print r
-        for x in xrange(0,self.length+1):
+        for x in xrange(0,self.length):
             # self.pixels[x+self.start].color = (r[x],g[x],b[x])
 
-            self.pixels[x+self.start].set_hsv(hues[x],0.9,bass_square[x])
+            self.temp_pixels[x] = colorsys.hsv_to_rgb(hues[x],0.9,bass_square[x])
 
+
+            # self.pixels[x+self.start].set_hsv(hues[x],0.9,bass_square[x])
+
+        return self.temp_pixels
  
+
+
+class Square():
+
+    def __init__(self,length=29):
+
+        self.length = length
+        self.strip_length = length/4
+        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
+
+    def update(self,fft,hue):
+        self.fill()
+        vu_level = sum(fft[:7])/7.0
+        colA = colorsys.hsv_to_rgb(hue,.90,.90)
+        colB = colorsys.hsv_to_rgb((hue+.5)%1.0,.90,.90)
+        self.vu_fill(vu_level,colA,colB)
+
+        return self.temp_pixels
+
+
+    def vu_fill(self, vu_value, colorA, colorB):
+        pixel_target = int(vu_value*(self.length))
+        # print pixel_target
+        # pixel_target = 29*3
+        self.vu_up(pixel_target,colorA)
+        self.vu_down(pixel_target,colorA, colorB)
+
+
+
+    def vu_up(self,pixel_target,color):
+        ''' bottom up '''
+        for x in xrange(0,pixel_target,1):
+            self.temp_pixels[x] += color
+
+
+    def vu_down(self,pixel_target,color,overlapcol):
+        ''' top down '''
+        for x in xrange(self.length-1,self.length-(pixel_target+1),-1):
+            if np.array_equal(self.temp_pixels[x], np.array([0.0,0.0,0.0])):
+                self.temp_pixels[x] += color
+            else:
+                self.temp_pixels[x] = overlapcol
+        
+    def fill(self,c=[0.0,0.0,0.0]):
+        for x in xrange(len(self.temp_pixels)):
+            self.temp_pixels[x] = np.array(c)
+
+
+class Cube():
+
+    def __init__(self, length=10,section='left'):
+
+        
+        self.length = length
+        self.section = section
+        self.square_length = self.length/3
+
+        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
+
+        self.squareA = Square(length=self.length/3)
+        self.hue = 0.1
+
+
+
+    def update(self, *args):
+
+        # self.clear_pixels()
+        fft = args[0]
+        vu_level = fft[2]
+        
+
+        
+        self.temp_pixels[:self.square_length] = self.squareA.update(fft,self.hue)
+        self.temp_pixels[self.square_length:2*self.square_length] = self.temp_pixels[:self.square_length]
+        self.temp_pixels[2*self.square_length:3*self.square_length] = self.temp_pixels[:self.square_length]
+
+        self.hue = (self.hue+0.001)%1.0
+        return self.temp_pixels
+ 
+    def clear_pixels(self):
+        for x in xrange(len(self.temp_pixels)):
+            self.temp_pixels[x] = np.array([0.0,0.0,0.0])
+
 
 class Waves(Animation):
     layout_type = "Layout"
@@ -160,13 +238,15 @@ class Waves(Animation):
         self.add_param("g", g, 0, 1)
         self.add_param("b", b, 0, 1)
 
-        self.mouth = FaceSection(self.layout.pixels, pixel_index=[0,100])
-        
+        self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
+        self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
+        self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
+        self.cube = Cube(length=fmap['stats']['cube_pixels'],section='cube')
+
+        # self.cube = Cube(length=300,section='cube')
 
         self.logger = logging_handler_setup('hsv test')
-        self.logger.info('Animation hsv test')
-
-        print 'HSV HSV HSV'
+        self.logger.info('Animation waves')
 
 
 
@@ -182,14 +262,24 @@ class Waves(Animation):
         g = self.params["g"].value
         b = self.params["b"].value
 
-        self.clear_pixels()
+        # self.clear_pixels()
+
         
-        # self.mouth.master_col = [0.0, self.fft[0], 0.0]
-        self.mouth.update(self.fft)       
-        # self.eye.master_col = [self.fft[1], 0.0, 0.0]
-        # self.eye.update()  
-        # self.nose.master_col = [self.fft[3], 0.2, 0.7]
-        # self.nose.update(self.fft) 
+        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft)):
+            old_pix.color = new_pix
+
+        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft)):
+            old_pix.color = new_pix
+
+        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft)):
+            old_pix.color = new_pix
+
+        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixels']], self.cube.update(self.fft)):
+            old_pix.color = new_pix
+
+        # for old_pix, new_pix in zip(self.layout.pixels[0:0+fmap['stats']['cube_pixels']], self.cube.update(self.fft)):
+        #     old_pix.color = new_pix
+
 
     def check_beat(self, ch_range=[0,3]):
         if sum(self.fft[7+ch_range[0]:7+ch_range[1]]) > 0:
