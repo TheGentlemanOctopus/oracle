@@ -28,23 +28,29 @@ class FaceSection():
 
         self.logger = logging_handler_setup('face section - %s'%self.section)
         self.fire_waves = []
-        self.fire_time = []
-        self.fire_time_delta = []
+        self.fire_decay_time = []
+        self.fire_decay_time_delta = []
+
+        self.fire_reset_time = []
+        self.fire_reset_time_delta = []
         for panel_index in range(len(fmap[self.section])):
             self.fire_waves.append(0.0) 
-            self.fire_time.append(0)
-            self.fire_time_delta.append(0)
+            self.fire_decay_time.append(0)
+            self.fire_decay_time_delta.append(0)
 
-    def update(self, fft, decay_time):
+            self.fire_reset_time.append(0)
+            self.fire_reset_time_delta.append(0)
+            
+    def update(self, fft, reset_time, decay_time):
 
-        if self.check_beat(fft[8:15]):
+        if self.check_beat(fft[8:10]):
         
             panel_count = 0
             while True:
                 panel_it = random.randint(0,len(fmap[self.section])-1)
-                if self.fire_time_delta[panel_it] > decay_time:
-                    self.fire_waves[panel_it] = 0.9
-                    self.fire_time[panel_it] = time.time()
+                if self.fire_reset_time_delta[panel_it] > reset_time:
+                    self.fire_waves[panel_it] = 0.5
+                    self.fire_reset_time[panel_it] = time.time()
                     break
                 else:
                     panel_count = panel_count+1
@@ -59,22 +65,28 @@ class FaceSection():
 
             for x in xrange(panel[0],panel[1]+1):
                 
-                rh = 0.0
-                rs = 0.9
-                rv = np.sin(self.fire_waves[panel_index]*x)
+                rh = np.sin(2*np.pi*self.fire_reset_time_delta[panel_index]*x) % 0.15
+                # print rh
+                rs = 1
+                rv = np.sin(2*np.pi*self.fire_waves[panel_index]*x)
                 
 
-                yh = 0.2
-                ys = 0.75
-                yv = np.sin(self.fire_waves[panel_index]*x*0.5)
+                # yh = 0.1
+                # ys = 1
+                # yv = np.sin(2*np.pi*self.fire_waves[panel_index]*(x+5))
                 
 
                 # print(h,s,v)
 
-                self.temp_pixels[x] = np.array(colorsys.hsv_to_rgb(yh,ys,yv)) + np.array(colorsys.hsv_to_rgb(rh,rs,rv))
+                self.temp_pixels[x] = (np.array(colorsys.hsv_to_rgb(rh,rs,rv)))# + (np.array(colorsys.hsv_to_rgb(yh,ys,yv)))
 
-            self.fire_waves[panel_index] = self.fire_waves[panel_index] * 0.9
-            self.fire_time_delta[panel_index] = time.time() - self.fire_time[panel_index]
+            
+            self.fire_reset_time_delta[panel_index] = time.time() - self.fire_reset_time[panel_index]
+            self.fire_decay_time_delta[panel_index] = time.time() - self.fire_decay_time[panel_index]
+            
+            if self.fire_decay_time_delta[panel_index] > decay_time:
+                self.fire_waves[panel_index] = self.fire_waves[panel_index] * 0.9
+                self.fire_decay_time[panel_index] = time.time()
         # self.temp_pixels = self.decay_pixels()
         return self.temp_pixels
 
@@ -136,7 +148,9 @@ class FireGlow(Animation):
         r = self.params["r"].value
         g = self.params["g"].value
         b = self.params["b"].value
-        fire_decay = 4
+        fire_reset = 2
+        fire_decay = 0.01
+
 
         self.clear_pixels()
         
@@ -148,13 +162,13 @@ class FireGlow(Animation):
         t_phase = t_delta / period
 
         self.carrier = np.sin(t_phase)
-        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, fire_decay)):
+        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, fire_reset, fire_decay)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, fire_decay)):
+        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, fire_reset, fire_decay)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_decay)):
+        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_reset, fire_decay)):
             old_pix.color = new_pix
 
     
