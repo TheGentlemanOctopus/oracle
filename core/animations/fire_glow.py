@@ -1,6 +1,6 @@
 from animation import Animation
 from core.utilities import logging_handler_setup
-from panel_utils import fmap
+from panel_utils import fmap, spatial_fmap
 
 from scipy import signal
 import numpy as np
@@ -33,13 +33,18 @@ class FaceSection():
 
         self.fire_reset_time = []
         self.fire_reset_time_delta = []
-        for panel_index in range(len(fmap[self.section])):
+
+        self.panel_on = []
+
+        for panel_index in range(len(spatial_fmap[self.section])):
             self.fire_waves.append(0.0) 
             self.fire_decay_time.append(0)
             self.fire_decay_time_delta.append(0)
 
             self.fire_reset_time.append(0)
             self.fire_reset_time_delta.append(0)
+
+            self.panel_on.append(False)
 
         self.time_start = 0
         self.time_delta = 0
@@ -51,60 +56,51 @@ class FaceSection():
         self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.5
         # print self.time_period
 
-        if self.check_beat(fft[8:10]):
+
+
+        if self.check_beat(fft[7:11]):
         
             panel_count = 0
-            while True:
-                panel_it = random.randint(0,len(fmap[self.section])-1)
+
+
+            for panel_it in range(len(spatial_fmap[self.section])):
+                
                 if self.fire_reset_time_delta[panel_it] > reset_time:
+                    self.panel_on[panel_it] = False
+
+                if self.panel_on[panel_it] == False:
                     self.fire_waves[panel_it] = 0.7
                     self.fire_reset_time[panel_it] = time.time()
-                    break
-                else:
-                    panel_count = panel_count+1
-                    if panel_count > len(fmap[self.section])-1:
-                        break
+                    self.panel_on[panel_it] = True
+                    break   
 
 
 
-
-
-        for panel_index, panel in enumerate(fmap[self.section]):
-
-
+        for panel_index, panel in enumerate(spatial_fmap[self.section]):
+            pixel_length = panel[1]+1-panel[0]
             for x in xrange(panel[0],panel[1]+1):
-                
-
-                rh = (np.sin(2*np.pi*self.fire_reset_time_delta[panel_index]*np.sin(x)) % 0.15) + self.time_period
-                # print rh
-                rs = 1
-                rv = np.sin(2*np.pi*self.fire_waves[panel_index]*x)
-                
-
-                # yh = 0.1
-                # ys = 1
-                # yv = np.sin(2*np.pi*self.fire_waves[panel_index]*(x+5))
-                
-
-                # print(h,s,v)
-
-                self.temp_pixels[x] = (np.array(colorsys.hsv_to_rgb(rh,rs,rv)))# + (np.array(colorsys.hsv_to_rgb(yh,ys,yv)))
+                x_duty = (float(x-panel[0])*self.fire_waves[panel_index])/float(pixel_length)
+                rh = (np.sin(x) % 0.15) + self.time_period
+                rs = 1.0
+                rv = np.sin(x_duty*self.fire_decay_time[panel_index])%15
+                self.temp_pixels[x] = (np.array(colorsys.hsv_to_rgb(rh,rs,rv)))
 
             
             self.fire_reset_time_delta[panel_index] = time.time() - self.fire_reset_time[panel_index]
             self.fire_decay_time_delta[panel_index] = time.time() - self.fire_decay_time[panel_index]
             
             if self.fire_decay_time_delta[panel_index] > decay_time:
-                self.fire_waves[panel_index] = self.fire_waves[panel_index] * 0.8
+                self.fire_waves[panel_index] = self.fire_waves[panel_index]*0.5
                 self.fire_decay_time[panel_index] = time.time()
+            
 
-        # self.temp_pixels = self.decay_pixels()
+
         return self.temp_pixels
 
         
-    def decay_pixels(self):
+    def decay(self, data):
         i = np.vectorize(self.add_random)
-        return i(self.temp_pixels,-.01,0.0)
+        return i(data,-.05,0.0)
 
         
     def add_random(self,x,lower,upper):
@@ -128,20 +124,18 @@ class FireGlow(Animation):
     beats = [0]*7
 
     def __init__(self, layout, 
-        r=1.0, 
-        g=0.0, 
-        b=0.0
-
+        fire_reset = 2,
+        fire_decay = 0.05,
+        colour_time = 5
     ):
         super(FireGlow, self).__init__()
         self.layout = layout
 
         strip_length =512
 
-        self.add_param("r", r, 0, 1)
-        self.add_param("g", g, 0, 1)
-        self.add_param("b", b, 0, 1)
-        # self.add_param("fire_decay", fire_decay, 0, 10)
+        self.add_param("fire_reset", fire_reset, 0.001, 10)
+        self.add_param("fire_decay", fire_decay, 0.001, 0.5)
+        self.add_param("colour_time", colour_time, 0.001, 10)
         
         self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
         self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
@@ -157,12 +151,9 @@ class FireGlow(Animation):
         ''' TODO: create mid frame beat polling & toggle beat state 
         between frames so that only one beat per frame can happen '''
         
-        r = self.params["r"].value
-        g = self.params["g"].value
-        b = self.params["b"].value
-        fire_reset = 2
-        fire_decay = 0.05
-        colour_time = 5
+        fire_reset = self.params["fire_reset"].value
+        fire_decay = self.params["fire_decay"].value
+        colour_time = self.params["colour_time"].value
 
         self.clear_pixels()
         
