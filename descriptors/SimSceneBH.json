@@ -2,7 +2,7 @@
     "SceneDetails": {
         "scene_fps" : 60,
         "device_fps": 30,
-        "opc_host": "127.0.0.1",
+        "opc_host": "192.168.1.152",
         "opc_port": 7890,
         "r_scaling": 0.5,
         "g_scaling": 0.5,
@@ -60,9 +60,9 @@
             "default_animation": {
                 "type": "FireGlow",
                 "args": {
-                    "r":0.2, 
-                    "g":0.7, 
-                    "b":0.5
+                    "fire_reset": 2,
+                    "fire_decay": 0.05,
+                    "colour_time": 5
                 }
             }
         }
