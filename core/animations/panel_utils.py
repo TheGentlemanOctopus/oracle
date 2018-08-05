@@ -11,7 +11,8 @@ fmap = {
         'total_pixels' : 1025,
         'r_pixels' : 319,
         'c_pixels' : 386,
-        'l_pixels' : 320
+        'l_pixels' : 320,
+        'cube_pixels' : 348
     },
     'right' : [[0,   27],
                 [28,  43],
@@ -58,52 +59,18 @@ fmap = {
                 [216, 241],
                 [242, 264],
                 [265, 299],
-                [300, 319]]
+                [300, 319]],
+    'cube'  :   [[0,  28],
+                [29,  57],
+                [58,  86],
+                [87,  115],
+                [116, 144],
+                [145, 173],
+                [174, 202],
+                [203, 231],
+                [232, 260],
+                [261, 289],
+                [290, 318],
+                [319, 347]]
+
 }
-
-
-
-class FaceSection():
-
-    def __init__(self, length=10,section='left'):
-
-
-        self.length = length
-        self.section = section
-
-
-        self.cycle_start = time.time()
-
-        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
-
-        self.logger = logging_handler_setup('face section - %s'%self.section)
-
-        
-
-    def update(self, fft, carrier):
-
-        if self.check_beat(fft[8:10]):
-            panel_it = random.randint(0,len(fmap[self.section])-1)
-            h = random.uniform(carrier-.1, carrier+.1)
-
-            for x in xrange(fmap[self.section][panel_it][0],fmap[self.section][panel_it][1]+1):
-                self.temp_pixels[x] = colorsys.hsv_to_rgb(h,.9,.9)
-
-        self.temp_pixels = self.decay_pixels()
-        return self.temp_pixels
-
-        
-    def decay_pixels(self):
-        i = np.vectorize(self.add_random)
-        return i(self.temp_pixels,-.01,0.0)
-
-        
-    def add_random(self,x,lower,upper):
-        return x + random.uniform(lower,upper)
-
-
-    def check_beat(self, beats):
-        if sum(beats) > 0:
-            return True
-        else:
-            return False

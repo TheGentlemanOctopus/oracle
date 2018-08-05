@@ -40,6 +40,12 @@ class FacePanelDevice(OutputDevice):
             start += strip_offset
         pixels.extend(gen_strip([fmap['stats']['r_pixels']+1, hw_chan_length], start, direction, led_spacing))
 
+        for pix_orders in fmap['cube']:
+            pixels.extend(gen_strip(pix_orders, start, direction, led_spacing))
+            start += strip_offset
+        pixels.extend(gen_strip([fmap['stats']['r_pixels']+1, hw_chan_length], start, direction, led_spacing))
+
+
         self.pixels_by_channel[int(channel)] = pixels
         # A generic layout that can be used with generic patterns
         self.layout = PixelList(pixels)
