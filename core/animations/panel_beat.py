@@ -60,6 +60,84 @@ class FaceSection():
 
  
 
+class Square():
+
+    def __init__(self,length=29):
+
+        self.length = length
+        self.strip_length = length/4
+        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
+        self.cycle_start = time.time()
+        self.vu_history = np.array([0.0]*(self.length))
+        self.vu_history_accent = np.array([0.0]*(self.length))
+        
+    def update(self,fft,hue):
+        self.fill()
+        
+        self.vu_history = np.insert(self.vu_history[0:-1],0,fft[1])
+        self.vu_history_accent = np.insert(self.vu_history[0:-1],0,fft[2])/4.0
+        
+        period = 10.0-(fft[1]*1.0) #- ((1.01-fft[1])*3)
+
+        t_delta = time.time()-self.cycle_start
+        if t_delta > period:
+            self.cycle_start = time.time()
+
+        t_phase = t_delta / period
+
+
+        t = np.linspace(0, 2, self.length)
+
+
+
+        for x in xrange(len(self.vu_history)):
+            # print '\n SIG X ', sig[x] 
+            self.temp_pixels[x] = colorsys.hsv_to_rgb( (.0+self.vu_history_accent[x])%1.0, 1.0, self.vu_history[x])
+            # print self.temp_pixels[x]
+
+        return self.temp_pixels
+
+
+
+        
+    def fill(self,c=[0.0,0.0,0.0]):
+        for x in xrange(len(self.temp_pixels)):
+            self.temp_pixels[x] = np.array(c)
+
+
+class Cube():
+
+    def __init__(self, length=10,section='left'):
+
+        self.length = length
+        self.section = section
+        self.square_length = self.length/3
+
+        self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
+
+        self.squareA = Square(length=self.length/3)
+        self.hue = 0.1
+
+
+    def update(self, *args):
+
+        # self.clear_pixels()
+        fft = args[0]
+        vu_level = fft[1]
+        
+        self.temp_pixels[:self.square_length] = self.squareA.update(fft,self.hue)
+        self.temp_pixels[self.square_length:2*self.square_length] = self.temp_pixels[:self.square_length]
+        self.temp_pixels[2*self.square_length:3*self.square_length] = self.temp_pixels[:self.square_length]
+
+        self.hue = (self.hue+0.001)%1.0
+        return self.temp_pixels
+ 
+    def clear_pixels(self):
+        for x in xrange(len(self.temp_pixels)):
+            self.temp_pixels[x] = np.array([0.0,0.0,0.0])
+
+
+
 class PanelBeat(Animation):
     layout_type = "Layout"
 
@@ -86,6 +164,8 @@ class PanelBeat(Animation):
         self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
         self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
         self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
+        self.cube = Cube(length=fmap['stats']['cube_pixels'],section='cube')
+
         self.cycle_start = time.time()
 
     def clear_pixels(self):
@@ -145,5 +225,8 @@ class PanelBeat(Animation):
                 r = colorsys.hsv_to_rgb((self.carrier+(.2))%1.0,1.0,1.0)
                 p = [(c[0]+c[1])/2.0 for c in zip(r,self.pixels[x].color)]
                 self.pixels[x].color = p
+
+        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixels']], self.cube.update(self.fft)):
+            old_pix.color = new_pix
 
     
