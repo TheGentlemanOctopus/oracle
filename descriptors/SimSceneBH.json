@@ -2,7 +2,7 @@
     "SceneDetails": {
         "scene_fps" : 60,
         "device_fps": 30,
-        "opc_host": "192.168.1.152",
+        "opc_host": "127.0.0.1",
         "opc_port": 7890,
         "r_scaling": 0.5,
         "g_scaling": 0.5,
@@ -51,10 +51,10 @@
                 "hw_chan_length": 512
             },
             "default_animation": {
-                "type": "PanelBeat",
+                "type": "Talker",
                 "args": {
-                    "r":0.2, 
-                    "g":0.7, 
+                    "r":0.5, 
+                    "g":0.5, 
                     "b":0.5
                 }
             }
