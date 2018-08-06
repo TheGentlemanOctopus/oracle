@@ -1,0 +1,63 @@
+{
+    "SceneDetails": {
+        "scene_fps" : 60,
+        "device_fps": 30,
+        "opc_host": "192.168.152",
+        "opc_port": 7890,
+        "r_scaling": 0.5,
+        "g_scaling": 0.5,
+        "b_scaling": 0.5
+    },
+    "InputDevices": [
+        {
+            "type": "AudioDevice",
+            "args": {
+                "arduino_ip": "192.168.1.177",
+                "local_ip": "",
+                "start_port": 5003,
+                "data_port": 5009,
+                "start_message": "Start",
+                "buffer_size": 100,
+                "fft_extent_reset_time": 10,
+                "autogainEnable": 0,
+                "no_sound_frequency": 0.2,
+                "ambient_level": 512,
+                "no_mic_level": 100,
+                "quiet_timeout": 15.0,
+                "beat_args":
+                {
+                    "wait": 0.2,
+                    "threshold": 200,
+                    "history_length": 30
+                }
+            }
+        },
+        {
+            "type": "AppDevice",
+            "args": {
+                "host": "192.168.1.142",
+                "port": 5000
+            }
+        }
+    ],
+    "OutputDevices": [
+        {
+            "name": "WunderGesicht",
+            "type": "FacePanelDevice",
+            "args": {
+                "led_spacing": 0.1,
+                "strip_spacing": 0.2,
+                "channel": 1,
+                "hw_chan_length": 512
+            },
+            "default_animation": {
+                "type": "Talker",
+                "args": {
+                    "r":0.5, 
+                    "g":0.5, 
+                    "b":0.5
+                }
+            }
+        }
+    ]
+}
