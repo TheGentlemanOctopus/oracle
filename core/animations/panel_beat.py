@@ -181,7 +181,7 @@ class PanelBeat(Animation):
         b = self.params["b"].value
 
 
-
+        # print self.fft
 
 
         self.clear_pixels()

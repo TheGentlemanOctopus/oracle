@@ -9,6 +9,7 @@ from core.udp.udp_server import UdpServer
 from core.audioanalysis.beat_detection import BeatDetect
 # from core.audioanalysis.server import AudioServer
 from core.devices.output_device import fft_message
+from core.utilities import logging_handler_setup
 
 import numpy as np
 
@@ -45,6 +46,12 @@ class AudioDevice(InputDevice):
         self.processed_record_file = None
         self.record_start_time = time.time()
 
+        self.sine_start = time.time()
+        self.beat_it = 0
+
+        self.logger = logging_handler_setup('Audio Device')
+        self.logger.info('Init audio device')
+
     def __del__(self):
         if self.server.connected:
             self.server.disconnect()
@@ -53,25 +60,36 @@ class AudioDevice(InputDevice):
         ''' initiate fft client with start message 
             if no bytes written, loop around and wait 5 seconds 
             before trt'ying again '''
+        self.logger.debug('start_client_stream')
         active = False
         while not active:
+            self.logger.debug('Sending start command to fft client')
             if self.server.send('Start'):
                 ''' wait for first data for success '''
+                self.logger.debug('send sucessed')
                 mStr, addr = self.server.receive() 
+                self.logger.debug('Wait to receive')
                 if len(mStr) > 0:
                     ''' success '''
+                    self.logger.debug('Wait to receive->success')
                     active = True
                 else:
+                    self.logger.debug('Wait to receive->fail')
                     active = False
             else:
-                print 'Error: no bytes sent'
+                self.logger.error('Sending start byte attempted, but failed')
                 return False
 
-            print 'still waiting for fft to send first udp'
+            self.logger.info("Still waiting for fft to send first udp")
+            fft_data, beat_data = self.gen_default_sine(10.0)
+            self.logger.debug("fft data: %s"%str(fft_data+beat_data))
+            # print fft_data
+            self.data_out(["processed", fft_data+beat_data])
             time.sleep(.5)
         return active
 
     def main(self):
+        self.logger.info('main audio device')
         self.server = UdpServer(udp_ip=self.udp_ip, 
                 udp_port_rec=self.udp_port_rec, 
                 udp_port_send=self.udp_port_send)
@@ -86,11 +104,13 @@ class AudioDevice(InputDevice):
 
         active = False
         while self.server.connected:
+            self.logger.debug('Audio device wait 1 second before sending start byte')
             time.sleep(1)
 
             
-            print 'sending Start'
+            self.logger.debug('Sending start byte')
             if self.start_client_stream('Start'):
+
                 active = True
 
                 ''' populate history '''
@@ -108,7 +128,6 @@ class AudioDevice(InputDevice):
                     if len(mStr) > 0:
                         
                         fft_data = [int(e) if e.isdigit() else e for e in mStr.split(',')]
-                        
                         beat_data = []
                         for x in xrange(7):
                             bin_history[x].pop(0)
@@ -135,40 +154,56 @@ class AudioDevice(InputDevice):
                             self.quiet['elapsed_time'] = 0.0
                             self.too_quiet = False
                             
-
                         if self.too_quiet:
-                            print 'too_quiet'
-                            offsets = np.linspace(0, (12.0/7)*np.pi, 7)
-                            levels = 512*(np.cos(2*np.pi*self.no_sound_frequency*time.time() + offsets) + 1)
-                            fft_data = levels.tolist()
-                            beat_data = [1,0,1,0,0,0,0]
-
+                            self.logger.debug("Too quiet")
+                            fft_data, beat_data = self.gen_default_sine(120.0)
                         
                         self.data_out(["processed", fft_data+beat_data])
 
 
                     else:
-                        print 'No data read from UDP, misread count:', self.server.misread_count
+                        self.logger.error('No data read from UDP, misread count: %d'%(self.server.misread_count))
                         if self.server.misread_count > 1:
                             active = False
-                        
-
+                    
 
             else:
-                print 'is socket connected properly?'
-            
+                self.logger.error('Is socket connected properly?')
+                self.logger.info('Sending simulated audio sine wave')  
+                msg_fft, msg_beats = self.gen_default_sine(10.0)
+                self.data_out(["processed", msg_fft+msg_beats])
+ 
+
+    def gen_default_sine(self, bpm):
+        ''' generates a sine wave (120bpm) with beats
+        for when audio data isnt being received '''
+
+        period = 60.0/float(bpm) # 120 bpm = 60 seconds / 120
+
+        t_delta = time.time()-self.sine_start
+        beat_data = [1,0,0,0,0,0,0]
+        
+        if t_delta > period:
+            self.logger.debug('beat ch %d'%self.beat_it )
+            self.sine_start = time.time()
+            beat_data[self.beat_it] = 1
+            self.beat_it = (self.beat_it+1)%7
+            # print 'beat @', t_delta
+
+        t_phase = t_delta / period
+        vu = int(np.sin(t_phase)+.5)*800
+        levels = [vu,vu,vu,vu,vu,vu,vu]
+        return levels, beat_data
+
 
     def calc_volume(self,fft_channels):
         # print sum(fft_channels)/len(fft_channels)
         return sum(fft_channels)/len(fft_channels)
             
-            
-
-
-
 
     def data_out(self, data):
         self.out_queue.put(data)
+
 
     def process_in_queue(self):
         """
@@ -277,7 +312,6 @@ class AudioDevice(InputDevice):
             ''' TODO: ammend for the context of beats '''
             # for x in xrange(7):
             #     msg[x] = msg[x]/1024.0
-
 
             return fft_message([band/1024.0 for band in msg[:7]] + msg[7:])
 
