@@ -32,6 +32,7 @@ class AudioDevice(InputDevice):
         self.quiet_timeout = fft_server_kwargs['quiet_timeout']
         self.min_volume = fft_server_kwargs['no_mic_level']
         self.no_sound_frequency = fft_server_kwargs['no_sound_frequency']
+        self.sw_gain = fft_server_kwargs['sw_gain']
 
         self.quiet = {
             'too_quiet' : False,
@@ -127,7 +128,7 @@ class AudioDevice(InputDevice):
 
                     if len(mStr) > 0:
                         
-                        fft_data = [int(e) if e.isdigit() else e for e in mStr.split(',')]
+                        fft_data = [int(e)*self.sw_gain if e.isdigit() else e for e in mStr.split(',')]
                         beat_data = []
                         for x in xrange(7):
                             bin_history[x].pop(0)
