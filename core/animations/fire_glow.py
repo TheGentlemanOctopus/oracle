@@ -143,6 +143,7 @@ class FireGlow(Animation):
         self.cube = FaceSection(length=fmap['stats']['cube_pixels'],section='cube')
         self.cycle_start = time.time()
 
+
     def clear_pixels(self):
         for i in range(len(self.pixels)):
             self.layout.pixels[i].color = (0, 0, 0)

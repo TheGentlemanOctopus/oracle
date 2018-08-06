@@ -115,6 +115,9 @@ class Talker(Animation):
 
         self.blob_buffer = []
 
+        self.logger = logging_handler_setup('Animation Talker')
+
+
     def clear_pixels(self):
         for i in range(len(self.pixels)):
             self.layout.pixels[i].color = (0, 0, 0)

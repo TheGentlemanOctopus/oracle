@@ -24,6 +24,7 @@
                 "ambient_level": 512,
                 "no_mic_level": 30,
                 "sw_gain": 1.0,
+                "simulated_sine_amplitude": 800,
                 "quiet_timeout": 15.0,
                 "beat_args":
                 {
@@ -59,11 +60,10 @@
                 ]
             },
             "default_animation": {
-                "type": "Talker",
+                "type": "Carousel",
                 "args": {
-                    "r": 2,
-                    "g": 0.05,
-                    "b": 5
+                    "min_transition_time": 30,
+                    "max_transition_time": 200
                 }
             }
         }

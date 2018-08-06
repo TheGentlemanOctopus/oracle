@@ -33,6 +33,7 @@ class AudioDevice(InputDevice):
         self.min_volume = fft_server_kwargs['no_mic_level']
         self.no_sound_frequency = fft_server_kwargs['no_sound_frequency']
         self.sw_gain = fft_server_kwargs['sw_gain']
+        self.simulated_sine_amplitude = fft_server_kwargs['simulated_sine_amplitude']
 
         self.quiet = {
             'too_quiet' : False,
@@ -83,7 +84,7 @@ class AudioDevice(InputDevice):
 
             self.logger.info("Still waiting for fft to send first udp")
             fft_data, beat_data = self.gen_default_sine(10.0)
-            self.logger.debug("fft data: %s"%str(fft_data+beat_data))
+            # self.logger.debug("fft data: %s"%str(fft_data+beat_data))
             # print fft_data
             self.data_out(["processed", fft_data+beat_data])
             time.sleep(.5)
@@ -105,7 +106,7 @@ class AudioDevice(InputDevice):
 
         active = False
         while self.server.connected:
-            self.logger.debug('Audio device wait 1 second before sending start byte')
+            # self.logger.debug('Audio device wait 1 second before sending start byte')
             time.sleep(1)
 
             
@@ -185,14 +186,14 @@ class AudioDevice(InputDevice):
         beat_data = [1,0,0,0,0,0,0]
         
         if t_delta > period:
-            self.logger.debug('beat ch %d'%self.beat_it )
+            # self.logger.debug('beat ch %d'%self.beat_it )
             self.sine_start = time.time()
             beat_data[self.beat_it] = 1
             self.beat_it = (self.beat_it+1)%7
             # print 'beat @', t_delta
 
         t_phase = t_delta / period
-        vu = int(np.sin(t_phase)+.5)*800
+        vu = int( ( (np.sin(t_phase)+1) /2.0 ) *self.simulated_sine_amplitude)
         levels = [vu,vu,vu,vu,vu,vu,vu]
         return levels, beat_data
 
