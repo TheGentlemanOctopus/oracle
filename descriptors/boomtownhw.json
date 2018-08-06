@@ -2,7 +2,7 @@
     "SceneDetails": {
         "scene_fps" : 60,
         "device_fps": 30,
-        "opc_host": "192.168.152",
+        "opc_host": "192.168.1.152",
         "opc_port": 7890,
         "r_scaling": 0.5,
         "g_scaling": 0.5,
@@ -22,7 +22,9 @@
                 "autogainEnable": 0,
                 "no_sound_frequency": 0.2,
                 "ambient_level": 512,
-                "no_mic_level": 100,
+                "no_mic_level": 30,
+                "sw_gain": 1.0,
+                "simulated_sine_amplitude": 800,
                 "quiet_timeout": 15.0,
                 "beat_args":
                 {
@@ -48,14 +50,20 @@
                 "led_spacing": 0.1,
                 "strip_spacing": 0.2,
                 "channel": 1,
-                "hw_chan_length": 512
+                "hw_chan_length": 512,
+                
+                "face_sections": [
+                    "left",
+                    "centre",
+                    "right",
+                    "cube"
+                ]
             },
             "default_animation": {
-                "type": "Talker",
+                "type": "Carousel",
                 "args": {
-                    "r":0.5, 
-                    "g":0.5, 
-                    "b":0.5
+                    "min_transition_time": 30,
+                    "max_transition_time": 200
                 }
             }
         }

@@ -175,13 +175,7 @@ class Waves(Animation):
         self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
         self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
         self.cube = Cube(length=fmap['stats']['cube_pixels'],section='cube')
-
-        # self.cube = Cube(length=300,section='cube')
-
-        self.logger = logging_handler_setup('hsv test')
-        self.logger.info('Animation waves')
-
-
+ 
 
     def clear_pixels(self):
         for i in range(len(self.pixels)):
