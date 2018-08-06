@@ -53,7 +53,7 @@ class FaceSection():
     def update(self, fft, reset_time, decay_time, colour_time):
 
         self.time_delta = time.time() - self.time_start
-        self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.5
+        self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.425
         # print self.time_period
 
 
@@ -82,7 +82,7 @@ class FaceSection():
                 x_duty = (float(x-panel[0])*self.fire_waves[panel_index])/float(pixel_length)
                 rh = (np.sin(x) % 0.15) + self.time_period
                 rs = 1.0
-                rv = np.sin(x_duty*self.fire_decay_time[panel_index])%15
+                rv = np.sin(x_duty*self.fire_decay_time[panel_index])%1
                 self.temp_pixels[x] = (np.array(colorsys.hsv_to_rgb(rh,rs,rv)))
 
             
