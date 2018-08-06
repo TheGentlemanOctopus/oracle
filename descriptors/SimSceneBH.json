@@ -2,7 +2,7 @@
     "SceneDetails": {
         "scene_fps" : 60,
         "device_fps": 30,
-        "opc_host": "192.168.1.152",
+        "opc_host": "127.0.0.1",
         "opc_port": 7890,
         "r_scaling": 0.5,
         "g_scaling": 0.5,
