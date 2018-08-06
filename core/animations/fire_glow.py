@@ -53,7 +53,7 @@ class FaceSection():
     def update(self, fft, reset_time, decay_time, colour_time):
 
         self.time_delta = time.time() - self.time_start
-        self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.5
+        self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.425
         # print self.time_period
 
 
@@ -82,7 +82,7 @@ class FaceSection():
                 x_duty = (float(x-panel[0])*self.fire_waves[panel_index])/float(pixel_length)
                 rh = (np.sin(x) % 0.15) + self.time_period
                 rs = 1.0
-                rv = np.sin(x_duty*self.fire_decay_time[panel_index])%15
+                rv = np.sin(x_duty*self.fire_decay_time[panel_index])%1
                 self.temp_pixels[x] = (np.array(colorsys.hsv_to_rgb(rh,rs,rv)))
 
             
@@ -140,7 +140,7 @@ class FireGlow(Animation):
         self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
         self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
         self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
-        self.cube = FaceSection(length=fmap['stats']['cube_pixel'],section='cube')
+        self.cube = FaceSection(length=fmap['stats']['cube_pixels'],section='cube')
         self.cycle_start = time.time()
 
     def clear_pixels(self):
@@ -174,6 +174,6 @@ class FireGlow(Animation):
         for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_reset, fire_decay, colour_time)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixel']], self.cube.update(self.fft, fire_reset, fire_decay, colour_time)):
+        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixels']], self.cube.update(self.fft, fire_reset, fire_decay, colour_time)):
             old_pix.color = new_pix
     
