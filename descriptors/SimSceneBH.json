@@ -22,7 +22,8 @@
                 "autogainEnable": 0,
                 "no_sound_frequency": 0.2,
                 "ambient_level": 512,
-                "no_mic_level": 100,
+                "no_mic_level": 30,
+
                 "quiet_timeout": 15.0,
                 "beat_args":
                 {
@@ -48,14 +49,21 @@
                 "led_spacing": 0.1,
                 "strip_spacing": 0.2,
                 "channel": 1,
-                "hw_chan_length": 512
+                "hw_chan_length": 512,
+                
+                "face_sections": [
+                    "left",
+                    "centre",
+                    "right",
+                    "cube"
+                ]
             },
             "default_animation": {
-                "type": "Waves",
+                "type": "Talker",
                 "args": {
-                    "r":0.2, 
-                    "g":0.7, 
-                    "b":0.5
+                    "r": 2,
+                    "g": 0.05,
+                    "b": 5
                 }
             }
         }

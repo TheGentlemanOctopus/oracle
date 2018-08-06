@@ -11,7 +11,7 @@ class FacePanelDevice(OutputDevice):
     """
         A generic pixels by channel device that made be used for displaying the individual panels as a series of strips
     """
-    def __init__(self, led_spacing, strip_spacing, channel, hw_chan_length):
+    def __init__(self, led_spacing, strip_spacing, channel, hw_chan_length, **face_sections):
         super(FacePanelDevice, self).__init__()
 
         self.pixels_by_channel = {}
@@ -23,29 +23,15 @@ class FacePanelDevice(OutputDevice):
 
         # Form one strip per face panel
         pixels = []
-        for pix_orders in fmap['left']:
-            pixels.extend(gen_strip(pix_orders, start, direction, led_spacing))
+        for section in face_sections['face_sections']:
+            for pix_orders in fmap[section]:
+                pixels.extend(gen_strip(pix_orders, start, direction, led_spacing))
+                start += strip_offset
+                pix_end = pix_orders[1]
+            pixels.extend(gen_strip([pix_end+1, hw_chan_length-1], start, direction, led_spacing))
             start += strip_offset
-        pixels.extend(gen_strip([fmap['stats']['l_pixels']+1, hw_chan_length], start, direction, led_spacing))
-        start += strip_offset
 
-        for pix_orders in fmap['centre']:
-            pixels.extend(gen_strip(pix_orders, start, direction, led_spacing))
-            start += strip_offset
-        pixels.extend(gen_strip([fmap['stats']['c_pixels']+1, hw_chan_length], start, direction, led_spacing))
-        start += strip_offset
-
-        for pix_orders in fmap['right']:
-            pixels.extend(gen_strip(pix_orders, start, direction, led_spacing))
-            start += strip_offset
-        pixels.extend(gen_strip([fmap['stats']['r_pixels']+1, hw_chan_length], start, direction, led_spacing))
-
-        for pix_orders in fmap['cube']:
-            pixels.extend(gen_strip(pix_orders, start, direction, led_spacing))
-            start += strip_offset
-        pixels.extend(gen_strip([fmap['stats']['r_pixels']+1, hw_chan_length], start, direction, led_spacing))
-
-
+        # whack all pixels into the same channel
         self.pixels_by_channel[int(channel)] = pixels
         # A generic layout that can be used with generic patterns
         self.layout = PixelList(pixels)
