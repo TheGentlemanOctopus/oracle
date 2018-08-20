@@ -13,6 +13,7 @@ class Travellers(Animation):
         width=0.2, 
         speed=0.1, 
         amplitude=1,
+        spacing=0.2,
         hue=0.58,
         saturation=0.71,
         fft_channel=0.9
@@ -29,6 +30,7 @@ class Travellers(Animation):
         self.add_param("width", width, 0, 1)
         self.add_param("speed", speed, 0, 1)
         self.add_param("amplitude", amplitude, 0, 1)
+        self.add_param("spacing", spacing, 0, 1)
 
         # TODO: Speed
         # self.add_param("saturation", saturation, 0, 1)
@@ -42,6 +44,7 @@ class Travellers(Animation):
         w = self.params["width"].value
         a = self.params["amplitude"].value
         v = self.params["speed"].value
+        spacing = self.params["spacing"].value
      
         # sat = self.params["saturation"].value
         # fft_index = int(self.params["fft_channel"].value)
@@ -50,10 +53,14 @@ class Travellers(Animation):
         t = time.time()
 
         x = np.linspace(0, 1, len(pixels))
-        r = gaussian(np.mod(x-v*t, 1), a, 0.5, w)
+
+        # G Means Gaussian
+        g = np.zeros(len(pixels))
+        for center in np.arange(0, 1, spacing):
+            g = g + gaussian(np.mod(x-v*t, 1), a, center, w)
 
         for i, pixel in enumerate(pixels):
-            pixel.r = r[i]
+            pixel.r = g[i]
             pixel.g = 0
             pixel.b = 0
 
