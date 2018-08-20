@@ -10,10 +10,10 @@ class Travellers(Animation):
     layout_type = "Layout"
 
     def __init__(self, layout, 
-        width=0.2, 
-        speed=0.1, 
-        amplitude=1,
-        spacing=0.2,
+        width=0.1, 
+        speed=0.3, 
+        amplitude=0.83,
+        spacing=0.11,
         hue=0.58,
         saturation=0.71,
         fft_channel=0.9
@@ -59,10 +59,14 @@ class Travellers(Animation):
         for center in np.arange(0, 1, spacing):
             g = g + gaussian(np.mod(x-v*t, 1), a, center, w)
 
+        hue = np.linspace(0, 1, len(pixels))
+
         for i, pixel in enumerate(pixels):
-            pixel.r = g[i]
-            pixel.g = 0
-            pixel.b = 0
+            h = hue[i]
+            s = 1
+            v = g[i]
+
+            pixel.set_hsv(h,s,v)
 
 
 def gaussian(x, a, b, c):
