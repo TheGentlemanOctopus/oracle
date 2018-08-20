@@ -11,6 +11,8 @@ import panel_beat
 import waves
 import fire_glow
 
+import brendo
+
 import utils
 
 # TODO: Refactor this properly
