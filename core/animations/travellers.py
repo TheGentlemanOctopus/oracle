@@ -50,7 +50,7 @@ class Travellers(Animation):
         t = time.time()
 
         x = np.linspace(0, 1, len(pixels))
-        r = gaussian(x, a, (v*t)%1, w)
+        r = gaussian(np.mod(x-v*t, 1), a, 0.5, w)
 
         for i, pixel in enumerate(pixels):
             pixel.r = r[i]
