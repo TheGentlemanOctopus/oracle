@@ -11,7 +11,7 @@ import panel_beat
 import waves
 import fire_glow
 
-import brendo
+import standers
 import travellers
 
 import utils

@@ -6,7 +6,7 @@ import colorsys
 
 from numpy import pi
 
-class Brendo(Animation):
+class Standers(Animation):
     layout_type = "Layout"
 
     def __init__(self, layout, 
