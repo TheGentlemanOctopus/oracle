@@ -42,7 +42,7 @@
                 "pixels": "face.json"
             },
             "default_animation": {
-                "type": "Travellers",
+                "type": "Standers",
                 "args": {}
             }
         }

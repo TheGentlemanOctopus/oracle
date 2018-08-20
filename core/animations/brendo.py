@@ -6,7 +6,7 @@ import colorsys
 
 from numpy import pi
 
-class Standers(Animation):
+class Brendo(Animation):
     layout_type = "Layout"
 
     def __init__(self, layout, 
@@ -22,7 +22,7 @@ class Standers(Animation):
             period is the number of seconds it takes a color to lap the cube
             hue_range defines the range of colors used as a prop of the color wheel
         """
-        super(Standers, self).__init__()
+        super(Brendo, self).__init__()
 
         self.layout = layout
 
@@ -41,29 +41,17 @@ class Standers(Animation):
         A = self.params["amplitude"].value
         l = self.params["wavelength"].value
         sat = self.params["saturation"].value
-        hue = self.params["hue"].value
-      
         fft_index = int(self.params["fft_channel"].value)
-        mod = self.fft[fft_index]
 
-        update_pixels(pixels, w, A, l, sat, hue, mod)
+        hue = self.params["hue"].value
+        t = time.time()
 
-def update_pixels(pixels, 
-    w,
-    A,
-    l,
-    sat,
-    hue,
-    mod
-):
-    t = time.time()
+        x = np.linspace(0, 1, len(pixels))
 
-    x = np.linspace(0, 1, len(pixels))
+        s = sat + (1-sat)*self.fft[fft_index]
+        v = 1
 
-    s = sat + (1-sat)*mod
-    v = 1
+        for i, pixel in enumerate(pixels):
+            h = (hue + A*np.sin(2*pi*x[i]/l)*np.cos(w*t)) % 1
 
-    for i, pixel in enumerate(pixels):
-        h = (hue + A*np.sin(2*pi*x[i]/l)*np.cos(w*t)) % 1
-
-        pixel.set_hsv(h,s,v)
+            pixel.set_hsv(h,s,v)
