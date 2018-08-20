@@ -11,9 +11,9 @@ class Travellers(Animation):
 
     def __init__(self, layout, 
         width=0.1, 
-        speed=0.3, 
+        speed=0.11, 
         amplitude=0.83,
-        spacing=0.11,
+        spacing=0.33,
         hue=0.58,
         saturation=0.71,
         fft_channel=0.9
@@ -28,7 +28,7 @@ class Travellers(Animation):
         self.layout = layout
 
         self.add_param("width", width, 0, 1)
-        self.add_param("speed", speed, 0, 1)
+        self.add_param("speed", speed, -1, 1)
         self.add_param("amplitude", amplitude, 0, 1)
         self.add_param("spacing", spacing, 0, 1)
 
@@ -46,27 +46,35 @@ class Travellers(Animation):
         v = self.params["speed"].value
         spacing = self.params["spacing"].value
      
-        # sat = self.params["saturation"].value
-        # fft_index = int(self.params["fft_channel"].value)
+        update_pixels(pixels, w, a, v, spacing, self.fft)
 
-        # hue = self.params["hue"].value
-        t = time.time()
 
-        x = np.linspace(0, 1, len(pixels))
 
-        # G Means Gaussian
-        g = np.zeros(len(pixels))
-        for center in np.arange(0, 1, spacing):
-            g = g + gaussian(np.mod(x-v*t, 1), a, center, w)
+def update_pixels(pixels, width, amplitude, speed, spacing, fft):
+    x = np.linspace(0, 1, len(pixels))
 
-        hue = np.linspace(0, 1, len(pixels))
+    w = width
+    v = speed
+    t = time.time()
+    a = amplitude
 
-        for i, pixel in enumerate(pixels):
-            h = hue[i]
-            s = 1
-            v = g[i]
+    hue_range = 0.6
+    hue = 0.3
 
-            pixel.set_hsv(h,s,v)
+    # A sum of spatial gaussians
+    g = np.zeros(len(pixels))
+    for center in np.arange(0, 1, spacing):
+        g = g + gaussian(np.mod(x-v*t, 1), a, center, w)
+
+    # Hue-e hoo haha
+    # hue = np.linspace(0, 1, len(pixels))
+
+    for i, pixel in enumerate(pixels):
+        h = (g[i]*hue_range + hue)%1
+        s = g[i]
+        v = g[i]
+
+        pixel.set_hsv(h,s,v)
 
 
 def gaussian(x, a, b, c):
