@@ -70,8 +70,6 @@ def update_pixels(pixels,
     global delta_hue
     delta_hue += norm.rvs(scale=delta**2*dt)
 
-    print "delta_hue", delta_hue
-
     hue = hue+delta_hue
 
     x = np.linspace(0, 1, len(pixels))
