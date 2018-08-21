@@ -10,7 +10,8 @@ default_animation_set = [
     {"type": "Waves"},
     {"type": "Talker"},
     {"type": "FireGlow"},
-    {"type": "PanelBeat"}
+    {"type": "PanelBeat"},
+    {"type": "Travellers"}
 ]
 
 class Carousel(Animation):
