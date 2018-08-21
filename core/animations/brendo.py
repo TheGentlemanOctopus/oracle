@@ -13,6 +13,7 @@ class Brendo(Animation):
     layout_type = "Layout"
 
     def __init__(self, layout, 
+        shift_rate=0,
         num_sections=10,
         fft_channel=1,
         tr_width=0.1, 
@@ -39,6 +40,7 @@ class Brendo(Animation):
 
         self.add_param("num_sections", num_sections, 1, 10)
         self.add_param("fft_channel", fft_channel, 0, 6)
+        self.add_param("shift_rate", shift_rate, 0, 30)
 
         # Travellers
         self.add_param("tr_width", tr_width, 0, 1)
@@ -57,12 +59,16 @@ class Brendo(Animation):
         self.add_param("st_hue", st_hue, 0, 1)
 
     def update(self):
-        pixels = self.layout.pixels
-      
+        # Get Shwifty
+        shift_rate = self.params["shift_rate"].value
+        n = int(time.time()*shift_rate)%len(self.layout.pixels)
+
+        pixels = self.layout.pixels[n:] + self.layout.pixels[:n]
+
+        # Slice them and dice them      
         num_sections = int(self.params["num_sections"].value)
         indices = np.linspace(0, len(pixels), num_sections+1).astype(int)
 
-        # Strip em!
         strips = []
         for i in range(len(indices)-1):
             strips.append(pixels[indices[i]:indices[i+1]])
@@ -100,5 +106,3 @@ class Brendo(Animation):
         mod = self.fft[fft_index]
 
         update_stander(pixels, w, A, l, sat, hue, mod)
-
-
