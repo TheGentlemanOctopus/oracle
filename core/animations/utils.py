@@ -34,13 +34,13 @@ def possible_animations(name):
     return possible_animations
 
 
-def add_params(animation, params, **kwargs):
+def add_params(animation, params, strict=True, **kwargs):
     """
         Adds a dictioanry of parameters and overrides to an animation
     """
     # Sort out params
     for name, value in kwargs.items():
-        if not name in params:
+        if strict and name not in params:
             raise Exception("Unknonwn params: %s"%name)
 
         params[name][0] = value

@@ -6,8 +6,10 @@ import colorsys
 
 from numpy import pi
 
-from travellers import update_pixels as update_traveller
-from standers import update_pixels as update_stander
+import travellers 
+import standers
+
+from utils import add_params
 
 class Brendo(Animation):
     layout_type = "Layout"
@@ -15,19 +17,7 @@ class Brendo(Animation):
     def __init__(self, layout, 
         shift_rate=0,
         num_sections=10,
-        fft_channel=1,
-        tr_width=0.1, 
-        tr_speed=0.11, 
-        tr_amplitude=0.83,
-        tr_spacing=0.33,
-        tr_hue=0.3,
-        tr_hue_range=0.6,
-        tr_saturation=0.71,
-        st_wavelength=4, 
-        st_amplitude=0.21, 
-        st_frequency=2.6,
-        st_hue=0.58,
-        st_saturation=0.71,
+        **kwargs
     ):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
@@ -39,24 +29,14 @@ class Brendo(Animation):
         self.layout = layout
 
         self.add_param("num_sections", num_sections, 1, 10)
-        self.add_param("fft_channel", fft_channel, 0, 6)
         self.add_param("shift_rate", shift_rate, 0, 30)
 
         # Travellers
-        self.add_param("tr_width", tr_width, 0, 1)
-        self.add_param("tr_speed", tr_speed, -1, 1)
-        self.add_param("tr_amplitude", tr_amplitude, 0, 1)
-        self.add_param("tr_spacing", tr_spacing, 0, 1)
-        self.add_param("tr_hue", tr_hue, 0, 1)
-        self.add_param("tr_hue_range", tr_hue_range, 0, 1)
-        self.add_param("tr_saturation", tr_saturation, 0, 1)
+        traveller_params = {"tr_"+key: value for key,value in travellers.params.items()}
+        standers_params = {"st_"+key: value for key,value in standers.params.items()}
 
-        # Standers
-        self.add_param("st_wavelength", st_wavelength, 0.5, 10)
-        self.add_param("st_amplitude", st_amplitude, 0, 1)
-        self.add_param("st_frequency", st_frequency, 0.5, 10)
-        self.add_param("st_saturation", st_saturation, 0, 1)
-        self.add_param("st_hue", st_hue, 0, 1)
+        add_params(self, traveller_params, strict=False, **kwargs)
+        add_params(self, standers_params, strict=False, **kwargs)
 
     def update(self):
         # Get Shwifty
@@ -93,7 +73,7 @@ class Brendo(Animation):
         hue_range = self.params["tr_hue_range"].value
         sat = self.params["tr_saturation"].value
      
-        update_traveller(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
+        travellers.update_pixels(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
 
     def update_stander(self, pixels):
         w = self.params["st_frequency"].value
@@ -102,7 +82,7 @@ class Brendo(Animation):
         sat = self.params["st_saturation"].value
         hue = self.params["st_hue"].value
       
-        fft_index = int(self.params["fft_channel"].value)
+        fft_index = int(self.params["st_fft_channel"].value)
         mod = self.fft[fft_index]
 
-        update_stander(pixels, w, A, l, sat, hue, mod)
+        standers.update_pixels(pixels, w, A, l, sat, hue, mod)
