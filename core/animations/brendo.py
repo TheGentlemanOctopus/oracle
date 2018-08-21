@@ -58,11 +58,11 @@ class Brendo(Animation):
         for strip in strips:
             curr_pattern = not curr_pattern
 
-            if curr_pattern:
-                self.update_stander(strip)
+        if curr_pattern:
+            self.update_stander(strip)
             
-            else:
-                self.update_traveller(strip)
+        else:
+            self.update_traveller(strip)
 
     def update_traveller(self, pixels):
         w = self.params["tr_width"].value
@@ -72,8 +72,10 @@ class Brendo(Animation):
         hue = self.params["tr_hue"].value
         hue_range = self.params["tr_hue_range"].value
         sat = self.params["tr_saturation"].value
+        mod_intensity = self.params["tr_mod_intensity"].value
+        delta = self.params["tr_delta"].value
      
-        travellers.update_pixels(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
+        travellers.update_pixels(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft, mod_intensity, delta)
 
     def update_stander(self, pixels):
         w = self.params["st_frequency"].value

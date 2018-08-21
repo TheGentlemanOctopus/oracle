@@ -60,11 +60,8 @@
                 ]
             },
             "default_animation": {
-                "type": "Carousel",
-                "args": {
-                    "min_transition_time": 30,
-                    "max_transition_time": 200
-                }
+                "type": "Brendo",
+                "args": {}
             }
         }
     ]
