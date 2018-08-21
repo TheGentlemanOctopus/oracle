@@ -6,7 +6,7 @@ import numpy as np
 import time
 import colorsys
 
-
+import random
 
 class FaceSection():
 
@@ -126,7 +126,7 @@ class Cube():
         self.temp_pixels = np.array([[0.0,0.0,0.0]]*self.length)
 
         self.squareA = Square(length=self.length/3)
-        self.hue = 0.1
+        self.hue = random.uniform(0.0, 1.0)
 
 
 
