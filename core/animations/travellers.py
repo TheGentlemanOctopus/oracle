@@ -4,18 +4,22 @@ import time
 import numpy as np
 import colorsys
 
+from scipy.stats import norm
+
 from numpy import pi
 from utils import add_params
 
 params = {
-    "width": [0.1, 0, 1], 
+    "width": [0, 0, 1], 
     "speed": [0.11, -1, 1], 
     "amplitude": [0.83, 0, 1],
     "spacing": [0.33, 0, 1],
     "hue": [0.3, 0, 1],
     "hue_range": [0.6, 0, 1],
     "saturation": [0.71, 0, 1],
-    "fft_channel": [0.9, 0, 6]
+    "fft_channel": [0.9, 0, 6],
+    "mod_intensity": [0.15, 0, 1],
+    "delta": [0.74, 0, 1]
 }
 
 class Travellers(Animation):
@@ -43,9 +47,12 @@ class Travellers(Animation):
         hue = self.params["hue"].value
         hue_range = self.params["hue_range"].value
         sat = self.params["saturation"].value
+        mod_intensity = self.params["mod_intensity"].value
+        delta = self.params["delta"].value
      
-        update_pixels(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
+        update_pixels(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft, mod_intensity, delta)
 
+delta_hue = 0
 
 def update_pixels(pixels, 
     width, 
@@ -55,19 +62,31 @@ def update_pixels(pixels,
     hue,
     hue_range,
     sat,
-    fft
+    fft,
+    mod_intensity,
+    delta,
+    dt=1.0/30
 ):
+    global delta_hue
+    delta_hue += norm.rvs(scale=delta**2*dt)
+
+    print "delta_hue", delta_hue
+
+    hue = hue+delta_hue
+
     x = np.linspace(0, 1, len(pixels))
 
-    w = width
+    w = width + mod_intensity*np.mean(fft)
     v = speed
     t = time.time()
     a = amplitude
+
 
     # A sum of spatial gaussians
     g = np.zeros(len(pixels))
     for center in np.arange(0, 1, spacing):
         g = g + gaussian(np.mod(x-v*t, 1), a, center, w)
+
 
     # Hue-e hoo haha
     # hue = np.linspace(0, 1, len(pixels))
