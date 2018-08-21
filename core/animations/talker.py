@@ -7,7 +7,7 @@ from scipy import signal
 import numpy as np
 import time
 import colorsys 
-
+import random
 
 class FaceSection():
 
@@ -96,7 +96,7 @@ class Talker(Animation):
 
         self.temp_pixels = np.array([[0.0,0.0,0.0]]*(fmap['stats']['c_pixels']+fmap['stats']['r_pixels']+fmap['stats']['l_pixels']+fmap['stats']['cube_pixels']))
         
-        self.hue_it = 0.1
+        self.hue_it = random.uniform(0.0, 1.0)
         self.hue_step = 0.005
         self.blob_length_factor = 10
         self.blob_hue_range_offset = 0.3
