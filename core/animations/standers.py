@@ -6,17 +6,20 @@ import colorsys
 
 from numpy import pi
 
+params = {
+    "wavelength": [4, 0.5, 10],
+    "amplitude": [0.21, 0, 1],
+    "frequency": [2.6, 0.5, 10],
+    "saturation": [0.71, 0, 1],
+    "hue": [0.58,0, 1],
+    "fft_channel": [1, 0, 6]
+}
+
+
 class Standers(Animation):
     layout_type = "Layout"
 
-    def __init__(self, layout, 
-        wavelength=4, 
-        amplitude=0.21, 
-        frequency=2.6,
-        hue=0.58,
-        saturation=0.71,
-        fft_channel=0.9
-    ):
+    def __init__(self, layout, **kwargs):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
             period is the number of seconds it takes a color to lap the cube
@@ -26,13 +29,15 @@ class Standers(Animation):
 
         self.layout = layout
 
-        self.add_param("wavelength", wavelength, 0.5, 10)
-        self.add_param("amplitude", amplitude, 0, 1)
-        self.add_param("frequency", frequency, 0.5, 10)
-        self.add_param("saturation", saturation, 0, 1)
-        self.add_param("fft_channel", fft_channel, 0, 6)
+        # Sort out params
+        for name, value in kwargs.items():
+            if not name in params:
+                raise Exception("Unknonwn params: %s"%name)
+
+            params[name][0] = value
         
-        self.add_param("hue", hue, 0, 1)
+        for name, value in params.items():
+            self.add_param(name, value[0], value[1], value[2])
 
     def update(self):
         pixels = self.layout.pixels
