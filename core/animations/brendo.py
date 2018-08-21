@@ -22,6 +22,11 @@ class Brendo(Animation):
         tr_hue=0.3,
         tr_hue_range=0.6,
         tr_saturation=0.71,
+        st_wavelength=4, 
+        st_amplitude=0.21, 
+        st_frequency=2.6,
+        st_hue=0.58,
+        st_saturation=0.71,
     ):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
@@ -33,6 +38,7 @@ class Brendo(Animation):
         self.layout = layout
 
         self.add_param("num_sections", num_sections, 1, 10)
+        self.add_param("fft_channel", fft_channel, 0, 6)
 
         # Travellers
         self.add_param("tr_width", tr_width, 0, 1)
@@ -42,6 +48,13 @@ class Brendo(Animation):
         self.add_param("tr_hue", tr_hue, 0, 1)
         self.add_param("tr_hue_range", tr_hue_range, 0, 1)
         self.add_param("tr_saturation", tr_saturation, 0, 1)
+
+        # Standers
+        self.add_param("st_wavelength", st_wavelength, 0.5, 10)
+        self.add_param("st_amplitude", st_amplitude, 0, 1)
+        self.add_param("st_frequency", st_frequency, 0.5, 10)
+        self.add_param("st_saturation", st_saturation, 0, 1)
+        self.add_param("st_hue", st_hue, 0, 1)
 
     def update(self):
         pixels = self.layout.pixels
@@ -65,7 +78,6 @@ class Brendo(Animation):
             else:
                 self.update_traveller(strip)
 
-
     def update_traveller(self, pixels):
         w = self.params["tr_width"].value
         a = self.params["tr_amplitude"].value
@@ -78,5 +90,15 @@ class Brendo(Animation):
         update_traveller(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
 
     def update_stander(self, pixels):
-        pass
+        w = self.params["st_frequency"].value
+        A = self.params["st_amplitude"].value
+        l = self.params["st_wavelength"].value
+        sat = self.params["st_saturation"].value
+        hue = self.params["st_hue"].value
+      
+        fft_index = int(self.params["fft_channel"].value)
+        mod = self.fft[fft_index]
+
+        update_stander(pixels, w, A, l, sat, hue, mod)
+
 
