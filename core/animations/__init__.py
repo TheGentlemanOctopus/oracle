@@ -11,6 +11,10 @@ import panel_beat
 import waves
 import fire_glow
 
+import standers
+import travellers
+import brendo
+
 import utils
 
 # TODO: Refactor this properly
