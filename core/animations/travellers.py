@@ -14,7 +14,8 @@ class Travellers(Animation):
         speed=0.11, 
         amplitude=0.83,
         spacing=0.33,
-        hue=0.58,
+        hue=0.3,
+        hue_range=0.6,
         saturation=0.71,
         fft_channel=0.9
     ):
@@ -31,12 +32,9 @@ class Travellers(Animation):
         self.add_param("speed", speed, -1, 1)
         self.add_param("amplitude", amplitude, 0, 1)
         self.add_param("spacing", spacing, 0, 1)
-
-        # TODO: Speed
-        # self.add_param("saturation", saturation, 0, 1)
-
-        # self.add_param("fft_channel", fft_channel, 0, 6)
-        # self.add_param("hue", hue, 0, 1)
+        self.add_param("hue", hue, 0, 1)
+        self.add_param("hue_range", hue_range, 0, 1)
+        self.add_param("saturation", saturation, 0, 1)
 
     def update(self):
         pixels = self.layout.pixels
@@ -45,21 +43,29 @@ class Travellers(Animation):
         a = self.params["amplitude"].value
         v = self.params["speed"].value
         spacing = self.params["spacing"].value
+        hue = self.params["hue"].value
+        hue_range = self.params["hue_range"].value
+        sat = self.params["saturation"].value
      
-        update_pixels(pixels, w, a, v, spacing, self.fft)
+        update_pixels(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
 
 
-
-def update_pixels(pixels, width, amplitude, speed, spacing, fft):
+def update_pixels(pixels, 
+    width, 
+    amplitude, 
+    speed, 
+    spacing, 
+    hue,
+    hue_range,
+    sat,
+    fft
+):
     x = np.linspace(0, 1, len(pixels))
 
     w = width
     v = speed
     t = time.time()
     a = amplitude
-
-    hue_range = 0.6
-    hue = 0.3
 
     # A sum of spatial gaussians
     g = np.zeros(len(pixels))

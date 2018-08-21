@@ -14,15 +14,13 @@ class Brendo(Animation):
 
     def __init__(self, layout, 
         num_sections=10,
-        wavelength=4, 
-        amplitude=0.21, 
-        frequency=2.6,
-        hue=0.58,
-        saturation=0.71,
-        fft_channel=0.9,
-        width=0.1, 
-        speed=0.11, 
-        spacing=0.33
+        fft_channel=1,
+        tr_width=0.1, 
+        tr_speed=0.11, 
+        tr_amplitude=0.83,
+        tr_spacing=0.33,
+        tr_hue=0.58,
+        tr_saturation=0.71,
     ):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
