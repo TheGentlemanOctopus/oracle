@@ -50,7 +50,7 @@ class FaceSection():
         self.time_delta = 0
         self.time_period = 0
             
-    def update(self, fft, reset_time, decay_time, colour_time):
+    def update(self, fft, reset_time, decay_time, colour_time, vol_limit):
 
         self.time_delta = time.time() - self.time_start
         self.time_period = (np.sin(self.time_delta/colour_time) + 1) * 0.425
@@ -58,10 +58,7 @@ class FaceSection():
 
 
 
-        if self.check_beat(fft[7:11]):
-        
-            panel_count = 0
-
+        if self.check_volume(fft[0:7], vol_limit) or self.check_beat(fft[7:11]):
 
             for panel_it in range(len(spatial_fmap[self.section])):
                 
@@ -113,6 +110,12 @@ class FaceSection():
         else:
             return False
 
+    def check_volume(self, fft, volume_limit):
+        if (sum(fft)/7) > volume_limit:
+            return True
+        else:
+            return False
+
  
 
 class FireGlow(Animation):
@@ -126,7 +129,8 @@ class FireGlow(Animation):
     def __init__(self, layout, 
         fire_reset = 2,
         fire_decay = 0.05,
-        colour_time = 5
+        colour_time = 5,
+        vol_limit = 0.6
     ):
         super(FireGlow, self).__init__()
         self.layout = layout
@@ -136,7 +140,7 @@ class FireGlow(Animation):
         self.add_param("fire_reset", fire_reset, 0.001, 10)
         self.add_param("fire_decay", fire_decay, 0.001, 0.5)
         self.add_param("colour_time", colour_time, 0.001, 10)
-        
+        self.add_param("volume_limit", vol_limit, 0.001, 1)
         self.left = FaceSection(length=fmap['stats']['l_pixels'],section='left')
         self.centre = FaceSection(length=fmap['stats']['c_pixels'],section='centre')
         self.right = FaceSection(length=fmap['stats']['r_pixels'],section='right')
@@ -155,7 +159,7 @@ class FireGlow(Animation):
         fire_reset = self.params["fire_reset"].value
         fire_decay = self.params["fire_decay"].value
         colour_time = self.params["colour_time"].value
-
+        vol_limit = self.params["volume_limit"].value
         self.clear_pixels()
         
         period = 5 #- ((1.01-fft[1])*3)
@@ -166,15 +170,15 @@ class FireGlow(Animation):
         t_phase = t_delta / period
 
         self.carrier = np.sin(t_phase)
-        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, fire_reset, fire_decay, colour_time)):
+        for old_pix, new_pix in zip(self.layout.pixels[0:fmap['stats']['l_pixels']], self.left.update(self.fft, fire_reset, fire_decay, colour_time, vol_limit)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, fire_reset, fire_decay, colour_time)):
+        for old_pix, new_pix in zip(self.layout.pixels[512:512+fmap['stats']['c_pixels']], self.centre.update(self.fft, fire_reset, fire_decay, colour_time, vol_limit)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_reset, fire_decay, colour_time)):
+        for old_pix, new_pix in zip(self.layout.pixels[1024:1024+fmap['stats']['r_pixels']], self.right.update(self.fft, fire_reset, fire_decay, colour_time, vol_limit)):
             old_pix.color = new_pix
 
-        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixels']], self.cube.update(self.fft, fire_reset, fire_decay, colour_time)):
+        for old_pix, new_pix in zip(self.layout.pixels[1536:1536+fmap['stats']['cube_pixels']], self.cube.update(self.fft, fire_reset, fire_decay, colour_time, vol_limit)):
             old_pix.color = new_pix
     
