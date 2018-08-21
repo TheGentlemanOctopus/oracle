@@ -19,7 +19,8 @@ class Brendo(Animation):
         tr_speed=0.11, 
         tr_amplitude=0.83,
         tr_spacing=0.33,
-        tr_hue=0.58,
+        tr_hue=0.3,
+        tr_hue_range=0.6,
         tr_saturation=0.71,
     ):
         """
@@ -33,41 +34,19 @@ class Brendo(Animation):
 
         self.add_param("num_sections", num_sections, 1, 10)
 
-        # Standers
-        self.add_param("wavelength", wavelength, 0.5, 10)
-        self.add_param("amplitude", amplitude, 0, 1)
-        self.add_param("frequency", frequency, 0.5, 10)
-        self.add_param("saturation", saturation, 0, 1)
-        self.add_param("fft_channel", fft_channel, 0, 6)
-        self.add_param("hue", hue, 0, 1)
-
         # Travellers
-        self.add_param("width", width, 0, 1)
-        self.add_param("speed", speed, -1, 1)
-        self.add_param("amplitude", amplitude, 0, 1)
-        self.add_param("spacing", spacing, 0, 1)
+        self.add_param("tr_width", tr_width, 0, 1)
+        self.add_param("tr_speed", tr_speed, -1, 1)
+        self.add_param("tr_amplitude", tr_amplitude, 0, 1)
+        self.add_param("tr_spacing", tr_spacing, 0, 1)
+        self.add_param("tr_hue", tr_hue, 0, 1)
+        self.add_param("tr_hue_range", tr_hue_range, 0, 1)
+        self.add_param("tr_saturation", tr_saturation, 0, 1)
 
     def update(self):
         pixels = self.layout.pixels
-
-        # Traveller params
-        w = self.params["width"].value
-        a = self.params["amplitude"].value
-        v = self.params["speed"].value
-        spacing = self.params["spacing"].value
-     
-        # Standers
-        w = self.params["frequency"].value
-        A = self.params["amplitude"].value
-        l = self.params["wavelength"].value
-        sat = self.params["saturation"].value
-        hue = self.params["hue"].value
       
-        fft_index = int(self.params["fft_channel"].value)
-        mod = self.fft[fft_index]
-
         num_sections = int(self.params["num_sections"].value)
-
         indices = np.linspace(0, len(pixels), num_sections+1).astype(int)
 
         # Strip em!
@@ -75,17 +54,29 @@ class Brendo(Animation):
         for i in range(len(indices)-1):
             strips.append(pixels[indices[i]:indices[i+1]])
 
+        # Update
         curr_pattern = True
         for strip in strips:
             curr_pattern = not curr_pattern
 
             if curr_pattern:
-                update_stander(strip, w, A, l, sat, hue, mod)
+                self.update_stander(strip)
             
             else:
-                update_traveller(strip, w, a, v, spacing, self.fft)
+                self.update_traveller(strip)
 
 
+    def update_traveller(self, pixels):
+        w = self.params["tr_width"].value
+        a = self.params["tr_amplitude"].value
+        v = self.params["tr_speed"].value
+        spacing = self.params["tr_spacing"].value
+        hue = self.params["tr_hue"].value
+        hue_range = self.params["tr_hue_range"].value
+        sat = self.params["tr_saturation"].value
+     
+        update_traveller(pixels, w, a, v, spacing, hue, hue_range, sat, self.fft)
 
-
+    def update_stander(self, pixels):
+        pass
 
