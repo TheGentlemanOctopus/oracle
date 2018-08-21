@@ -5,20 +5,23 @@ import numpy as np
 import colorsys
 
 from numpy import pi
+from utils import add_params
+
+params = {
+    "width": [0.1, 0, 1], 
+    "speed": [0.11, -1, 1], 
+    "amplitude": [0.83, 0, 1],
+    "spacing": [0.33, 0, 1],
+    "hue": [0.3, 0, 1],
+    "hue_range": [0.6, 0, 1],
+    "saturation": [0.71, 0, 1],
+    "fft_channel": [0.9, 0, 6]
+}
 
 class Travellers(Animation):
     layout_type = "Layout"
 
-    def __init__(self, layout, 
-        width=0.1, 
-        speed=0.11, 
-        amplitude=0.83,
-        spacing=0.33,
-        hue=0.3,
-        hue_range=0.6,
-        saturation=0.71,
-        fft_channel=0.9
-    ):
+    def __init__(self, layout, **kwargs):
         """
             Shifts pixel colors along a hue range in the order that the led strips woulf be laid in
             period is the number of seconds it takes a color to lap the cube
@@ -28,13 +31,7 @@ class Travellers(Animation):
 
         self.layout = layout
 
-        self.add_param("width", width, 0, 1)
-        self.add_param("speed", speed, -1, 1)
-        self.add_param("amplitude", amplitude, 0, 1)
-        self.add_param("spacing", spacing, 0, 1)
-        self.add_param("hue", hue, 0, 1)
-        self.add_param("hue_range", hue_range, 0, 1)
-        self.add_param("saturation", saturation, 0, 1)
+        add_params(self, params, **kwargs)
 
     def update(self):
         pixels = self.layout.pixels
