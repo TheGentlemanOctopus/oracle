@@ -6,6 +6,8 @@ import colorsys
 
 from numpy import pi
 
+from utils import add_params
+
 params = {
     "wavelength": [4, 0.5, 10],
     "amplitude": [0.21, 0, 1],
@@ -29,15 +31,8 @@ class Standers(Animation):
 
         self.layout = layout
 
-        # Sort out params
-        for name, value in kwargs.items():
-            if not name in params:
-                raise Exception("Unknonwn params: %s"%name)
+        add_params(self, params, **kwargs)
 
-            params[name][0] = value
-        
-        for name, value in params.items():
-            self.add_param(name, value[0], value[1], value[2])
 
     def update(self):
         pixels = self.layout.pixels

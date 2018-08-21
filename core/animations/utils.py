@@ -32,3 +32,18 @@ def possible_animations(name):
         possible_animations.update(animation_dict[name])
 
     return possible_animations
+
+
+def add_params(animation, params, **kwargs):
+    """
+        Adds a dictioanry of parameters and overrides to an animation
+    """
+    # Sort out params
+    for name, value in kwargs.items():
+        if not name in params:
+            raise Exception("Unknonwn params: %s"%name)
+
+        params[name][0] = value
+    
+    for name, value in params.items():
+        animation.add_param(name, value[0], value[1], value[2])
