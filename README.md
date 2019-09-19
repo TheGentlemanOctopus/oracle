@@ -40,7 +40,9 @@ Each scene file should contain three top-level keys
 * `InputDevices` - An array of input devices (see below). E.g. fft data streamed over udp
 * `OutputDevices` - An array of output devices (see below). E.g. the Oracle
 
-For example, here is a minimal scene file 
+All devices must contain a `type` key indicating the type of device. Additionally, output devices should specify a `name` key too. 
+
+For example, consider the scene file 
 ```
 {
     "SceneDetails": {
@@ -63,14 +65,23 @@ For example, here is a minimal scene file
     ],
     "OutputDevices": [
         {
-            "name": "Cloudface",
-            "type": "PointCloudDevice",
+            "name": "BigDaddy",
+            "type": "BigCubeDevice",
             "args": {
                 "channel": 1,
-                "pixels": "face.json"
+                "led_spacing" : 0.2,
+                "strip_spacing": 0.05
+            },
+            "default_animation": {
+                "type": "SwoopyTown",
+                "args": {}
             }
         }
     ]
 }
 ```
+
+This scene contains one input device, a fft chip that communicates over UDP, and one output device, a BigCubeDevice led display.
+
+
 
