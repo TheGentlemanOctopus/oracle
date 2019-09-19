@@ -41,7 +41,7 @@ Each scene file should contain three top-level keys
 * `OutputDevices` - An array of output devices (see below). E.g. the Oracle
 
 For example, here is a minimal scene file 
-
+```
 {
     "SceneDetails": {
         "scene_fps" : 60,
@@ -72,5 +72,5 @@ For example, here is a minimal scene file
         }
     ]
 }
-
+```
 
