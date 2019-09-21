@@ -89,6 +89,16 @@ For example, consider the scene file
 
 This scene contains one input device, a pattern controller app, and one output device, a BigCubeDevice led display.
 
+## Devices
+
+Devices are individual components that either generate stimulus affecting pattern generation (input device) or generate rgb data send over opc (output device). In scene files, each device must contain a `type` (indicating device class) and an `args` object that defines initialisation data.
+
+### Input Devices
+
+The `AppDevice` is a http app (Flask) for controlling high level pattern parameters.
+Args
+* `host` - str - App IP
+* `port` - int - App Port
 
 
 
