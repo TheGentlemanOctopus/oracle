@@ -37,12 +37,12 @@ This launches an instance of `gl_server` with the appropriate led cloud and begi
 
 ### File structure
 
-Each scene file should contain three top-level keys
+A scene file requires three top-level keys
 * `SceneDetails` - opc communication settings and framerate
-* `InputDevices` - An array of input devices (see below). E.g. fft data streamed over udp
-* `OutputDevices` - An array of output devices (see below). E.g. the Oracle
+* `InputDevices` - An array of input devices, e.g. fft data streamed over udp
+* `OutputDevices` - An array of output devices, e.g. the Oracle
 
-All devices must contain a `type` key indicating the type of device. Additionally, output devices should specify a `name` key too. 
+All devices must contain a `type` key indicating the type of device. Output devices must also specify a `name` key for reference. 
 
 For example, consider the scene file 
 ```
@@ -83,7 +83,7 @@ For example, consider the scene file
 }
 ```
 
-This scene contains one input device, a fft chip that communicates over UDP, and one output device, a BigCubeDevice led display.
+This scene contains one input device, a pattern controller app, and one output device, a BigCubeDevice led display.
 
 
 
