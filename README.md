@@ -1,15 +1,15 @@
 # The Oracle
 
-This repo contains code to generate sound reactive patterns for the Oracle art installation. The framework provided here was designed to be extendable for future sound-reactive led art installations. Led rgb data is communicated over UDP using [OpenPixelControl (OPC)](https://github.com/zestyping/openpixelcontrol)
+Generate sound reactive patterns for the Oracle art installation. Based on a generalised 'art scene' model, the framework provided here is extendable for future interactive led art installations. During runtime, rgb data is outputted over UDP using [OpenPixelControl (OPC)](https://github.com/zestyping/openpixelcontrol)
 
 ## Installation
 
-To use the oracle, you'll need a couple bits of software. 
-First, install required python packages with
+To use the oracle, you'll need to install a couples pieces of software on your mac/linux development machine. 
+
+* Install python packages with
 
 `$ pip install -r requirements.txt`
-
-For simulation of led displays we use [openpixelcontrol's (OPCs) gl_server](https://github.com/zestyping/openpixelcontrol). After installation, ensure it is reachable on the path, e.g.
+* Led displays are simulated with [OPC's gl_server](https://github.com/zestyping/openpixelcontrol). After installation, ensure `gl_server` is reachable on the path, e.g.
 
 `$ sudo ln -s PATH_TO_GL_SERVER /usr/local/bin/gl_server`
 
@@ -21,7 +21,7 @@ Example scenes can be found under `descriptors/`
 
 ### Running a scene
 
-To run a scene call
+To run a scene, call
 
 `$ python scene PATH_TO_SCENE_FILE`
 
@@ -29,9 +29,11 @@ This requires the receiving OPC server to be running at the address defined in `
 
 ### Simulate a scene
 
-For those wishing to develop patterns that don't have access to hardware, you can simulate scenes with the opc gl_server. 
+For those wishing to develop patterns that don't have access to hardware, you can simulate scenes with
 
 `$ python main.py sim PATH_TO_SCENE`
+
+This launches an instance of `gl_server` with the appropriate led cloud and begins pattern generation and communication. 
 
 ### File structure
 
