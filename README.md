@@ -4,7 +4,7 @@ Generate sound reactive animations for the Oracle art installation. Based on a g
 
 ## Installation
 
-To use the oracle, you'll need to install a couples pieces of software on your mac/linux development machine. 
+To use the oracle, you'll need to install a couple pieces of software on your mac/linux development machine. 
 
 * Install python packages with
 
@@ -107,7 +107,7 @@ The `FftDevice` receives 7-band fft data (0-127) over serial. Data should be for
 
 ### OutputDevices
 
-An `OutputDevice` is an led display. Each output device in a scene file must contain a `name` key as a reference. Optionally, a `default_animation` key can be defined indicating  which pattern should run at startup (useful for production), see the example scene above. For flexible opc connectivity, each `OutputDevice` can output across multiple opc channels.
+An `OutputDevice` is an led display. Each output device in a scene file must contain a `name` key as a reference. Optionally, a `default_animation` key can be defined to indicate  which pattern should run at startup (useful for production), see the example scene above. For flexible opc connectivity, each `OutputDevice` can output across multiple opc channels.
 The `layout_type` property defined on the class defines the type of animations that are compatible (and thus selectable via the app)
 
 Example `OutputDevices` include
@@ -120,8 +120,17 @@ Example `OutputDevices` include
 `Animation` classes are used to define sound reactive animations. Although an animation can work across multiple output devices, it's `layout_type` parameter must be compatible. To make an animation, subclass `Animation` in a new module and store it under `core/animations/`. Import the new module under `core/animation/__init__.py` to make it accessible to `main.py`.
 Each animation defines a number of `Param`'s, that define the sliders that appear on the app. 
 
-Notable examples
+Notable examples (found in `core/animations/`)
 * `Carousel` - cycles between different animations
 * `SpiralOutFast` - sonic travelling waves
 * `FireGlow` - warm, firey goodness
 * `LavaLamp` - squelchy, bloby, drifty
+
+## Layouts
+
+A `Layout` abstracts an arrangement of pixels. Each `Animation` is associated with a specific layout class, via the `layout_type` property, indicating which layout it is compatible with. Similarly, the an `OutputDevice` defines the mapping of layout pixels to opc channels and defines a similar `layout_type` property. A `Layout` can itself be composed of `Layout`'s, allowing for complex structures to be defined.
+
+Current layouts include:
+* `pixel_list` - a generic list of pixels (eg for point clouds)
+* `strip` - a linear strip of leds
+* `big_cube` - strips of leds arranged in a cube
