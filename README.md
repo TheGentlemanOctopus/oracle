@@ -93,12 +93,32 @@ This scene contains one input device, a pattern controller app, and one output d
 
 Devices are individual components that either generate stimulus affecting pattern generation (input device) or generate rgb data send over opc (output device). In scene files, each device must contain a `type` (indicating device class) and an `args` object that defines initialisation data.
 
-### Input Devices
+### AppDevice (InputDevice)
 
-The `AppDevice` is a http app (Flask) for controlling high level pattern parameters.
-Args
+The `AppDevice` is a http app (Flask) for switching of patterns and control high level pattern parameters.
+A drop-down menu provides a list of compatible patterns for the current scene. 
+For real-time configuration, sliders are provided for each parameter of the currently selected pattern.
+
+Args:
 * `host` - str - App IP
 * `port` - int - App Port
 
+![Alt text](/docs/app.png?raw=true "/descriptors/PointCloudScene.json")
+
+### FftDevice (InputDevice)
+
+The `FftDevice` receives 7-band fft data (0-127) over serial. Data should be formatted by a comma separated string terminated by newline, eg. `30,78,0,0,127,68,127\n`. Sends a start message during initialisation.
+
+Args:
+* `arduino_ip` - str - IP to listen on
+* `local_ip` - str - IP to send data from
+* `start_port` - int -  port to listen on
+* `data_port` - int - port to send data from
+* `start_message` - str - initialisation message
+* `buffer_size` - int - (deprecated)
+* `autogainEnable` - int - when non-zero, automatically scale data according to the range of values received
+* `fft_extent_reset_time` - autogain range timeout reset
+* `ambient_level` - background noise level
+* `no_mic_level` - approx disconnected mic level
 
 
