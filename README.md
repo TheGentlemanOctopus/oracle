@@ -1,6 +1,6 @@
 # The Oracle
 
-Generate sound reactive patterns for the Oracle art installation. Based on a generalised 'art scene' model, the framework provided here is extendable for future interactive led art installations. During runtime, output rgb data is sent over UDP using [OpenPixelControl (OPC)](https://github.com/zestyping/openpixelcontrol)
+Generate sound reactive animations for the Oracle art installation. Based on a generalised 'art scene' model, the framework provided here is extendable for future interactive led art installations. During runtime, output rgb data is sent over UDP using [OpenPixelControl (OPC)](https://github.com/zestyping/openpixelcontrol)
 
 ## Installation
 
@@ -30,7 +30,7 @@ This requires the receiving OPC server to be running at the address defined in `
 
 ### Simulate a scene
 
-For those wishing to develop patterns that don't have access to hardware, you can simulate scenes with
+For those wishing to develop animations that don't have access to hardware, you can simulate scenes with
 
 `$ python main.py sim PATH_TO_SCENE`
 
@@ -91,7 +91,7 @@ This scene contains one input device, a pattern controller app, and one output d
 
 ## Devices
 
-Devices are individual components that either generate stimulus affecting pattern generation (input device) or generate rgb data send over opc (output device). In scene files, each device must contain a `type` (indicating device class) and an `args` object that defines initialisation data.
+Devices are individual components that either generate stimulus affecting pattern generation (input device) or generate rgb data send over opc (output device). In scene files, each device must contain a `type` (indicating device class) and an `args` object that defines initialisation data. Each device runs as a serparate python process (via multiprocessing API) so processing can be split across multiple cores. 
 
 ### AppDevice (InputDevice)
 
@@ -99,26 +99,29 @@ The `AppDevice` is a http app (Flask) for switching of patterns and control high
 A drop-down menu provides a list of compatible patterns for the current scene. 
 For real-time configuration, sliders are provided for each parameter of the currently selected pattern.
 
-Args:
-* `host` - str - App IP
-* `port` - int - App Port
-
 ![Alt text](/docs/app.png?raw=true "/descriptors/PointCloudScene.json")
 
 ### FftDevice (InputDevice)
 
 The `FftDevice` receives 7-band fft data (0-127) over serial. Data should be formatted by a comma separated string terminated by newline, eg. `30,78,0,0,127,68,127\n`. Sends a start message during initialisation.
 
-Args:
-* `arduino_ip` - str - IP to listen on
-* `local_ip` - str - IP to send data from
-* `start_port` - int -  port to listen on
-* `data_port` - int - port to send data from
-* `start_message` - str - initialisation message
-* `buffer_size` - int - (deprecated)
-* `autogainEnable` - int - when non-zero, automatically scale data according to the range of values received
-* `fft_extent_reset_time` - autogain range timeout reset
-* `ambient_level` - background noise level
-* `no_mic_level` - approx disconnected mic level
+### OutputDevices
 
+An `OutputDevice` is an led display. Each output device in a scene file must contain a `name` key as a reference. Optionally, a `default_animation` key can be defined indicating  which pattern should run at startup (useful for production), see the example scene above. For flexible opc connectivity, each `OutputDevice` can output across multiple opc channels.
+The `layout_type` property defined on the class defines the type of animations that are compatible (and thus selectable via the app)
 
+Example `OutputDevices` include
+* `Lonely` - The simplest led display, a singular pixel
+* `BigCubeDevice` - A cube of led strips
+* `PointCloudDevice` - A generic point cloud of pixels, defined in json under `core/point_clouds/`
+
+## Animations
+
+`Animation` classes are used to define sound reactive animations. Although an animation can work across multiple output devices, it's `layout_type` parameter must be compatible. To make an animation, subclass `Animation` in a new module and store it under `core/animations/`. Import the new module under `core/animation/__init__.py` to make it accessible to `main.py`.
+Each animation defines a number of `Param`'s, that define the sliders that appear on the app. 
+
+Notable examples
+* `Carousel` - cycles between different animations
+* `SpiralOutFast` - sonic travelling waves
+* `FireGlow` - warm, firey goodness
+* `LavaLamp` - squelchy, bloby, drifty
