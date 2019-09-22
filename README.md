@@ -1,6 +1,6 @@
 # The Oracle
 
-Generate sound reactive animations for the Oracle art installation. Based on a generalised 'art scene' model, the framework provided here is extendable for future interactive led art installations. During runtime, output rgb data is sent over UDP using [OpenPixelControl (OPC)](https://github.com/zestyping/openpixelcontrol)
+Generate sound reactive animations for the Oracle art installation. Based on a generalised 'art scene' model, the framework provided here is extendable for future interactive led art installations. During runtime, output rgb data is communicated over UDP using the [OpenPixelControl (OPC)](https://github.com/zestyping/openpixelcontrol) protocol.
 
 ## Installation
 
@@ -128,7 +128,7 @@ Notable examples (found in `core/animations/`)
 
 ## Layouts
 
-A `Layout` abstracts an arrangement of pixels. Each `Animation` is associated with a specific layout class, via the `layout_type` property, indicating which layout it is compatible with. Similarly, the an `OutputDevice` defines the mapping of layout pixels to opc channels and defines a similar `layout_type` property. A `Layout` can itself be composed of `Layout`'s, allowing for complex structures to be defined.
+A `Layout` abstracts an arrangement of pixels. Each `Animation` is associated with a specific layout class, via the `layout_type` property, indicating which layout it is compatible with. Similarly, an `OutputDevice` defines the mapping of layout pixels to opc channels and defines a similar `layout_type` property. A `Layout` can itself be composed of `Layout`s, allowing complex structures to be defined.
 
 Current layouts include:
 * `pixel_list` - a generic list of pixels (eg for point clouds)
