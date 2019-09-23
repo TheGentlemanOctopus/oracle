@@ -41,14 +41,16 @@
                 "led_spacing" : 0.2,
                 "strip_spacing": 0.2,
                 "pixels_per_channel": {
-                    "0": 1170
+                    "1": 1170
                 }
             },
             "default_animation": {
-                "type": "Carousel",
+                "type": "SpiralOutFast",
                 "args": {
-                    "min_transition_time": 10,
-                    "max_transition_time": 30
+                    "r_slowness":1.2, 
+                    "g_slowness":1.7, 
+                    "b_slowness":2, 
+                    "overall_slowness":0.5
                 }
             }
         }

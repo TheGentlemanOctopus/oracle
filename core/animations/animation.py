@@ -22,7 +22,7 @@ class Animation(object):
         self.params = {}
 
         # Initialise _fft var. This should only be get/set from the properties below
-        self._fft = np.zeros((7,))
+        self._fft = np.zeros((14,))
 
         # This defines the layout used for animation
         self.layout = Layout()

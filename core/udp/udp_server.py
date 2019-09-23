@@ -17,7 +17,13 @@ class UdpServer():
 
         self.sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
-        self.sock.bind(('', self.port_r))
+
+        try:
+            self.sock.bind(('', self.port_r))
+        except Exception, e:
+            print self.ip, self.port_r
+            print 'SERVER ERROR', e
+            raise e
 
         self.sock.settimeout(timeout)
 

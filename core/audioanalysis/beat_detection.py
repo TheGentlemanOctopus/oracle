@@ -41,7 +41,6 @@ class BeatDetect():
         ''' decrement beat_history '''
         self.history-=1   
         self.history = np.array([ x for x in self.history if (x > 0)])
-        print 'x', len(self.history), self.history
         
 
 
@@ -78,7 +77,7 @@ if __name__ == '__main__':
 
     # bin_history.append(fft.stats['bin_values_normalized'][chan])
 
-    print len(bin_history)
+    # print len(bin_history)
 
     while (len(bin_history[0]) < history_length):
         data = audio.sample_and_send()

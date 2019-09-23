@@ -118,7 +118,6 @@ class SceneManager(object):
             # Get data from the queue until cleared
             while True:
                 item = input_device.get_out_queue()
-
                 if item is None:
                     break
                 # print item

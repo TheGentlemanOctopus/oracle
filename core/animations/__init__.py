@@ -6,6 +6,14 @@ import swoopy_town
 import spiral_out_fast
 import carousel
 import lava_lamp
+import talker
+import panel_beat
+import waves
+import fire_glow
+
+import standers
+import travellers
+import brendo
 
 import utils
 

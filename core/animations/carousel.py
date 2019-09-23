@@ -7,9 +7,11 @@ import itertools
 import numpy as np
 
 default_animation_set = [
-    {"type": "BigCubeWalk"},
-    # {"type": "SwoopyTown"},
-    {"type": "SpiralOutFast"}
+    {"type": "Waves"},
+    {"type": "Talker"},
+    {"type": "FireGlow"},
+    {"type": "PanelBeat"},
+    {"type": "Travellers"}
 ]
 
 class Carousel(Animation):

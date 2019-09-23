@@ -40,6 +40,10 @@
             "args": {
                 "channel": 1,
                 "pixels": "face.json"
+            },
+            "default_animation": {
+                "type": "Brendo",
+                "args": {}
             }
         }
     ]
